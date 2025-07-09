@@ -18,6 +18,6 @@ public class CodeEntity {
     private String label;
 
     @ManyToOne
-    @JoinColumn(name = "codes_list_id" , nullable = false)
+    @JoinColumn(name = "codes_list_id", nullable = false)
     private CodesListEntity codesList;
 }
