@@ -11,13 +11,11 @@ import lombok.Setter;
 public class CodeEntity {
 
     @Id
-    @GeneratedValue
-    private Long id;
+    private String id;
 
-    private String code;
     private String label;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "codes_list_id", nullable = false)
     private CodesListEntity codesList;
 }

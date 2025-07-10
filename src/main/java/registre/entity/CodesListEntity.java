@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,23 +13,16 @@ import java.util.UUID;
 public class CodesListEntity {
 
     @Id
-    @GeneratedValue
-    private UUID id;
+    private String id;
 
-    @Column(columnDefinition = "jsonb")
-    private String searchConfiguration;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "metadata_id")
+    private MetadataEntity metadata;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "search_config_id")
+    private CodesListSearchConfigurationEntity searchConfiguration;
 
     @OneToMany(mappedBy = "codesList", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CodeEntity> content = new ArrayList<>();
-
-    @Column(name = "external_uuid")
-    private UUID externalUuid;
-
-    @Column(name = "external_version")
-    private String externalVersion;
-
-    public void addCode(CodeEntity code) {
-        content.add(code);
-        code.setCodesList(this);
-    }
+    private List<CodeEntity> content;
 }
