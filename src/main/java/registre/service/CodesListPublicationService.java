@@ -15,11 +15,10 @@ import registre.mapper.CodesListMapper;
 import registre.repository.CodesListRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class CodesListService {
+public class CodesListPublicationService {
 
     private static final String CODES_LIST_NOT_FOUND = "Codes list not found";
 
@@ -29,11 +28,11 @@ public class CodesListService {
     private final ObjectMapper objectMapper;
     private final CodesListExternalLinkMapper codesListExternalLinkMapper;
 
-    public CodesListService(CodesListRepository codesListRepository,
-                            CodesListMapper codesListMapper,
-                            CodeMapper codeMapper,
-                            ObjectMapper objectMapper,
-                            CodesListExternalLinkMapper codesListExternalLinkMapper) {
+    public CodesListPublicationService(CodesListRepository codesListRepository,
+                                       CodesListMapper codesListMapper,
+                                       CodeMapper codeMapper,
+                                       ObjectMapper objectMapper,
+                                       CodesListExternalLinkMapper codesListExternalLinkMapper) {
         this.codesListRepository = codesListRepository;
         this.codesListMapper = codesListMapper;
         this.codeMapper = codeMapper;
@@ -95,8 +94,4 @@ public class CodesListService {
         codesListRepository.save(entity);
     }
 
-    public Optional<CodesListDto> getById(String id) {
-        return codesListRepository.findById(id)
-                .map(codesListMapper::toDto);
-    }
 }
