@@ -12,9 +12,10 @@ import java.util.Objects;
 /**
  * CodesListDto
  */
-
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
 public class CodesListDto {
+
+  private String id;
 
   private Metadata metadata;
 
@@ -22,6 +23,25 @@ public class CodesListDto {
 
   @Valid
   private List<Code> content;
+
+  public CodesListDto id(String id) {
+    this.id = id;
+    return this;
+  }
+
+  /**
+   * Get id
+   * @return id
+   */
+  @Schema(name = "id", example = "my-list-id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("id")
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
   public CodesListDto metadata(Metadata metadata) {
     this.metadata = metadata;
@@ -31,8 +51,8 @@ public class CodesListDto {
   /**
    * Get metadata
    * @return metadata
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "metadata", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("metadata")
   public Metadata getMetadata() {
@@ -51,8 +71,7 @@ public class CodesListDto {
   /**
    * Get searchConfiguration
    * @return searchConfiguration
-  */
-  
+   */
   @Schema(name = "searchConfiguration", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("searchConfiguration")
   public Object getSearchConfiguration() {
@@ -79,8 +98,8 @@ public class CodesListDto {
   /**
    * Get content
    * @return content
-  */
-  @Valid 
+   */
+  @Valid
   @Schema(name = "content", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("content")
   public List<Code> getContent() {
@@ -93,27 +112,25 @@ public class CodesListDto {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    CodesListDto codesListDto = (CodesListDto) o;
-    return Objects.equals(this.metadata, codesListDto.metadata) &&
-        Objects.equals(this.searchConfiguration, codesListDto.searchConfiguration) &&
-        Objects.equals(this.content, codesListDto.content);
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    CodesListDto that = (CodesListDto) o;
+    return Objects.equals(id, that.id) &&
+            Objects.equals(metadata, that.metadata) &&
+            Objects.equals(searchConfiguration, that.searchConfiguration) &&
+            Objects.equals(content, that.content);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(metadata, searchConfiguration, content);
+    return Objects.hash(id, metadata, searchConfiguration, content);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class CodesListDto {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    metadata: ").append(toIndentedString(metadata)).append("\n");
     sb.append("    searchConfiguration: ").append(toIndentedString(searchConfiguration)).append("\n");
     sb.append("    content: ").append(toIndentedString(content)).append("\n");
@@ -121,15 +138,10 @@ public class CodesListDto {
     return sb.toString();
   }
 
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
   private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
+    if (o == null) return "null";
     return o.toString().replace("\n", "\n    ");
   }
 }
+
 

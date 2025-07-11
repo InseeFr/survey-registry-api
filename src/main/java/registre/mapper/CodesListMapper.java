@@ -30,6 +30,7 @@ public class CodesListMapper {
         if (entity == null) return null;
 
         CodesListDto dto = new CodesListDto();
+        dto.setId(entity.getId());
         dto.setMetadata(metadataMapper.toDto(entity.getMetadata()));
 
         if (entity.getSearchConfiguration() != null) {
@@ -57,6 +58,11 @@ public class CodesListMapper {
         if (dto == null) return null;
 
         CodesListEntity entity = new CodesListEntity();
+
+        if (dto.getId() != null) {
+            entity.setId(dto.getId());
+        }
+
         entity.setMetadata(metadataMapper.toEntity(dto.getMetadata()));
 
         if (dto.getSearchConfiguration() != null) {
