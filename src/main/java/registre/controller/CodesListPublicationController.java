@@ -16,8 +16,8 @@ public class CodesListPublicationController implements CodesListPublicationApi {
 
     private final CodesListPublicationService codesListPublicationService;
 
-    public CodesListPublicationController(CodesListPublicationService codesListService) {
-        this.codesListPublicationService = codesListService;
+    public CodesListPublicationController(CodesListPublicationService codesListPublicationService) {
+        this.codesListPublicationService = codesListPublicationService;
     }
 
     @Override
