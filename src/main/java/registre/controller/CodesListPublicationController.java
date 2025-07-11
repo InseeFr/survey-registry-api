@@ -1,5 +1,6 @@
 package registre.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,13 +13,10 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class CodesListPublicationController implements CodesListPublicationApi {
 
     private final CodesListPublicationService codesListPublicationService;
-
-    public CodesListPublicationController(CodesListPublicationService codesListPublicationService) {
-        this.codesListPublicationService = codesListPublicationService;
-    }
 
     @Override
     public ResponseEntity<Void> createCodesList(@Valid CodesListDto codesListDto) {
