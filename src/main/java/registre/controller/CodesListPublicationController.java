@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 import registre.dto.Code;
 import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLink;
-import registre.service.CodesListService;
 
 import java.util.List;
 import java.util.UUID;
