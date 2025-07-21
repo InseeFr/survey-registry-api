@@ -16,6 +16,8 @@ import registre.repository.CodesListRepository;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 @Service
 public class CodesListPublicationService {
@@ -55,7 +57,7 @@ public class CodesListPublicationService {
 
         List<CodeEntity> contentEntities = contentDto.stream()
                 .map(codeMapper::toEntity)
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
 
         contentEntities.forEach(code -> code.setCodesList(entity));
 
@@ -71,6 +73,9 @@ public class CodesListPublicationService {
         MetadataEntity metadata = entity.getMetadata();
         if (metadata != null) {
             CodesListExternalLinkEntity externalLinkEntity = codesListExternalLinkMapper.toEntity(externalLinkDto);
+            if (externalLinkEntity.getUuid() == null) {
+                externalLinkEntity.setUuid(UUID.randomUUID());
+            }
             metadata.setExternalLink(externalLinkEntity);
         }
 
@@ -90,8 +95,9 @@ public class CodesListPublicationService {
             throw new InvalidSearchConfigurationException("Erreur de sérialisation JSON", e);
         }
 
+        configEntity.setId(UUID.randomUUID().toString());
+
         entity.setSearchConfiguration(configEntity);
         codesListRepository.save(entity);
     }
-
 }
