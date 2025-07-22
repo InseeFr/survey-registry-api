@@ -1,7 +1,9 @@
 package registre.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import registre.dto.Code;
@@ -88,16 +90,35 @@ public class CodesListPublicationService {
                 .orElseThrow(() -> new IllegalArgumentException(CODES_LIST_NOT_FOUND));
 
         CodesListSearchConfigurationEntity configEntity = new CodesListSearchConfigurationEntity();
-        try {
-            String json = objectMapper.writeValueAsString(configJson);
-            configEntity.setJsonContent(json);
-        } catch (JsonProcessingException e) {
-            throw new InvalidSearchConfigurationException("Erreur de sérialisation JSON", e);
-        }
 
-        configEntity.setId(UUID.randomUUID().toString());
+        try {
+            JsonNode node = objectMapper.valueToTree(configJson);
+
+            if (!node.isObject()) {
+                throw new InvalidSearchConfigurationException("Le JSON fourni doit être un objet");
+            }
+
+            ObjectNode objectNode = (ObjectNode) node;
+
+            String configId;
+            if (objectNode.has("id") && !objectNode.get("id").isNull()) {
+                configId = objectNode.get("id").asText();
+            } else {
+                configId = UUID.randomUUID().toString();
+                objectNode.put("id", configId);
+            }
+
+            String finalJson = objectMapper.writeValueAsString(objectNode);
+
+            configEntity.setId(configId);
+            configEntity.setJsonContent(finalJson);
+
+        } catch (IllegalArgumentException | JsonProcessingException e) {
+            throw new InvalidSearchConfigurationException("Erreur lors de la manipulation du JSON", e);
+        }
 
         entity.setSearchConfiguration(configEntity);
         codesListRepository.save(entity);
     }
+
 }

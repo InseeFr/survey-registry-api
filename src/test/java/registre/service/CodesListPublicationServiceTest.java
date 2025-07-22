@@ -1,6 +1,5 @@
 package registre.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,7 +7,10 @@ import org.junit.jupiter.api.function.Executable;
 import registre.dto.Code;
 import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLink;
-import registre.entity.*;
+import registre.entity.CodeEntity;
+import registre.entity.CodesListEntity;
+import registre.entity.CodesListExternalLinkEntity;
+import registre.entity.MetadataEntity;
 import registre.exception.InvalidSearchConfigurationException;
 import registre.mapper.CodeMapper;
 import registre.mapper.CodesListExternalLinkMapper;
@@ -120,7 +122,7 @@ class CodesListPublicationServiceTest {
     }
 
     @Test
-    void testUpdateSearchConfiguration_WithInvalidJson() throws JsonProcessingException {
+    void testUpdateSearchConfiguration_WithInvalidJson() {
         String id = UUID.randomUUID().toString();
         CodesListEntity entity = new CodesListEntity();
         when(repository.findById(id)).thenReturn(Optional.of(entity));
@@ -132,10 +134,11 @@ class CodesListPublicationServiceTest {
                 repository, codesListMapper, codeMapper, failingObjectMapper, externalLinkMapper
         );
 
-        when(failingObjectMapper.writeValueAsString(any()))
-                .thenThrow(new JsonProcessingException("Mocked error") {});
+        when(failingObjectMapper.valueToTree(any()))
+                .thenThrow(new IllegalArgumentException("Mocked failure in valueToTree"));
 
         assertThrows(InvalidSearchConfigurationException.class, () ->
                 service.updateSearchConfiguration(id, invalid));
     }
+
 }

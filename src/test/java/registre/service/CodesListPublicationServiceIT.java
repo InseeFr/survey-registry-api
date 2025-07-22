@@ -31,7 +31,7 @@ class CodesListPublicationServiceIT {
     @Test
     void testCreateAndFetchCodesList() {
         CodesListDto dto = new CodesListDto();
-        dto.setContent(List.of());
+        dto.setContent(new ArrayList<>());
         String id = service.createCodesList(dto);
 
         Optional<CodesListEntity> entity = repository.findById(id);
