@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "questionnaire_variable")
-public class QuestionnaireVariableEntity {
+public class QuestionnaireVariablesEntity {
 
     @Id
     private String id;

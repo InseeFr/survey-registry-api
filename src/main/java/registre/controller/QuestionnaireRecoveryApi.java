@@ -6,7 +6,7 @@
 package registre.controller;
 
 import registre.dto.Metadata;
-import registre.dto.QuestionnaireVariablesInner;
+import registre.dto.QuestionnaireVariables;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -184,7 +184,7 @@ public interface QuestionnaireRecoveryApi {
         tags = { "Questionnaire Recovery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "List of all variables in questionnaire (and their scope)", content = {
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = QuestionnaireVariablesInner.class)))
+                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = QuestionnaireVariables.class)))
             })
         }
     )
@@ -193,7 +193,7 @@ public interface QuestionnaireRecoveryApi {
         value = "/questionnaires/{questionnaireId}/variables",
         produces = { "application/json" }
     )
-    default ResponseEntity<List<QuestionnaireVariablesInner>> getVariablesQuestionnaireById(
+    default ResponseEntity<List<QuestionnaireVariables>> getVariablesQuestionnaireById(
         @Parameter(name = "questionnaireId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("questionnaireId") String questionnaireId
     ) {
         getRequest().ifPresent(request -> {

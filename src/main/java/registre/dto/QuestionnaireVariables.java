@@ -8,12 +8,12 @@ import javax.annotation.Generated;
 import java.util.Objects;
 
 /**
- * QuestionnaireVariablesInner
+ * QuestionnaireVariables
  */
 
-@JsonTypeName("QuestionnaireVariables_inner")
+@JsonTypeName("QuestionnaireVariables")
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
-public class QuestionnaireVariablesInner {
+public class QuestionnaireVariables {
 
   private String id;
 
@@ -23,7 +23,7 @@ public class QuestionnaireVariablesInner {
 
   private String scope;
 
-  public QuestionnaireVariablesInner id(String id) {
+  public QuestionnaireVariables id(String id) {
     this.id = id;
     return this;
   }
@@ -31,8 +31,7 @@ public class QuestionnaireVariablesInner {
   /**
    * Get id
    * @return id
-  */
-  
+   */
   @Schema(name = "id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("id")
   public String getId() {
@@ -43,7 +42,7 @@ public class QuestionnaireVariablesInner {
     this.id = id;
   }
 
-  public QuestionnaireVariablesInner name(String name) {
+  public QuestionnaireVariables name(String name) {
     this.name = name;
     return this;
   }
@@ -51,8 +50,7 @@ public class QuestionnaireVariablesInner {
   /**
    * Get name
    * @return name
-  */
-  
+   */
   @Schema(name = "name", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("name")
   public String getName() {
@@ -63,7 +61,7 @@ public class QuestionnaireVariablesInner {
     this.name = name;
   }
 
-  public QuestionnaireVariablesInner dataType(Object dataType) {
+  public QuestionnaireVariables dataType(Object dataType) {
     this.dataType = dataType;
     return this;
   }
@@ -71,8 +69,7 @@ public class QuestionnaireVariablesInner {
   /**
    * Get dataType
    * @return dataType
-  */
-  
+   */
   @Schema(name = "dataType", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("dataType")
   public Object getDataType() {
@@ -83,7 +80,7 @@ public class QuestionnaireVariablesInner {
     this.dataType = dataType;
   }
 
-  public QuestionnaireVariablesInner scope(String scope) {
+  public QuestionnaireVariables scope(String scope) {
     this.scope = scope;
     return this;
   }
@@ -91,8 +88,7 @@ public class QuestionnaireVariablesInner {
   /**
    * Get scope
    * @return scope
-  */
-  
+   */
   @Schema(name = "scope", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("scope")
   public String getScope() {
@@ -111,11 +107,11 @@ public class QuestionnaireVariablesInner {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    QuestionnaireVariablesInner questionnaireVariablesInner = (QuestionnaireVariablesInner) o;
-    return Objects.equals(this.id, questionnaireVariablesInner.id) &&
-        Objects.equals(this.name, questionnaireVariablesInner.name) &&
-        Objects.equals(this.dataType, questionnaireVariablesInner.dataType) &&
-        Objects.equals(this.scope, questionnaireVariablesInner.scope);
+    QuestionnaireVariables that = (QuestionnaireVariables) o;
+    return Objects.equals(this.id, that.id) &&
+            Objects.equals(this.name, that.name) &&
+            Objects.equals(this.dataType, that.dataType) &&
+            Objects.equals(this.scope, that.scope);
   }
 
   @Override
@@ -126,7 +122,7 @@ public class QuestionnaireVariablesInner {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class QuestionnaireVariablesInner {\n");
+    sb.append("class QuestionnaireVariables {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    dataType: ").append(toIndentedString(dataType)).append("\n");

@@ -7,7 +7,7 @@ package registre.controller;
 
 import registre.dto.ErrorResponse;
 import registre.dto.QuestionnaireDto;
-import registre.dto.QuestionnaireVariablesInner;
+import registre.dto.QuestionnaireVariables;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -214,7 +214,7 @@ public interface QuestionnairePublicationApi {
      * Pogues-Model publication
      *
      * @param questionnaireId  (required)
-     * @param questionnaireVariablesInner  (optional)
+     * @param questionnaireVariables  (optional)
      * @return Variables of questionnaire initialized (status code 201)
      *         or Structured error (status code 409)
      */
@@ -238,7 +238,7 @@ public interface QuestionnairePublicationApi {
     )
     default ResponseEntity<Void> putVariablesQuestionnaireById(
         @Parameter(name = "questionnaireId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("questionnaireId") String questionnaireId,
-        @Parameter(name = "QuestionnaireVariablesInner", description = "") @Valid @RequestBody(required = false) List<QuestionnaireVariablesInner> questionnaireVariablesInner
+        @Parameter(name = "QuestionnaireVariables", description = "") @Valid @RequestBody(required = false) List<QuestionnaireVariables> questionnaireVariables
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
