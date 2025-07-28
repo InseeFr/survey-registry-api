@@ -1,0 +1,599 @@
+openapi: 3.0.3
+info:
+  title: Metadata-Collecte API
+  version: 0.0.1
+  description: |
+    ## Codes-List Registry
+    - Registry of codes-list
+    - Registry of suggester configuration
+    ## Questionnaire Registry
+    - Registry of questionnaire
+    - Registry of questionnaires projection and its variables
+
+servers:
+  - url: http://localhost:8080
+
+tags:
+  - name: Codes List Recovery
+    description: Codes List Endpoints for
+  - name: Questionnaire Recovery
+    description: Questionnaire Endpoints for recovery
+  - name: Codes List Publication
+    description: Codes List Endpoints for publication
+  - name: Questionnaire Publication
+    description: Questionnaire Endpoints for publication
+  - name: Healthcheck
+
+paths:
+  /questionnaires:
+    post:
+      tags:
+        - Questionnaire Publication
+      summary: Publication of questionnaire metadata
+      operationId: postQuestionnaire
+      requestBody:
+        $ref: "#/components/requestBodies/QuestionnaireDto"
+      responses:
+        "201":
+          description: Questionnaire initialized
+  /questionnaires/{questionnaireId}/conceptual-model:
+    put:
+      tags:
+        - Questionnaire Publication
+      summary: Publication of conceptual-model of questionnaire
+      description: Pogues-Model publication
+      operationId: putConceptualModelQuestionnaireById
+      parameters:
+        - name: questionnaireId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/ConceptualModel"
+      responses:
+        "201":
+          description: Questionnaire initialized
+        "409":
+          $ref: "#/components/responses/ErrorResponse"
+  /questionnaires/{questionnaireId}/variables:
+    get:
+      tags:
+        - Questionnaire Recovery
+      summary: Retrieve variables of questionnaire
+      description: Get all variables of questionnaire
+      operationId: getVariablesQuestionnaireById
+      parameters:
+        - name: questionnaireId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/QuestionnaireVariables"
+    put:
+      tags:
+        - Questionnaire Publication
+      summary: Publication of variables of questionnaire
+      description: Pogues-Model publication
+      operationId: putVariablesQuestionnaireById
+      parameters:
+        - name: questionnaireId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/QuestionnaireVariables"
+      responses:
+        "201":
+          description: Variables of questionnaire initialized
+        "409":
+          $ref: "#/components/responses/ErrorResponse"
+  /questionnaires/{questionnaireId}/cawi-model:
+    get:
+      tags:
+        - Questionnaire Recovery
+      summary: Retrieve cawi questionnaire
+      description: Lunatic-Model (Cawi) recovery
+      operationId: getCawiQuestionnaireById
+      parameters:
+        - name: questionnaireId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/CawiModel"
+    put:
+      tags:
+        - Questionnaire Publication
+      summary: Publication of cawi questionnaire
+      description: Lunatic-Model (cawi) publication
+      operationId: putCawiQuestionnaireById
+      parameters:
+        - name: questionnaireId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CawiModel"
+      responses:
+        "201":
+          description: Questionnaire initialized
+        "409":
+          $ref: "#/components/responses/ErrorResponse"
+  /questionnaires/{questionnaireId}/capi-model:
+    get:
+      tags:
+        - Questionnaire Recovery
+      summary: Retrieve capi questionnaire
+      description: Lunatic-Model (Capi) recovery
+      operationId: getCapiQuestionnaireById
+      parameters:
+        - name: questionnaireId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/CapiModel"
+    put:
+      tags:
+        - Questionnaire Publication
+      summary: Publication of capi questionnaire
+      description: Lunatic-Model (capi) publication
+      operationId: putCapiQuestionnaireById
+      parameters:
+        - name: questionnaireId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CapiModel"
+      responses:
+        "201":
+          description: Capi Questionnaire initialized
+        "409":
+          $ref: "#/components/responses/ErrorResponse"
+  /questionnaires/{questionnaireId}/papi-model:
+    get:
+      tags:
+        - Questionnaire Recovery
+      summary: Retrieve papi questionnaire
+      description: FO (papi) recovery
+      operationId: getPapiQuestionnaireById
+      parameters:
+        - name: questionnaireId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/PapiModel"
+    put:
+      tags:
+        - Questionnaire Publication
+      summary: Publication of papi questionnaire
+      description: FO (papi) publication
+      operationId: putPapiQuestionnaireById
+      parameters:
+        - name: questionnaireId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/PapiModel"
+      responses:
+        "201":
+          description: Papi Questionnaire initialized
+        "409":
+          $ref: "#/components/responses/ErrorResponse"
+  /questionnaires/{questionnaireId}/codes-list:
+    get:
+      tags:
+        - Questionnaire Recovery
+      summary: Retrieve list of codes-list required for questionnaire
+      description: List of codes-list
+      operationId: getCodesListsQuestionnaireById
+      parameters:
+        - name: questionnaireId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/CodesListsMetadata"
+
+  /codes-lists:
+    post:
+      tags:
+        - Codes List Publication
+      summary: Create codes list (metadata only)
+      operationId: createCodesList
+      description: |
+        Admin only. Create a code list without content or search config.
+        These must be added later via PUT endpoints.
+      requestBody:
+        $ref: "#/components/requestBodies/CodesListDto"
+      responses:
+        "201":
+          description: Created
+        "409":
+          $ref: "#/components/responses/ErrorResponse"
+
+    get:
+      tags:
+        - Codes List Recovery
+      summary: Get all codes lists metadata
+      operationId: getAllCodesLists
+      responses:
+        "200":
+          $ref: "#/components/responses/CodesListsMetadata"
+
+  /codes-lists/full:
+    post:
+      tags:
+        - Codes List Publication
+      summary: Create a full codes list (metadata + content + search config)
+      operationId: createFullCodesList
+      description: Convenience endpoint for complete creation.
+      requestBody:
+        $ref: "#/components/requestBodies/CodesListDto"
+      responses:
+        "201":
+          description: Created
+
+  /codes-lists/{codesListId}/content:
+    put:
+      tags:
+        - Codes List Publication
+      summary: Add content to a codes list
+      operationId: putCodesListContentById
+      parameters:
+        - name: codesListId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CodesListContent"
+      responses:
+        "201":
+          description: Content set successfully
+        "409":
+          $ref: "#/components/responses/ErrorResponse"
+
+  /codes-lists/{codesListId}/search-configuration:
+    put:
+      tags:
+        - Codes List Publication
+      summary: Add search configuration to a codes list
+      operationId: putCodesListSearchConfigById
+      parameters:
+        - name: codesListId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CodesListSearchConfiguration"
+      responses:
+        "201":
+          description: Search configuration set successfully
+        "409":
+          $ref: "#/components/responses/ErrorResponse"
+
+    get:
+      tags:
+        - Codes List Recovery
+      summary: Get search configuration
+      operationId: getCodesListSearchConfigById
+      parameters:
+        - name: codesListId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/CodesListSearchConfiguration"
+
+  /codes-lists/{codesListId}:
+    get:
+      tags:
+        - Codes List Recovery
+      summary: Get full content of a codes list
+      operationId: getCodesListById
+      parameters:
+        - name: codesListId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/CodesList"
+
+  /codes-lists/{codesListId}/metadata:
+    get:
+      tags:
+        - Codes List Recovery
+      summary: Get codes list metadata
+      operationId: getCodesListMetadataById
+      parameters:
+        - name: codesListId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/CodesListMetadata"
+
+  /codes-lists/{codesListId}/external-link:
+    put:
+      tags:
+        - Codes List Publication
+      summary: Set external link for a codes list
+      operationId: putCodesListExternalLinkById
+      parameters:
+        - name: codesListId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CodesListExternalLinkMetadata"
+      responses:
+        "201":
+          description: External link set successfully
+        "409":
+          $ref: "#/components/responses/ErrorResponse"
+
+  /healthcheck:
+    get:
+      operationId: getHealthcheck
+      summary: Check if the service is alive
+      responses:
+        '200':
+          description: OK
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 409
+        message:
+          type: string
+          example: Content of ${codeListId} already exists
+
+    ConceptualModel:
+      type: object
+      description: Pogues model
+
+    CawiModel:
+      type: object
+      description: Lunatic model for cawi mode
+
+    CapiModel:
+      type: object
+      description: Lunatic model for capi mode
+
+    PapiModel:
+      type: string
+      description: FO model for papi mode (xml expected)
+
+    QuestionnaireVariables:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+          name:
+            type: string
+          dataType:
+            type: object
+          scope:
+            type: string
+
+    QuestionnaireDto:
+      type: object
+      properties:
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+
+    CodesListDto:
+      type: object
+      properties:
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+        searchConfiguration:
+          $ref: "#/components/schemas/CodesListSearchConfiguration"
+        content:
+          $ref: "#/components/schemas/CodesList"
+
+    Metadata:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: UUID created during creation by api
+        label:
+          type: string
+        version:
+          type: string
+        externalLink:
+          $ref: "#/components/schemas/CodesListExternalLink"
+
+    CodesListSearchConfiguration:
+      type: object
+
+    CodesListExternalLink:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID from RMeS
+        version:
+          type: string
+          description: version of code-list from RMeS
+
+    CodesList:
+      type: array
+      items:
+        $ref: "#/components/schemas/Code"
+
+    Code:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+      additionalProperties: true
+
+  requestBodies:
+    QuestionnaireDto:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/QuestionnaireDto"
+    ConceptualModel:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ConceptualModel"
+    QuestionnaireVariables:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/QuestionnaireVariables"
+    CawiModel:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CawiModel"
+    CapiModel:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CapiModel"
+    PapiModel:
+      content:
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/PapiModel"
+
+    CodesListDto:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CodesListDto"
+
+    CodesListContent:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CodesList"
+
+    CodesListSearchConfiguration:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CodesListSearchConfiguration"
+
+    CodesListExternalLinkMetadata:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CodesListExternalLink"
+
+  responses:
+    QuestionnaireDto:
+      description: QuestionnaireDto
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/QuestionnaireDto"
+    ConceptualModel:
+      description: Conceptual Model i.e Pogues-Model
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ConceptualModel"
+    QuestionnaireVariables:
+      description: List of all variables in questionnaire (and their scope)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/QuestionnaireVariables"
+    CawiModel:
+      description: Lunatic Model for cawi
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CawiModel"
+    CapiModel:
+      description: Lunatic Model for capi
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CapiModel"
+    PapiModel:
+      description: FO Model for papi
+      content:
+        application/xml:
+          schema:
+            $ref: "#/components/schemas/PapiModel"
+
+    CodesList:
+      description: Codes list content
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CodesList"
+
+    CodesListsMetadata:
+      description: List of codes list metadata
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Metadata"
+
+    CodesListMetadata:
+      description: Metadata of a codes list
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Metadata"
+
+    CodesListSearchConfiguration:
+      description: Search configuration
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CodesListSearchConfiguration"
+
+    ErrorResponse:
+      description: Structured error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
