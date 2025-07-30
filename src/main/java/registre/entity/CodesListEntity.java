@@ -1,5 +1,6 @@
 package registre.entity;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,13 +16,18 @@ public class CodesListEntity {
     @Id
     private String id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "metadata_id")
-    private MetadataEntity metadata;
+    @Column(name = "metadata_label")
+    private String metadataLabel;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "search_config_id")
-    private CodesListSearchConfigurationEntity searchConfiguration;
+    @Column(name = "metadata_version")
+    private String metadataVersion;
+
+    @Column(name = "external_link_version")
+    private String externalLinkVersion;
+
+    @Column(name = "search_config", columnDefinition = "json")
+    @Lob
+    private JsonNode searchConfiguration;
 
     @OneToMany(mappedBy = "codesList", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CodeEntity> content;
