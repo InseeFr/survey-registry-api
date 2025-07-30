@@ -4,8 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import registre.dto.Code;
-import registre.dto.Metadata;
+import registre.dto.CodeDto;
+import registre.dto.MetadataDto;
 import registre.entity.CodeEntity;
 import registre.entity.CodesListEntity;
 import registre.entity.CodesListSearchConfigurationEntity;
@@ -45,7 +45,7 @@ class CodesListRecoveryServiceIntegrationTest {
 
         repository.save(codesList);
 
-        List<Metadata> result = service.getAllMetadata();
+        List<MetadataDto> result = service.getAllMetadata();
 
         assertEquals(1, result.size());
         assertEquals("Metadata", result.getFirst().getLabel());
@@ -64,7 +64,7 @@ class CodesListRecoveryServiceIntegrationTest {
 
         repository.save(codesList);
 
-        Optional<Metadata> result = service.getMetadataById("CodeList2");
+        Optional<MetadataDto> result = service.getMetadataById("CodeList2");
 
         assertTrue(result.isPresent());
         assertEquals("Metadata", result.get().getLabel());
@@ -85,7 +85,7 @@ class CodesListRecoveryServiceIntegrationTest {
 
         repository.save(codesList);
 
-        Optional<List<Code>> result = service.getCodesListById("CodeList3");
+        Optional<List<CodeDto>> result = service.getCodesListById("CodeList3");
 
         assertTrue(result.isPresent());
         assertEquals(1, result.get().size());

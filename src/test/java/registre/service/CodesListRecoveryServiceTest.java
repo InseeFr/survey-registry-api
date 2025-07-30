@@ -3,7 +3,7 @@ package registre.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import registre.dto.Metadata;
+import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
 import registre.entity.CodesListSearchConfigurationEntity;
 import registre.entity.MetadataEntity;
@@ -41,10 +41,10 @@ class CodesListRecoveryServiceTest {
         entity.setMetadata(metadata);
 
         when(repository.findAll()).thenReturn(List.of(entity));
-        Metadata dto = new Metadata();
+        MetadataDto dto = new MetadataDto();
         when(metadataMapper.toDto(metadata)).thenReturn(dto);
 
-        List<Metadata> result = service.getAllMetadata();
+        List<MetadataDto> result = service.getAllMetadata();
         assertEquals(1, result.size());
         assertSame(dto, result.getFirst());
     }
@@ -56,10 +56,10 @@ class CodesListRecoveryServiceTest {
         entity.setMetadata(metadata);
 
         when(repository.findById("id2")).thenReturn(Optional.of(entity));
-        Metadata dto = new Metadata();
+        MetadataDto dto = new MetadataDto();
         when(metadataMapper.toDto(metadata)).thenReturn(dto);
 
-        Optional<Metadata> result = service.getMetadataById("id2");
+        Optional<MetadataDto> result = service.getMetadataById("id2");
 
         assertTrue(result.isPresent());
         assertSame(dto, result.get());

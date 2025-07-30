@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import registre.dto.Code;
+import registre.dto.CodeDto;
 import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLink;
+import registre.dto.CodesListExternalLinkDto;
 import registre.entity.CodesListEntity;
 import registre.entity.MetadataEntity;
 import registre.repository.CodesListRepository;
@@ -45,7 +45,7 @@ class CodesListPublicationServiceIntegrationTest {
         dto.setContent(new ArrayList<>());
         String id = service.createCodesList(dto);
 
-        Code code = new Code();
+        CodeDto code = new CodeDto();
         code.setId("code1");
         code.setLabel("Label1");
         service.updateContent(id, List.of(code));
@@ -68,7 +68,7 @@ class CodesListPublicationServiceIntegrationTest {
 
         repository.save(entity);
 
-        CodesListExternalLink link = new CodesListExternalLink();
+        CodesListExternalLinkDto link = new CodesListExternalLinkDto();
         link.setVersion("vX");
 
         service.updateExternalLink(id, link);

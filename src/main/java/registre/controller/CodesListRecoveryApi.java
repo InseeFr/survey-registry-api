@@ -5,8 +5,8 @@
  */
 package registre.controller;
 
-import registre.dto.Code;
-import registre.dto.Metadata;
+import registre.dto.CodeDto;
+import registre.dto.MetadataDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -48,7 +48,7 @@ public interface CodesListRecoveryApi {
         tags = { "Codes List Recovery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "List of codes list metadata", content = {
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Metadata.class)))
+                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = MetadataDto.class)))
             })
         }
     )
@@ -57,7 +57,7 @@ public interface CodesListRecoveryApi {
         value = "/codes-lists",
         produces = { "application/json" }
     )
-    default ResponseEntity<List<Metadata>> getAllCodesLists(
+    default ResponseEntity<List<MetadataDto>> getAllCodesLists(
         
     ) {
         getRequest().ifPresent(request -> {
@@ -86,7 +86,7 @@ public interface CodesListRecoveryApi {
         tags = { "Codes List Recovery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "Codes list content", content = {
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Code.class)))
+                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CodeDto.class)))
             })
         }
     )
@@ -95,7 +95,7 @@ public interface CodesListRecoveryApi {
         value = "/codes-lists/{codesListId}",
         produces = { "application/json" }
     )
-    default ResponseEntity<List<Code>> getCodesListById(
+    default ResponseEntity<List<CodeDto>> getCodesListById(
         @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") String codesListId
     ) {
         getRequest().ifPresent(request -> {
@@ -124,7 +124,7 @@ public interface CodesListRecoveryApi {
         tags = { "Codes List Recovery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "Metadata of a codes list", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Metadata.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = MetadataDto.class))
             })
         }
     )
@@ -133,7 +133,7 @@ public interface CodesListRecoveryApi {
         value = "/codes-lists/{codesListId}/metadata",
         produces = { "application/json" }
     )
-    default ResponseEntity<Metadata> getCodesListMetadataById(
+    default ResponseEntity<MetadataDto> getCodesListMetadataById(
         @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") String codesListId
     ) {
         getRequest().ifPresent(request -> {

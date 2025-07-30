@@ -13,7 +13,7 @@ import java.util.UUID;
  */
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
-public class Metadata {
+public class MetadataDto {
 
   private UUID id;
 
@@ -21,9 +21,9 @@ public class Metadata {
 
   private String version;
 
-  private CodesListExternalLink externalLink;
+  private CodesListExternalLinkDto externalLink;
 
-  public Metadata id(UUID id) {
+  public MetadataDto id(UUID id) {
     this.id = id;
     return this;
   }
@@ -43,7 +43,7 @@ public class Metadata {
     this.id = id;
   }
 
-  public Metadata label(String label) {
+  public MetadataDto label(String label) {
     this.label = label;
     return this;
   }
@@ -63,7 +63,7 @@ public class Metadata {
     this.label = label;
   }
 
-  public Metadata version(String version) {
+  public MetadataDto version(String version) {
     this.version = version;
     return this;
   }
@@ -83,7 +83,7 @@ public class Metadata {
     this.version = version;
   }
 
-  public Metadata externalLink(CodesListExternalLink externalLink) {
+  public MetadataDto externalLink(CodesListExternalLinkDto externalLink) {
     this.externalLink = externalLink;
     return this;
   }
@@ -95,11 +95,11 @@ public class Metadata {
   @Valid 
   @Schema(name = "externalLink", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("externalLink")
-  public CodesListExternalLink getExternalLink() {
+  public CodesListExternalLinkDto getExternalLink() {
     return externalLink;
   }
 
-  public void setExternalLink(CodesListExternalLink externalLink) {
+  public void setExternalLink(CodesListExternalLinkDto externalLink) {
     this.externalLink = externalLink;
   }
 
@@ -111,7 +111,7 @@ public class Metadata {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Metadata metadata = (Metadata) o;
+    MetadataDto metadata = (MetadataDto) o;
     return Objects.equals(this.id, metadata.id) &&
         Objects.equals(this.label, metadata.label) &&
         Objects.equals(this.version, metadata.version) &&

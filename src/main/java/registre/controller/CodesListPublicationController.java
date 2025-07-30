@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import registre.dto.Code;
+import registre.dto.CodeDto;
 import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLink;
+import registre.dto.CodesListExternalLinkDto;
 import registre.service.CodesListPublicationService;
 
 import javax.validation.Valid;
@@ -40,13 +40,13 @@ public class CodesListPublicationController implements CodesListPublicationApi {
     }
 
     @Override
-    public ResponseEntity<Void> putCodesListContentById(String codesListId, @Valid List<Code> code) {
+    public ResponseEntity<Void> putCodesListContentById(String codesListId, @Valid List<CodeDto> code) {
         codesListPublicationService.updateContent(codesListId, code);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Override
-    public ResponseEntity<Void> putCodesListExternalLinkById(String codesListId, @Valid CodesListExternalLink codesListExternalLink) {
+    public ResponseEntity<Void> putCodesListExternalLinkById(String codesListId, @Valid CodesListExternalLinkDto codesListExternalLink) {
         codesListPublicationService.updateExternalLink(codesListId, codesListExternalLink);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

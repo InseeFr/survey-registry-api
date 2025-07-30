@@ -2,7 +2,7 @@ package registre.mapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import registre.dto.CodesListExternalLink;
+import registre.dto.CodesListExternalLinkDto;
 import registre.entity.CodesListExternalLinkEntity;
 
 import java.util.UUID;
@@ -22,7 +22,7 @@ class CodesListExternalLinkMapperTest {
     void testToEntity_WithValidDto() {
         // Given
         UUID uuid = UUID.randomUUID();
-        CodesListExternalLink dto = new CodesListExternalLink();
+        CodesListExternalLinkDto dto = new CodesListExternalLinkDto();
         dto.setUuid(uuid);
         dto.setVersion("v1");
 
@@ -49,7 +49,7 @@ class CodesListExternalLinkMapperTest {
         entity.setVersion("v2");
 
         // When
-        CodesListExternalLink dto = mapper.toDto(entity);
+        CodesListExternalLinkDto dto = mapper.toDto(entity);
 
         // Then
         assertNotNull(dto);

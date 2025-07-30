@@ -5,9 +5,9 @@
  */
 package registre.controller;
 
-import registre.dto.ErrorResponse;
+import registre.dto.ErrorResponseDto;
 import registre.dto.QuestionnaireDto;
-import registre.dto.QuestionnaireVariables;
+import registre.dto.QuestionnaireVariablesDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -82,7 +82,7 @@ public interface QuestionnairePublicationApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "Capi Questionnaire initialized"),
             @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
             })
         }
     )
@@ -118,7 +118,7 @@ public interface QuestionnairePublicationApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "Questionnaire initialized"),
             @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
             })
         }
     )
@@ -154,7 +154,7 @@ public interface QuestionnairePublicationApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "Questionnaire initialized"),
             @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
             })
         }
     )
@@ -190,7 +190,7 @@ public interface QuestionnairePublicationApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "Papi Questionnaire initialized"),
             @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
             })
         }
     )
@@ -226,7 +226,7 @@ public interface QuestionnairePublicationApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "Variables of questionnaire initialized"),
             @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
             })
         }
     )
@@ -238,7 +238,7 @@ public interface QuestionnairePublicationApi {
     )
     default ResponseEntity<Void> putVariablesQuestionnaireById(
         @Parameter(name = "questionnaireId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("questionnaireId") String questionnaireId,
-        @Parameter(name = "QuestionnaireVariables", description = "") @Valid @RequestBody(required = false) List<QuestionnaireVariables> questionnaireVariables
+        @Parameter(name = "QuestionnaireVariables", description = "") @Valid @RequestBody(required = false) List<QuestionnaireVariablesDto> questionnaireVariables
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 

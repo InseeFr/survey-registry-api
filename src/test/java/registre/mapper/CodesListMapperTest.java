@@ -3,9 +3,9 @@ package registre.mapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import registre.dto.Code;
+import registre.dto.CodeDto;
 import registre.dto.CodesListDto;
-import registre.dto.Metadata;
+import registre.dto.MetadataDto;
 import registre.entity.CodeEntity;
 import registre.entity.CodesListEntity;
 import registre.entity.CodesListSearchConfigurationEntity;
@@ -41,7 +41,7 @@ class CodesListMapperTest {
         entity.setId(String.valueOf(1L));
 
         MetadataEntity metadataEntity = new MetadataEntity();
-        Metadata metadataDto = new Metadata();
+        MetadataDto metadataDto = new MetadataDto();
         when(metadataMapper.toDto(metadataEntity)).thenReturn(metadataDto);
         entity.setMetadata(metadataEntity);
 
@@ -51,7 +51,7 @@ class CodesListMapperTest {
         entity.setSearchConfiguration(configEntity);
 
         CodeEntity codeEntity = new CodeEntity();
-        Code codeDto = new Code();
+        CodeDto codeDto = new CodeDto();
         when(codeMapper.toDto(codeEntity)).thenReturn(codeDto);
         entity.setContent(Collections.singletonList(codeEntity));
 
@@ -82,14 +82,14 @@ class CodesListMapperTest {
         CodesListDto dto = new CodesListDto();
         dto.setId(String.valueOf(42L));
 
-        Metadata metadataDto = new Metadata();
+        MetadataDto metadataDto = new MetadataDto();
         MetadataEntity metadataEntity = new MetadataEntity();
         when(metadataMapper.toEntity(metadataDto)).thenReturn(metadataEntity);
         dto.setMetadata(metadataDto);
 
         dto.setSearchConfiguration(Map.of("key", "value"));
 
-        Code codeDto = new Code();
+        CodeDto codeDto = new CodeDto();
         CodeEntity codeEntity = new CodeEntity();
         when(codeMapper.toEntity(codeDto)).thenReturn(codeEntity);
         dto.setContent(List.of(codeDto));

@@ -15,13 +15,13 @@ import java.util.Objects;
  */
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
-public class Code {
+public class CodeDto {
 
   private String id;
 
   private String label;
 
-  public Code id(String id) {
+  public CodeDto id(String id) {
     this.id = id;
     return this;
   }
@@ -41,7 +41,7 @@ public class Code {
     this.id = id;
   }
 
-  public Code label(String label) {
+  public CodeDto label(String label) {
     this.label = label;
     return this;
   }
@@ -72,7 +72,7 @@ public class Code {
     * If the property does not already exist, create it otherwise replace it.
     */
     @JsonAnySetter
-    public Code putAdditionalProperty(String key, Object value) {
+    public CodeDto putAdditionalProperty(String key, Object value) {
         if (this.additionalProperties == null) {
             this.additionalProperties = new HashMap<String, Object>();
         }
@@ -106,7 +106,7 @@ public class Code {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Code code = (Code) o;
+    CodeDto code = (CodeDto) o;
     return Objects.equals(this.id, code.id) &&
         Objects.equals(this.label, code.label) &&
     Objects.equals(this.additionalProperties, code.additionalProperties);

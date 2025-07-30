@@ -1,7 +1,7 @@
 package registre.mapper;
 
 import org.springframework.stereotype.Component;
-import registre.dto.Metadata;
+import registre.dto.MetadataDto;
 import registre.entity.MetadataEntity;
 
 @Component
@@ -13,7 +13,7 @@ public class MetadataMapper {
         this.externalLinkMapper = externalLinkMapper;
     }
 
-    public MetadataEntity toEntity(Metadata dto) {
+    public MetadataEntity toEntity(MetadataDto dto) {
         if (dto == null) return null;
 
         MetadataEntity entity = new MetadataEntity();
@@ -24,10 +24,10 @@ public class MetadataMapper {
         return entity;
     }
 
-    public Metadata toDto(MetadataEntity entity) {
+    public MetadataDto toDto(MetadataEntity entity) {
         if (entity == null) return null;
 
-        Metadata dto = new Metadata();
+        MetadataDto dto = new MetadataDto();
         dto.setId(entity.getId());
         dto.setLabel(entity.getLabel());
         dto.setVersion(entity.getVersion());

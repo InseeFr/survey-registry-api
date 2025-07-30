@@ -2,8 +2,8 @@ package registre.mapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import registre.dto.Metadata;
-import registre.dto.CodesListExternalLink;
+import registre.dto.MetadataDto;
+import registre.dto.CodesListExternalLinkDto;
 import registre.entity.MetadataEntity;
 import registre.entity.CodesListExternalLinkEntity;
 
@@ -27,12 +27,12 @@ class MetadataMapperTest {
     void testToEntity_WithValidDto() {
         // Given
         UUID uuid = UUID.randomUUID();
-        Metadata dto = new Metadata();
+        MetadataDto dto = new MetadataDto();
         dto.setId(uuid);
         dto.setLabel("Label1");
         dto.setVersion("v1");
 
-        CodesListExternalLink externalLinkDto = new CodesListExternalLink();
+        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto();
         CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
         dto.setExternalLink(externalLinkDto);
         when(externalLinkMapper.toEntity(externalLinkDto)).thenReturn(externalLinkEntity);
@@ -63,12 +63,12 @@ class MetadataMapperTest {
         entity.setVersion("v2");
 
         CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
-        CodesListExternalLink externalLinkDto = new CodesListExternalLink();
+        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto();
         entity.setExternalLink(externalLinkEntity);
         when(externalLinkMapper.toDto(externalLinkEntity)).thenReturn(externalLinkDto);
 
         // When
-        Metadata dto = metadataMapper.toDto(entity);
+        MetadataDto dto = metadataMapper.toDto(entity);
 
         // Then
         assertNotNull(dto);

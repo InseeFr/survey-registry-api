@@ -17,12 +17,12 @@ public class CodesListDto {
 
   private String id;
 
-  private Metadata metadata;
+  private MetadataDto metadata;
 
   private Object searchConfiguration;
 
   @Valid
-  private List<Code> content;
+  private List<CodeDto> content;
 
   public CodesListDto id(String id) {
     this.id = id;
@@ -43,7 +43,7 @@ public class CodesListDto {
     this.id = id;
   }
 
-  public CodesListDto metadata(Metadata metadata) {
+  public CodesListDto metadata(MetadataDto metadata) {
     this.metadata = metadata;
     return this;
   }
@@ -55,11 +55,11 @@ public class CodesListDto {
   @Valid
   @Schema(name = "metadata", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("metadata")
-  public Metadata getMetadata() {
+  public MetadataDto getMetadata() {
     return metadata;
   }
 
-  public void setMetadata(Metadata metadata) {
+  public void setMetadata(MetadataDto metadata) {
     this.metadata = metadata;
   }
 
@@ -82,12 +82,12 @@ public class CodesListDto {
     this.searchConfiguration = searchConfiguration;
   }
 
-  public CodesListDto content(List<Code> content) {
+  public CodesListDto content(List<CodeDto> content) {
     this.content = content;
     return this;
   }
 
-  public CodesListDto addContentItem(Code contentItem) {
+  public CodesListDto addContentItem(CodeDto contentItem) {
     if (this.content == null) {
       this.content = new ArrayList<>();
     }
@@ -102,11 +102,11 @@ public class CodesListDto {
   @Valid
   @Schema(name = "content", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("content")
-  public List<Code> getContent() {
+  public List<CodeDto> getContent() {
     return content;
   }
 
-  public void setContent(List<Code> content) {
+  public void setContent(List<CodeDto> content) {
     this.content = content;
   }
 

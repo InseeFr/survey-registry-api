@@ -1,13 +1,13 @@
 package registre.mapper;
 
 import org.springframework.stereotype.Component;
-import registre.dto.Code;
+import registre.dto.CodeDto;
 import registre.entity.CodeEntity;
 
 @Component
 public class CodeMapper {
 
-    public CodeEntity toEntity(Code dto) {
+    public CodeEntity toEntity(CodeDto dto) {
         if (dto == null) return null;
         CodeEntity entity = new CodeEntity();
         entity.setId(dto.getId());
@@ -15,9 +15,9 @@ public class CodeMapper {
         return entity;
     }
 
-    public Code toDto(CodeEntity entity) {
+    public CodeDto toDto(CodeEntity entity) {
         if (entity == null) return null;
-        Code dto = new Code();
+        CodeDto dto = new CodeDto();
         dto.setId(entity.getId());
         dto.setLabel(entity.getLabel());
         return dto;

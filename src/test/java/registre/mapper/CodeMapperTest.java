@@ -2,7 +2,7 @@ package registre.mapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import registre.dto.Code;
+import registre.dto.CodeDto;
 import registre.entity.CodeEntity;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +19,7 @@ class CodeMapperTest {
     @Test
     void testToEntity_WithValidDto() {
         // Given
-        Code dto = new Code();
+        CodeDto dto = new CodeDto();
         dto.setId("code1");
         dto.setLabel("Label1");
 
@@ -49,7 +49,7 @@ class CodeMapperTest {
         entity.setLabel("Label2");
 
         // When
-        Code dto = codeMapper.toDto(entity);
+        CodeDto dto = codeMapper.toDto(entity);
 
         // Then
         assertNotNull(dto);
@@ -60,7 +60,7 @@ class CodeMapperTest {
     @Test
     void testToDto_WithNullEntity() {
         // When
-        Code dto = codeMapper.toDto(null);
+        CodeDto dto = codeMapper.toDto(null);
 
         // Then
         assertNull(dto);

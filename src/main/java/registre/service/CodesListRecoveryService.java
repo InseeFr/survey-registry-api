@@ -3,8 +3,8 @@ package registre.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import registre.dto.Code;
-import registre.dto.Metadata;
+import registre.dto.CodeDto;
+import registre.dto.MetadataDto;
 import registre.mapper.CodeMapper;
 import registre.mapper.MetadataMapper;
 import registre.repository.CodesListRepository;
@@ -33,20 +33,20 @@ public class CodesListRecoveryService {
         this.objectMapper = objectMapper;
     }
 
-    public List<Metadata> getAllMetadata() {
+    public List<MetadataDto> getAllMetadata() {
         return codesListRepository.findAll().stream()
                 .map(entity -> metadataMapper.toDto(entity.getMetadata()))
                 .toList();
     }
 
-    public Optional<List<Code>> getCodesListById(String id) {
+    public Optional<List<CodeDto>> getCodesListById(String id) {
         return codesListRepository.findById(id)
                 .map(entity -> entity.getContent().stream()
                         .map(codeMapper::toDto)
                         .toList());
     }
 
-    public Optional<Metadata> getMetadataById(String id) {
+    public Optional<MetadataDto> getMetadataById(String id) {
         return codesListRepository.findById(id)
                 .map(entity -> metadataMapper.toDto(entity.getMetadata()));
     }

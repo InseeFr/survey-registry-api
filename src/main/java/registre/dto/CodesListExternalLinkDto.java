@@ -13,13 +13,13 @@ import java.util.UUID;
  */
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
-public class CodesListExternalLink {
+public class CodesListExternalLinkDto {
 
   private UUID uuid;
 
   private String version;
 
-  public CodesListExternalLink uuid(UUID uuid) {
+  public CodesListExternalLinkDto uuid(UUID uuid) {
     this.uuid = uuid;
     return this;
   }
@@ -39,7 +39,7 @@ public class CodesListExternalLink {
     this.uuid = uuid;
   }
 
-  public CodesListExternalLink version(String version) {
+  public CodesListExternalLinkDto version(String version) {
     this.version = version;
     return this;
   }
@@ -67,7 +67,7 @@ public class CodesListExternalLink {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    CodesListExternalLink codesListExternalLink = (CodesListExternalLink) o;
+    CodesListExternalLinkDto codesListExternalLink = (CodesListExternalLinkDto) o;
     return Objects.equals(this.uuid, codesListExternalLink.uuid) &&
         Objects.equals(this.version, codesListExternalLink.version);
   }

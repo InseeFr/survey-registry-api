@@ -13,7 +13,7 @@ import java.util.Objects;
 
 @JsonTypeName("QuestionnaireVariables")
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
-public class QuestionnaireVariables {
+public class QuestionnaireVariablesDto {
 
   private String id;
 
@@ -23,7 +23,7 @@ public class QuestionnaireVariables {
 
   private String scope;
 
-  public QuestionnaireVariables id(String id) {
+  public QuestionnaireVariablesDto id(String id) {
     this.id = id;
     return this;
   }
@@ -42,7 +42,7 @@ public class QuestionnaireVariables {
     this.id = id;
   }
 
-  public QuestionnaireVariables name(String name) {
+  public QuestionnaireVariablesDto name(String name) {
     this.name = name;
     return this;
   }
@@ -61,7 +61,7 @@ public class QuestionnaireVariables {
     this.name = name;
   }
 
-  public QuestionnaireVariables dataType(Object dataType) {
+  public QuestionnaireVariablesDto dataType(Object dataType) {
     this.dataType = dataType;
     return this;
   }
@@ -80,7 +80,7 @@ public class QuestionnaireVariables {
     this.dataType = dataType;
   }
 
-  public QuestionnaireVariables scope(String scope) {
+  public QuestionnaireVariablesDto scope(String scope) {
     this.scope = scope;
     return this;
   }
@@ -107,7 +107,7 @@ public class QuestionnaireVariables {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    QuestionnaireVariables that = (QuestionnaireVariables) o;
+    QuestionnaireVariablesDto that = (QuestionnaireVariablesDto) o;
     return Objects.equals(this.id, that.id) &&
             Objects.equals(this.name, that.name) &&
             Objects.equals(this.dataType, that.dataType) &&

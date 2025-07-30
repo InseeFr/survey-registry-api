@@ -5,10 +5,10 @@
  */
 package registre.controller;
 
-import registre.dto.Code;
+import registre.dto.CodeDto;
 import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLink;
-import registre.dto.ErrorResponse;
+import registre.dto.CodesListExternalLinkDto;
+import registre.dto.ErrorResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -55,7 +55,7 @@ public interface CodesListPublicationApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "Created"),
             @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
             })
         }
     )
@@ -117,7 +117,7 @@ public interface CodesListPublicationApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "Content set successfully"),
             @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
             })
         }
     )
@@ -129,7 +129,7 @@ public interface CodesListPublicationApi {
     )
     default ResponseEntity<Void> putCodesListContentById(
         @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") String codesListId,
-        @Parameter(name = "Code", description = "") @Valid @RequestBody(required = false) List<Code> code
+        @Parameter(name = "Code", description = "") @Valid @RequestBody(required = false) List<CodeDto> code
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
@@ -151,7 +151,7 @@ public interface CodesListPublicationApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "External link set successfully"),
             @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
             })
         }
     )
@@ -163,7 +163,7 @@ public interface CodesListPublicationApi {
     )
     default ResponseEntity<Void> putCodesListExternalLinkById(
         @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") String codesListId,
-        @Parameter(name = "CodesListExternalLink", description = "") @Valid @RequestBody(required = false) CodesListExternalLink codesListExternalLink
+        @Parameter(name = "CodesListExternalLink", description = "") @Valid @RequestBody(required = false) CodesListExternalLinkDto codesListExternalLink
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
@@ -185,7 +185,7 @@ public interface CodesListPublicationApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "Search configuration set successfully"),
             @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
             })
         }
     )

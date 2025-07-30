@@ -6,9 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import registre.dto.Code;
+import registre.dto.CodeDto;
 import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLink;
+import registre.dto.CodesListExternalLinkDto;
 import registre.entity.*;
 import registre.exception.InvalidSearchConfigurationException;
 import registre.mapper.CodeMapper;
@@ -53,7 +53,7 @@ public class CodesListPublicationService {
     }
 
     @Transactional
-    public void updateContent(String codesListId, List<Code> contentDto) {
+    public void updateContent(String codesListId, List<CodeDto> contentDto) {
         CodesListEntity entity = codesListRepository.findById(codesListId)
                 .orElseThrow(() -> new IllegalArgumentException(CODES_LIST_NOT_FOUND));
 
@@ -68,7 +68,7 @@ public class CodesListPublicationService {
     }
 
     @Transactional
-    public void updateExternalLink(String codesListId, CodesListExternalLink externalLinkDto) {
+    public void updateExternalLink(String codesListId, CodesListExternalLinkDto externalLinkDto) {
         CodesListEntity entity = codesListRepository.findById(codesListId)
                 .orElseThrow(() -> new IllegalArgumentException(CODES_LIST_NOT_FOUND));
 

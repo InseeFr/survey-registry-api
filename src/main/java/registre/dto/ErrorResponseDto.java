@@ -11,13 +11,13 @@ import java.util.Objects;
  */
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
-public class ErrorResponse {
+public class ErrorResponseDto {
 
   private Integer code;
 
   private String message;
 
-  public ErrorResponse code(Integer code) {
+  public ErrorResponseDto code(Integer code) {
     this.code = code;
     return this;
   }
@@ -37,7 +37,7 @@ public class ErrorResponse {
     this.code = code;
   }
 
-  public ErrorResponse message(String message) {
+  public ErrorResponseDto message(String message) {
     this.message = message;
     return this;
   }
@@ -65,7 +65,7 @@ public class ErrorResponse {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ErrorResponse errorResponse = (ErrorResponse) o;
+    ErrorResponseDto errorResponse = (ErrorResponseDto) o;
     return Objects.equals(this.code, errorResponse.code) &&
         Objects.equals(this.message, errorResponse.message);
   }

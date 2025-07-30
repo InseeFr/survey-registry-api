@@ -5,8 +5,8 @@
  */
 package registre.controller;
 
-import registre.dto.Metadata;
-import registre.dto.QuestionnaireVariables;
+import registre.dto.MetadataDto;
+import registre.dto.QuestionnaireVariablesDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -113,7 +113,7 @@ public interface QuestionnaireRecoveryApi {
         tags = { "Questionnaire Recovery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "List of codes list metadata", content = {
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Metadata.class)))
+                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = MetadataDto.class)))
             })
         }
     )
@@ -122,7 +122,7 @@ public interface QuestionnaireRecoveryApi {
         value = "/questionnaires/{questionnaireId}/codes-list",
         produces = { "application/json" }
     )
-    default ResponseEntity<List<Metadata>> getCodesListsQuestionnaireById(
+    default ResponseEntity<List<MetadataDto>> getCodesListsQuestionnaireById(
         @Parameter(name = "questionnaireId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("questionnaireId") String questionnaireId
     ) {
         getRequest().ifPresent(request -> {
@@ -184,7 +184,7 @@ public interface QuestionnaireRecoveryApi {
         tags = { "Questionnaire Recovery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "List of all variables in questionnaire (and their scope)", content = {
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = QuestionnaireVariables.class)))
+                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = QuestionnaireVariablesDto.class)))
             })
         }
     )
@@ -193,7 +193,7 @@ public interface QuestionnaireRecoveryApi {
         value = "/questionnaires/{questionnaireId}/variables",
         produces = { "application/json" }
     )
-    default ResponseEntity<List<QuestionnaireVariables>> getVariablesQuestionnaireById(
+    default ResponseEntity<List<QuestionnaireVariablesDto>> getVariablesQuestionnaireById(
         @Parameter(name = "questionnaireId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("questionnaireId") String questionnaireId
     ) {
         getRequest().ifPresent(request -> {

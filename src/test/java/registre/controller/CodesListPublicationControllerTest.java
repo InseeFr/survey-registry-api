@@ -10,9 +10,9 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import registre.dto.Code;
+import registre.dto.CodeDto;
 import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLink;
+import registre.dto.CodesListExternalLinkDto;
 import registre.service.CodesListPublicationService;
 
 import java.util.List;
@@ -65,7 +65,7 @@ class CodesListPublicationControllerTest {
     void testCreateFullCodesList() throws Exception {
         CodesListDto codesListDto = new CodesListDto();
         codesListDto.setId("CodeList1");
-        codesListDto.setContent(List.of(new Code()));
+        codesListDto.setContent(List.of(new CodeDto()));
         codesListDto.setSearchConfiguration(Map.of("filter", true));
 
         Mockito.when(codesListPublicationService.createCodesList(Mockito.any())).thenReturn("TestCodesList");
@@ -82,7 +82,7 @@ class CodesListPublicationControllerTest {
 
     @Test
     void testPutCodesListContentById() throws Exception {
-        List<Code> codes = List.of(new Code());
+        List<CodeDto> codes = List.of(new CodeDto());
 
         mockMvc.perform(put("/codes-lists/CodesList1/content")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -94,7 +94,7 @@ class CodesListPublicationControllerTest {
 
     @Test
     void testPutCodesListExternalLinkById() throws Exception {
-        CodesListExternalLink externalLink = new CodesListExternalLink();
+        CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto();
         externalLink.setUuid(UUID.randomUUID());
         externalLink.setVersion("http://example.com");
 

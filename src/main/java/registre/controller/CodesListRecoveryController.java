@@ -3,8 +3,8 @@ package registre.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import registre.dto.Code;
-import registre.dto.Metadata;
+import registre.dto.CodeDto;
+import registre.dto.MetadataDto;
 import registre.service.CodesListRecoveryService;
 
 import java.util.List;
@@ -16,20 +16,20 @@ public class CodesListRecoveryController implements CodesListRecoveryApi {
     private final CodesListRecoveryService codesListRecoveryService;
 
     @Override
-    public ResponseEntity<List<Metadata>> getAllCodesLists() {
-        List<Metadata> metadataList = codesListRecoveryService.getAllMetadata();
+    public ResponseEntity<List<MetadataDto>> getAllCodesLists() {
+        List<MetadataDto> metadataList = codesListRecoveryService.getAllMetadata();
         return ResponseEntity.ok(metadataList);
     }
 
     @Override
-    public ResponseEntity<List<Code>> getCodesListById(String codesListId) {
+    public ResponseEntity<List<CodeDto>> getCodesListById(String codesListId) {
         return codesListRecoveryService.getCodesListById(codesListId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @Override
-    public ResponseEntity<Metadata> getCodesListMetadataById(String codesListId) {
+    public ResponseEntity<MetadataDto> getCodesListMetadataById(String codesListId) {
         return codesListRecoveryService.getMetadataById(codesListId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

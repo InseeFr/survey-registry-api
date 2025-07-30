@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import registre.dto.Code;
+import registre.dto.CodeDto;
 import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLink;
+import registre.dto.CodesListExternalLinkDto;
 import registre.entity.CodeEntity;
 import registre.entity.CodesListEntity;
 import registre.entity.CodesListExternalLinkEntity;
@@ -63,7 +63,7 @@ class CodesListPublicationServiceTest {
         CodesListEntity entity = new CodesListEntity();
         when(repository.findById(id)).thenReturn(Optional.of(entity));
 
-        Code codeDto = new Code();
+        CodeDto codeDto = new CodeDto();
         CodeEntity codeEntity = new CodeEntity();
         when(codeMapper.toEntity(codeDto)).thenReturn(codeEntity);
 
@@ -89,7 +89,7 @@ class CodesListPublicationServiceTest {
         entity.setMetadata(metadata);
         when(repository.findById(id)).thenReturn(Optional.of(entity));
 
-        CodesListExternalLink dto = new CodesListExternalLink();
+        CodesListExternalLinkDto dto = new CodesListExternalLinkDto();
         CodesListExternalLinkEntity externalEntity = new CodesListExternalLinkEntity();
         when(externalLinkMapper.toEntity(dto)).thenReturn(externalEntity);
 

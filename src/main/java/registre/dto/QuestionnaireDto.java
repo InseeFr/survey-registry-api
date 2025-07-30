@@ -14,9 +14,9 @@ import java.util.Objects;
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
 public class QuestionnaireDto {
 
-  private Metadata metadata;
+  private MetadataDto metadata;
 
-  public QuestionnaireDto metadata(Metadata metadata) {
+  public QuestionnaireDto metadata(MetadataDto metadata) {
     this.metadata = metadata;
     return this;
   }
@@ -28,11 +28,11 @@ public class QuestionnaireDto {
   @Valid 
   @Schema(name = "metadata", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("metadata")
-  public Metadata getMetadata() {
+  public MetadataDto getMetadata() {
     return metadata;
   }
 
-  public void setMetadata(Metadata metadata) {
+  public void setMetadata(MetadataDto metadata) {
     this.metadata = metadata;
   }
 

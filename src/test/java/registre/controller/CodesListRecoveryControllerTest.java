@@ -8,8 +8,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.web.servlet.MockMvc;
-import registre.dto.Code;
-import registre.dto.Metadata;
+import registre.dto.CodeDto;
+import registre.dto.MetadataDto;
 import registre.service.CodesListRecoveryService;
 
 import java.util.List;
@@ -46,11 +46,11 @@ class CodesListRecoveryControllerTest {
 
     @Test
     void testGetAllCodesLists() throws Exception {
-        Metadata metadata = new Metadata();
+        MetadataDto metadata = new MetadataDto();
         metadata.setId(UUID.randomUUID());
         metadata.label("CodesList1");
         metadata.version("V1");
-        List<Metadata> metadatalist = List.of(metadata);
+        List<MetadataDto> metadatalist = List.of(metadata);
         Mockito.when(codesListRecoveryService.getAllMetadata()).thenReturn(metadatalist);
 
         mockMvc.perform(get("/codes-lists"))
@@ -61,7 +61,7 @@ class CodesListRecoveryControllerTest {
 
     @Test
     void testGetCodesListById_found() throws Exception {
-        Code code = new Code();
+        CodeDto code = new CodeDto();
         code.setId("Code1");
         code.setLabel("Label1");
 
@@ -85,7 +85,7 @@ class CodesListRecoveryControllerTest {
 
     @Test
     void testGetCodesListMetadataById_found() throws Exception {
-        Metadata metadata = new Metadata();
+        MetadataDto metadata = new MetadataDto();
         metadata.setId(UUID.randomUUID());
         metadata.label("CodesList1");
         metadata.version("V1");
