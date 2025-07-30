@@ -3,7 +3,6 @@ package registre.mapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import registre.dto.CodeDto;
-import registre.entity.CodeEntity;
 
 import static org.junit.jupiter.api.Assertions.*;
 

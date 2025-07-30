@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Entity
@@ -29,6 +27,7 @@ public class CodesListEntity {
     @Lob
     private JsonNode searchConfiguration;
 
-    @OneToMany(mappedBy = "codesList", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CodeEntity> content;
+    @Column(name = "content", columnDefinition = "json")
+    @Lob
+    private JsonNode content;
 }

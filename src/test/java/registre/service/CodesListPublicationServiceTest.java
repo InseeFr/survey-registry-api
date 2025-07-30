@@ -7,7 +7,6 @@ import org.junit.jupiter.api.function.Executable;
 import registre.dto.CodeDto;
 import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
-import registre.entity.CodeEntity;
 import registre.entity.CodesListEntity;
 import registre.exception.InvalidSearchConfigurationException;
 import registre.mapper.CodeMapper;

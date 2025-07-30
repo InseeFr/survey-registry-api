@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import registre.dto.CodeDto;
 import registre.dto.CodesListDto;
 import registre.dto.MetadataDto;
-import registre.entity.CodeEntity;
 import registre.entity.CodesListEntity;
 import registre.exception.InvalidSearchConfigurationException;
 

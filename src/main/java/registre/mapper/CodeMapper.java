@@ -2,7 +2,6 @@ package registre.mapper;
 
 import org.springframework.stereotype.Component;
 import registre.dto.CodeDto;
-import registre.entity.CodeEntity;
 
 @Component
 public class CodeMapper {

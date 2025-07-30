@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import registre.dto.CodeDto;
 import registre.dto.MetadataDto;
-import registre.entity.CodeEntity;
 import registre.entity.CodesListEntity;
 import registre.repository.CodesListRepository;
 
