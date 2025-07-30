@@ -1,54 +1,31 @@
 package registre.mapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import registre.dto.CodesListDto;
+import registre.dto.CodesListExternalLinkDto;
+import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
-import registre.exception.InvalidSearchConfigurationException;
-
-import java.util.stream.Collectors;
 
 @Component
 public class CodesListMapper {
-
-    private final MetadataMapper metadataMapper;
-    private final CodeMapper codeMapper;
-    private final ObjectMapper objectMapper;
-
-    public CodesListMapper(
-            MetadataMapper metadataMapper,
-            CodeMapper codeMapper,
-            ObjectMapper objectMapper) {
-        this.metadataMapper = metadataMapper;
-        this.codeMapper = codeMapper;
-        this.objectMapper = objectMapper;
-    }
 
     public CodesListDto toDto(CodesListEntity entity) {
         if (entity == null) return null;
 
         CodesListDto dto = new CodesListDto();
         dto.setId(entity.getId());
-        dto.setMetadata(metadataMapper.toDto(entity.getMetadata()));
+        dto.setSearchConfiguration(entity.getSearchConfiguration());
+        dto.setContent(entity.getContent());
 
-        if (entity.getSearchConfiguration() != null) {
-            try {
-                Object configObject = objectMapper.readValue(
-                        entity.getSearchConfiguration().getJsonContent(),
-                        Object.class
-                );
-                dto.setSearchConfiguration(configObject);
-            } catch (JsonProcessingException e) {
-                throw new InvalidSearchConfigurationException("Erreur lors du parsing du searchConfiguration JSON", e);
-            }
-        }
+        MetadataDto metadataDto = new MetadataDto();
+        metadataDto.setLabel(entity.getMetadataLabel());
+        metadataDto.setVersion(entity.getMetadataVersion());
 
-        if (entity.getContent() != null) {
-            dto.setContent(entity.getContent().stream()
-                    .map(codeMapper::toDto)
-                    .collect(Collectors.toList()));
-        }
+        CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto();
+        externalLink.setVersion(entity.getExternalLinkVersion());
+        metadataDto.setExternalLink(externalLink);
+
+        dto.setMetadata(metadataDto);
 
         return dto;
     }
@@ -57,27 +34,17 @@ public class CodesListMapper {
         if (dto == null) return null;
 
         CodesListEntity entity = new CodesListEntity();
+        entity.setId(dto.getId());
+        entity.setSearchConfiguration(dto.getSearchConfiguration());
+        entity.setContent(dto.getContent());
 
-        if (dto.getId() != null) {
-            entity.setId(dto.getId());
-        }
-
-        entity.setMetadata(metadataMapper.toEntity(dto.getMetadata()));
-
-        if (dto.getSearchConfiguration() != null) {
-            CodesListSearchConfigurationEntity configEntity = new CodesListSearchConfigurationEntity();
-            try {
-                configEntity.setJsonContent(objectMapper.writeValueAsString(dto.getSearchConfiguration()));
-            } catch (JsonProcessingException e) {
-                throw new InvalidSearchConfigurationException("Erreur lors de la sérialisation du searchConfiguration en JSON", e);
+        MetadataDto metadata = dto.getMetadata();
+        if (metadata != null) {
+            entity.setMetadataLabel(metadata.getLabel());
+            entity.setMetadataVersion(metadata.getVersion());
+            if (metadata.getExternalLink() != null) {
+                entity.setExternalLinkVersion(metadata.getExternalLink().getVersion());
             }
-            entity.setSearchConfiguration(configEntity);
-        }
-
-        if (dto.getContent() != null) {
-            entity.setContent(dto.getContent().stream()
-                    .map(codeMapper::toEntity)
-                    .collect(Collectors.toList()));
         }
 
         return entity;

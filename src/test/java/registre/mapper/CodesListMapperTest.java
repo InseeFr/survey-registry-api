@@ -3,7 +3,6 @@ package registre.mapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import registre.dto.CodeDto;
 import registre.dto.CodesListDto;
 import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;

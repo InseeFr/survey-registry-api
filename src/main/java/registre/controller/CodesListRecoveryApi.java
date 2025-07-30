@@ -5,7 +5,6 @@
  */
 package registre.controller;
 
-import registre.dto.CodeDto;
 import registre.dto.MetadataDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

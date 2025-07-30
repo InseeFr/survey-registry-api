@@ -10,7 +10,6 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import registre.dto.CodeDto;
 import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
 import registre.service.CodesListPublicationService;

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import registre.dto.CodeDto;
 import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
 import registre.repository.CodesListRepository;

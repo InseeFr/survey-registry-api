@@ -5,7 +5,6 @@
  */
 package registre.controller;
 
-import registre.dto.CodeDto;
 import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
 import registre.dto.ErrorResponseDto;

@@ -1,120 +1,52 @@
 package registre.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Setter;
 
-import javax.annotation.Generated;
-import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
-/**
- * CodesListDto
- */
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
+@Setter
 public class CodesListDto {
 
   private String id;
 
+  @Setter
   private MetadataDto metadata;
 
-  private Object searchConfiguration;
+  private JsonNode searchConfiguration;
 
-  @Valid
-  private List<CodeDto> content;
+  private JsonNode content;
 
-  public CodesListDto id(String id) {
-    this.id = id;
-    return this;
-  }
-
-  /**
-   * Get id
-   * @return id
-   */
   @Schema(name = "id", example = "my-list-id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("id")
   public String getId() {
     return id;
   }
 
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public CodesListDto metadata(MetadataDto metadata) {
-    this.metadata = metadata;
-    return this;
-  }
-
-  /**
-   * Get metadata
-   * @return metadata
-   */
-  @Valid
   @Schema(name = "metadata", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("metadata")
   public MetadataDto getMetadata() {
     return metadata;
   }
 
-  public void setMetadata(MetadataDto metadata) {
-    this.metadata = metadata;
-  }
-
-  public CodesListDto searchConfiguration(Object searchConfiguration) {
-    this.searchConfiguration = searchConfiguration;
-    return this;
-  }
-
-  /**
-   * Get searchConfiguration
-   * @return searchConfiguration
-   */
-  @Schema(name = "searchConfiguration", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    @Schema(name = "searchConfiguration", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("searchConfiguration")
-  public Object getSearchConfiguration() {
+  public JsonNode getSearchConfiguration() {
     return searchConfiguration;
   }
 
-  public void setSearchConfiguration(Object searchConfiguration) {
-    this.searchConfiguration = searchConfiguration;
-  }
-
-  public CodesListDto content(List<CodeDto> content) {
-    this.content = content;
-    return this;
-  }
-
-  public CodesListDto addContentItem(CodeDto contentItem) {
-    if (this.content == null) {
-      this.content = new ArrayList<>();
-    }
-    this.content.add(contentItem);
-    return this;
-  }
-
-  /**
-   * Get content
-   * @return content
-   */
-  @Valid
   @Schema(name = "content", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("content")
-  public List<CodeDto> getContent() {
+  public JsonNode getContent() {
     return content;
-  }
-
-  public void setContent(List<CodeDto> content) {
-    this.content = content;
   }
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    CodesListDto that = (CodesListDto) o;
+    if (!(o instanceof CodesListDto that)) return false;
     return Objects.equals(id, that.id) &&
             Objects.equals(metadata, that.metadata) &&
             Objects.equals(searchConfiguration, that.searchConfiguration) &&
@@ -128,20 +60,11 @@ public class CodesListDto {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class CodesListDto {\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    metadata: ").append(toIndentedString(metadata)).append("\n");
-    sb.append("    searchConfiguration: ").append(toIndentedString(searchConfiguration)).append("\n");
-    sb.append("    content: ").append(toIndentedString(content)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  private String toIndentedString(Object o) {
-    if (o == null) return "null";
-    return o.toString().replace("\n", "\n    ");
+    return "CodesListDto{" +
+            "id='" + id + '\'' +
+            ", metadata=" + metadata +
+            ", searchConfiguration=" + searchConfiguration +
+            ", content=" + content +
+            '}';
   }
 }
-
-

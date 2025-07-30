@@ -3,10 +3,7 @@ package registre.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import registre.dto.CodeDto;
 import registre.dto.MetadataDto;
-import registre.mapper.CodeMapper;
-import registre.mapper.MetadataMapper;
 import registre.repository.CodesListRepository;
 
 import java.util.List;

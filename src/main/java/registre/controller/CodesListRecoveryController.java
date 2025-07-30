@@ -3,7 +3,6 @@ package registre.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import registre.dto.CodeDto;
 import registre.dto.MetadataDto;
 import registre.service.CodesListRecoveryService;
 

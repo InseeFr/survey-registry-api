@@ -6,13 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import registre.dto.CodeDto;
 import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
 import registre.entity.*;
 import registre.exception.InvalidSearchConfigurationException;
-import registre.mapper.CodeMapper;
-import registre.mapper.CodesListExternalLinkMapper;
 import registre.mapper.CodesListMapper;
 import registre.repository.CodesListRepository;
 

@@ -4,13 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import registre.dto.CodeDto;
 import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
 import registre.entity.CodesListEntity;
 import registre.exception.InvalidSearchConfigurationException;
-import registre.mapper.CodeMapper;
-import registre.mapper.CodesListExternalLinkMapper;
 import registre.mapper.CodesListMapper;
 import registre.repository.CodesListRepository;
 
