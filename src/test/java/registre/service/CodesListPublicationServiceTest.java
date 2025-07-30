@@ -9,8 +9,6 @@ import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
 import registre.entity.CodeEntity;
 import registre.entity.CodesListEntity;
-import registre.entity.CodesListExternalLinkEntity;
-import registre.entity.MetadataEntity;
 import registre.exception.InvalidSearchConfigurationException;
 import registre.mapper.CodeMapper;
 import registre.mapper.CodesListExternalLinkMapper;

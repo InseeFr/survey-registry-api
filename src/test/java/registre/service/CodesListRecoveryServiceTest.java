@@ -5,8 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
-import registre.entity.CodesListSearchConfigurationEntity;
-import registre.entity.MetadataEntity;
 import registre.mapper.CodeMapper;
 import registre.mapper.MetadataMapper;
 import registre.repository.CodesListRepository;

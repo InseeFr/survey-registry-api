@@ -8,7 +8,6 @@ import registre.dto.CodeDto;
 import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
 import registre.entity.CodesListEntity;
-import registre.entity.MetadataEntity;
 import registre.repository.CodesListRepository;
 
 import java.util.ArrayList;

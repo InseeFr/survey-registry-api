@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import registre.dto.CodesListDto;
 import registre.entity.CodesListEntity;
-import registre.entity.CodesListSearchConfigurationEntity;
 import registre.exception.InvalidSearchConfigurationException;
 
 import java.util.stream.Collectors;

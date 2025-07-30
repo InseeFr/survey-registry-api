@@ -4,8 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import registre.dto.MetadataDto;
 import registre.dto.CodesListExternalLinkDto;
-import registre.entity.MetadataEntity;
-import registre.entity.CodesListExternalLinkEntity;
 
 import java.util.UUID;
 

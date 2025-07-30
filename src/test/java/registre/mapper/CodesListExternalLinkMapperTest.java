@@ -3,7 +3,6 @@ package registre.mapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import registre.dto.CodesListExternalLinkDto;
-import registre.entity.CodesListExternalLinkEntity;
 
 import java.util.UUID;
 

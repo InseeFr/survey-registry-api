@@ -8,8 +8,6 @@ import registre.dto.CodesListDto;
 import registre.dto.MetadataDto;
 import registre.entity.CodeEntity;
 import registre.entity.CodesListEntity;
-import registre.entity.CodesListSearchConfigurationEntity;
-import registre.entity.MetadataEntity;
 import registre.exception.InvalidSearchConfigurationException;
 
 import java.util.Collections;

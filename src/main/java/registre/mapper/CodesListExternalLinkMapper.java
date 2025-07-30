@@ -2,7 +2,6 @@ package registre.mapper;
 
 import org.springframework.stereotype.Component;
 import registre.dto.CodesListExternalLinkDto;
-import registre.entity.CodesListExternalLinkEntity;
 
 @Component
 public class CodesListExternalLinkMapper {

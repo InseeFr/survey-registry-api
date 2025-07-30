@@ -2,7 +2,6 @@ package registre.mapper;
 
 import org.springframework.stereotype.Component;
 import registre.dto.MetadataDto;
-import registre.entity.MetadataEntity;
 
 @Component
 public class MetadataMapper {
