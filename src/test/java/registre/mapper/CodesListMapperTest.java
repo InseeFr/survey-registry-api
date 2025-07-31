@@ -1,103 +1,89 @@
 package registre.mapper;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import registre.dto.CodesListDto;
+import registre.dto.CodesListExternalLinkDto;
 import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
-import registre.exception.InvalidSearchConfigurationException;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class CodesListMapperTest {
 
-    private MetadataMapper metadataMapper;
-    private CodeMapper codeMapper;
     private CodesListMapper codesListMapper;
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
-        metadataMapper = mock(MetadataMapper.class);
-        codeMapper = mock(CodeMapper.class);
-        ObjectMapper objectMapper = new ObjectMapper();
-        codesListMapper = new CodesListMapper(metadataMapper, codeMapper, objectMapper);
+        codesListMapper = new CodesListMapper();
+        objectMapper = new ObjectMapper();
     }
 
     @Test
-    void testToDto_WithValidEntity() {
+    void testToDto_WithValidEntity() throws Exception {
         // Given
-        CodesListEntity entity = new CodesListEntity();
-        entity.setId(String.valueOf(1L));
+        CodesListEntity codesListEntity = new CodesListEntity();
+        codesListEntity.setId("CodesList1");
+        codesListEntity.setMetadataLabel("LabelCodesList1");
+        codesListEntity.setMetadataVersion("v1");
+        codesListEntity.setExternalLinkVersion("ext-v1");
 
-        MetadataEntity metadataEntity = new MetadataEntity();
-        MetadataDto metadataDto = new MetadataDto();
-        when(metadataMapper.toDto(metadataEntity)).thenReturn(metadataDto);
-        entity.setMetadata(metadataEntity);
+        JsonNode searchConfig = objectMapper.readTree("{\"enabled\": true}");
+        JsonNode content = objectMapper.readTree("[{\"code\": \"01\"}]");
 
-        CodesListSearchConfigurationEntity configEntity = new CodesListSearchConfigurationEntity();
-        String jsonConfig = "{\"key\":\"value\"}";
-        configEntity.setJsonContent(jsonConfig);
-        entity.setSearchConfiguration(configEntity);
-
-        CodeEntity codeEntity = new CodeEntity();
-        CodeDto codeDto = new CodeDto();
-        when(codeMapper.toDto(codeEntity)).thenReturn(codeDto);
-        entity.setContent(Collections.singletonList(codeEntity));
+        codesListEntity.setSearchConfiguration(searchConfig);
+        codesListEntity.setContent(content);
 
         // When
-        CodesListDto dto = codesListMapper.toDto(entity);
+        CodesListDto dto = codesListMapper.toDto(codesListEntity);
 
         // Then
         assertNotNull(dto);
-        assertEquals(String.valueOf(1L), dto.getId());
-        assertEquals(metadataDto, dto.getMetadata());
-        assertEquals(Map.of("key", "value"), dto.getSearchConfiguration());
-        assertEquals(1, dto.getContent().size());
-        assertEquals(codeDto, dto.getContent().getFirst());
+        assertEquals("CodesList1", dto.getId());
+        assertNotNull(dto.getMetadata());
+        assertEquals("LabelCodesList1", dto.getMetadata().getLabel());
+        assertEquals("v1", dto.getMetadata().getVersion());
+        assertNotNull(dto.getMetadata().getExternalLink());
+        assertEquals("ext-v1", dto.getMetadata().getExternalLink().getVersion());
+        assertTrue(dto.getSearchConfiguration().get("enabled").asBoolean());
+        assertEquals("01", dto.getContent().get(0).get("code").asText());
     }
 
     @Test
-    void testToDto_WithInvalidJson_ThrowsException() {
-        CodesListEntity entity = new CodesListEntity();
-        CodesListSearchConfigurationEntity config = new CodesListSearchConfigurationEntity();
-        config.setJsonContent("invalid json");
-        entity.setSearchConfiguration(config);
-
-        assertThrows(InvalidSearchConfigurationException.class, () -> codesListMapper.toDto(entity));
-    }
-
-    @Test
-    void testToEntity_WithValidDto() {
+    void testToEntity_WithValidDto() throws Exception {
+        // Given
         CodesListDto dto = new CodesListDto();
-        dto.setId(String.valueOf(42L));
+        dto.setId("CodesList2");
 
-        MetadataDto metadataDto = new MetadataDto();
-        MetadataEntity metadataEntity = new MetadataEntity();
-        when(metadataMapper.toEntity(metadataDto)).thenReturn(metadataEntity);
-        dto.setMetadata(metadataDto);
+        MetadataDto metadata = new MetadataDto();
+        metadata.setLabel("LabelCodesList2");
+        metadata.setVersion("v2");
 
-        dto.setSearchConfiguration(Map.of("key", "value"));
+        CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto();
+        externalLink.setVersion("ext-v2");
+        metadata.setExternalLink(externalLink);
 
-        CodeDto codeDto = new CodeDto();
-        CodeEntity codeEntity = new CodeEntity();
-        when(codeMapper.toEntity(codeDto)).thenReturn(codeEntity);
-        dto.setContent(List.of(codeDto));
+        dto.setMetadata(metadata);
 
+        JsonNode searchConfig = objectMapper.readTree("{\"enabled\": false}");
+        JsonNode content = objectMapper.readTree("[{\"code\": \"01\"}]");
+
+        dto.setSearchConfiguration(searchConfig);
+        dto.setContent(content);
+
+        // When
         CodesListEntity entity = codesListMapper.toEntity(dto);
 
+        // Then
         assertNotNull(entity);
-        assertEquals(String.valueOf(42L), entity.getId());
-        assertEquals(metadataEntity, entity.getMetadata());
-        assertNotNull(entity.getSearchConfiguration());
-        assertTrue(entity.getSearchConfiguration().getJsonContent().contains("\"key\":\"value\""));
-        assertEquals(1, entity.getContent().size());
-        assertEquals(codeEntity, entity.getContent().getFirst());
+        assertEquals("CodesList2", entity.getId());
+        assertEquals("LabelCodesList2", entity.getMetadataLabel());
+        assertEquals("v2", entity.getMetadataVersion());
+        assertEquals("ext-v2", entity.getExternalLinkVersion());
+        assertFalse(entity.getSearchConfiguration().get("enabled").asBoolean());
+        assertEquals("01", entity.getContent().get(0).get("code").asText());
     }
 }

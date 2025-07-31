@@ -5,6 +5,7 @@
  */
 package registre.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import registre.dto.MetadataDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -72,44 +73,40 @@ public interface CodesListRecoveryApi {
 
     }
 
-
     /**
      * GET /codes-lists/{codesListId} : Get full content of a codes list
      *
      * @param codesListId  (required)
-     * @return Codes list content (status code 200)
+     * @return Codes list content as raw JSON (status code 200)
      */
     @Operation(
-        operationId = "getCodesListById",
-        summary = "Get full content of a codes list",
-        tags = { "Codes List Recovery" },
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Codes list content", content = {
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CodeDto.class)))
-            })
-        }
+            operationId = "getCodesListById",
+            summary = "Get full content of a codes list",
+            tags = { "Codes List Recovery" },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Codes list content",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(type = "array", example = "[ { \"id\": \"code1\", \"label\": \"Label1\" } ]")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Codes list not found"
+                    )
+            }
     )
     @RequestMapping(
-        method = RequestMethod.GET,
-        value = "/codes-lists/{codesListId}",
-        produces = { "application/json" }
+            method = RequestMethod.GET,
+            value = "/codes-lists/{codesListId}",
+            produces = { "application/json" }
     )
-    default ResponseEntity<List<CodeDto>> getCodesListById(
-        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") String codesListId
-    ) {
-        getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
-                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "[ { \"id\" : \"id\", \"label\" : \"label\" }, { \"id\" : \"id\", \"label\" : \"label\" } ]";
-                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
-                    break;
-                }
-            }
-        });
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
-    }
-
+    ResponseEntity<JsonNode> getCodesListById(
+            @Parameter(name = "codesListId", required = true, in = ParameterIn.PATH)
+            @PathVariable("codesListId") String codesListId
+    );
 
     /**
      * GET /codes-lists/{codesListId}/metadata : Get codes list metadata
@@ -148,11 +145,10 @@ public interface CodesListRecoveryApi {
 
     }
 
-
     /**
      * GET /codes-lists/{codesListId}/search-configuration : Get search configuration
      *
-     * @param codesListId  (required)
+     * @param codesListId (required)
      * @return Search configuration (status code 200)
      */
     @Operation(
@@ -170,7 +166,7 @@ public interface CodesListRecoveryApi {
         value = "/codes-lists/{codesListId}/search-configuration",
         produces = { "application/json" }
     )
-    default ResponseEntity<Object> getCodesListSearchConfigById(
+    default ResponseEntity<JsonNode> getCodesListSearchConfigById(
         @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") String codesListId
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);

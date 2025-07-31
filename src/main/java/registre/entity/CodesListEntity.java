@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import registre.utils.JsonNodeConverter;
 
 @Getter
 @Setter
@@ -23,11 +24,11 @@ public class CodesListEntity {
     @Column(name = "external_link_version")
     private String externalLinkVersion;
 
-    @Column(name = "search_config", columnDefinition = "json")
-    @Lob
+    @Column(name = "search_config", columnDefinition = "jsonb")
+    @Convert(converter = JsonNodeConverter.class)
     private JsonNode searchConfiguration;
 
-    @Column(name = "content", columnDefinition = "json")
-    @Lob
+    @Column(name = "content", columnDefinition = "jsonb")
+    @Convert(converter = JsonNodeConverter.class)
     private JsonNode content;
 }

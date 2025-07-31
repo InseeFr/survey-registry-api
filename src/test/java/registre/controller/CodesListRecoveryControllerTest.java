@@ -1,5 +1,7 @@
 package registre.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -12,7 +14,6 @@ import registre.dto.MetadataDto;
 import registre.service.CodesListRecoveryService;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,11 +31,19 @@ class CodesListRecoveryControllerTest {
     @Autowired
     private CodesListRecoveryService codesListRecoveryService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @TestConfiguration
     static class TestConfig {
         @Bean
         public CodesListRecoveryService codesListRecoveryService() {
             return Mockito.mock(CodesListRecoveryService.class);
+        }
+
+        @Bean
+        public ObjectMapper objectMapper() {
+            return new ObjectMapper();
         }
     }
 
@@ -49,8 +58,9 @@ class CodesListRecoveryControllerTest {
         metadata.setId(UUID.randomUUID());
         metadata.label("CodesList1");
         metadata.version("V1");
-        List<MetadataDto> metadatalist = List.of(metadata);
-        Mockito.when(codesListRecoveryService.getAllMetadata()).thenReturn(metadatalist);
+
+        List<MetadataDto> metadataList = List.of(metadata);
+        Mockito.when(codesListRecoveryService.getAllMetadata()).thenReturn(metadataList);
 
         mockMvc.perform(get("/codes-lists"))
                 .andExpect(status().isOk())
@@ -60,12 +70,18 @@ class CodesListRecoveryControllerTest {
 
     @Test
     void testGetCodesListById_found() throws Exception {
-        CodeDto code = new CodeDto();
-        code.setId("Code1");
-        code.setLabel("Label1");
+        String json = """
+            [
+              {
+                "id": "Code1",
+                "label": "Label1"
+              }
+            ]
+        """;
+        JsonNode content = objectMapper.readTree(json);
 
         Mockito.when(codesListRecoveryService.getCodesListById("CodesList1"))
-                .thenReturn(Optional.of(List.of(code)));
+                .thenReturn(Optional.of(content));
 
         mockMvc.perform(get("/codes-lists/CodesList1"))
                 .andExpect(status().isOk())
@@ -76,9 +92,9 @@ class CodesListRecoveryControllerTest {
 
     @Test
     void testGetCodesListById_notFound() throws Exception {
-        Mockito.when(codesListRecoveryService.getCodesListById("CodeListX")).thenReturn(Optional.empty());
+        Mockito.when(codesListRecoveryService.getCodesListById("CodesListX")).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/codes-lists/CodeListX"))
+        mockMvc.perform(get("/codes-lists/CodesListX"))
                 .andExpect(status().isNotFound());
     }
 
@@ -88,6 +104,7 @@ class CodesListRecoveryControllerTest {
         metadata.setId(UUID.randomUUID());
         metadata.label("CodesList1");
         metadata.version("V1");
+
         Mockito.when(codesListRecoveryService.getMetadataById("CodesList1")).thenReturn(Optional.of(metadata));
 
         mockMvc.perform(get("/codes-lists/CodesList1/metadata"))
@@ -106,8 +123,11 @@ class CodesListRecoveryControllerTest {
 
     @Test
     void testGetCodesListSearchConfigById() throws Exception {
-        Map<String, Object> searchConfig = Map.of("filter", true);
-        Mockito.when(codesListRecoveryService.getSearchConfiguration("CodesList1")).thenReturn(Optional.of(searchConfig));
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode searchConfig = mapper.readTree("{\"filter\": true}");
+
+        Mockito.when(codesListRecoveryService.getSearchConfiguration("CodesList1"))
+                .thenReturn(Optional.of(searchConfig));
 
         mockMvc.perform(get("/codes-lists/CodesList1/search-configuration"))
                 .andExpect(status().isOk())

@@ -1,6 +1,8 @@
 package registre.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -11,7 +13,6 @@ import registre.exception.InvalidSearchConfigurationException;
 import registre.mapper.CodesListMapper;
 import registre.repository.CodesListRepository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,19 +23,16 @@ class CodesListPublicationServiceTest {
 
     private CodesListRepository repository;
     private CodesListMapper codesListMapper;
-    private CodeMapper codeMapper;
-    private CodesListExternalLinkMapper externalLinkMapper;
     private CodesListPublicationService service;
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
         repository = mock(CodesListRepository.class);
         codesListMapper = mock(CodesListMapper.class);
-        codeMapper = mock(CodeMapper.class);
-        ObjectMapper objectMapper = new ObjectMapper();
-        externalLinkMapper = mock(CodesListExternalLinkMapper.class);
+        objectMapper = new ObjectMapper();
 
-        service = new CodesListPublicationService(repository, codesListMapper, codeMapper, objectMapper, externalLinkMapper);
+        service = new CodesListPublicationService(repository, codesListMapper);
     }
 
     @Test
@@ -57,82 +55,91 @@ class CodesListPublicationServiceTest {
         CodesListEntity entity = new CodesListEntity();
         when(repository.findById(id)).thenReturn(Optional.of(entity));
 
-        CodeDto codeDto = new CodeDto();
-        CodeEntity codeEntity = new CodeEntity();
-        when(codeMapper.toEntity(codeDto)).thenReturn(codeEntity);
+        ArrayNode contentJson = objectMapper.createArrayNode();
+        contentJson.add("code1");
+        contentJson.add("code2");
 
-        service.updateContent(id, List.of(codeDto));
+        service.updateContent(id, contentJson);
 
-        assertEquals(1, entity.getContent().size());
-        assertEquals(entity, codeEntity.getCodesList());
+        assertEquals(contentJson, entity.getContent());
         verify(repository).save(entity);
     }
 
     @Test
     void testUpdateContent_WhenCodesListDoesNotExist() {
         when(repository.findById("invalid-id")).thenReturn(Optional.empty());
-        Executable executable = () -> service.updateContent("invalid-id", List.of());
+        Executable executable = () -> service.updateContent("invalid-id", objectMapper.createArrayNode());
         assertThrows(IllegalArgumentException.class, executable);
     }
 
     @Test
-    void testUpdateExternalLink() {
+    void testUpdateExternalLink_WhenCodesListExists() {
         String id = UUID.randomUUID().toString();
         CodesListEntity entity = new CodesListEntity();
-        MetadataEntity metadata = new MetadataEntity();
-        entity.setMetadata(metadata);
         when(repository.findById(id)).thenReturn(Optional.of(entity));
 
-        CodesListExternalLinkDto dto = new CodesListExternalLinkDto();
-        CodesListExternalLinkEntity externalEntity = new CodesListExternalLinkEntity();
-        when(externalLinkMapper.toEntity(dto)).thenReturn(externalEntity);
+        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto();
+        externalLinkDto.setVersion("v1");
 
-        service.updateExternalLink(id, dto);
+        service.updateExternalLink(id, externalLinkDto);
 
-        assertEquals(externalEntity, metadata.getExternalLink());
+        assertEquals("v1", entity.getExternalLinkVersion());
         verify(repository).save(entity);
     }
 
-    static class SearchConfig {
-        public String type;
-
-        public SearchConfig(String type) {
-            this.type = type;
-        }
+    @Test
+    void testUpdateExternalLink_WhenCodesListDoesNotExist() {
+        when(repository.findById("invalid-id")).thenReturn(Optional.empty());
+        Executable executable = () -> service.updateExternalLink("invalid-id", new CodesListExternalLinkDto());
+        assertThrows(IllegalArgumentException.class, executable);
     }
+
     @Test
     void testUpdateSearchConfiguration_WithValidJson() {
         String id = UUID.randomUUID().toString();
         CodesListEntity entity = new CodesListEntity();
         when(repository.findById(id)).thenReturn(Optional.of(entity));
 
-        SearchConfig config = new SearchConfig("simple");
+        ObjectNode searchConfig = objectMapper.createObjectNode();
+        searchConfig.put("type", "advanced");
 
-        service.updateSearchConfiguration(id, config);
+        service.updateSearchConfiguration(id, searchConfig);
 
         assertNotNull(entity.getSearchConfiguration());
-        assertTrue(entity.getSearchConfiguration().getJsonContent().contains("simple"));
+        assertEquals(searchConfig, entity.getSearchConfiguration());
+        assertNotNull(entity.getSearchConfiguration().get("id"));
         verify(repository).save(entity);
     }
 
     @Test
-    void testUpdateSearchConfiguration_WithInvalidJson() {
+    void testUpdateSearchConfiguration_AddsIdIfMissing() {
         String id = UUID.randomUUID().toString();
         CodesListEntity entity = new CodesListEntity();
         when(repository.findById(id)).thenReturn(Optional.of(entity));
 
-        Object invalid = new Object();
+        ObjectNode searchConfig = objectMapper.createObjectNode();
+        service.updateSearchConfiguration(id, searchConfig);
 
-        ObjectMapper failingObjectMapper = mock(ObjectMapper.class);
-        service = new CodesListPublicationService(
-                repository, codesListMapper, codeMapper, failingObjectMapper, externalLinkMapper
-        );
-
-        when(failingObjectMapper.valueToTree(any()))
-                .thenThrow(new IllegalArgumentException("Mocked failure in valueToTree"));
-
-        assertThrows(InvalidSearchConfigurationException.class, () ->
-                service.updateSearchConfiguration(id, invalid));
+        assertNotNull(entity.getSearchConfiguration().get("id"));
+        verify(repository).save(entity);
     }
 
+    @Test
+    void testUpdateSearchConfiguration_WithInvalidJson_ThrowsException() {
+        String id = UUID.randomUUID().toString();
+        CodesListEntity entity = new CodesListEntity();
+        when(repository.findById(id)).thenReturn(Optional.of(entity));
+
+        ArrayNode invalidJson = objectMapper.createArrayNode();
+
+        assertThrows(InvalidSearchConfigurationException.class,
+                () -> service.updateSearchConfiguration(id, invalidJson));
+    }
+
+    @Test
+    void testUpdateSearchConfiguration_WhenCodesListDoesNotExist() {
+        when(repository.findById("invalid-id")).thenReturn(Optional.empty());
+        Executable executable = () -> service.updateSearchConfiguration("invalid-id", objectMapper.createObjectNode());
+        assertThrows(IllegalArgumentException.class, executable);
+    }
 }

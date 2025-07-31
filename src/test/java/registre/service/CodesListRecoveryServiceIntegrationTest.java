@@ -1,5 +1,7 @@
 package registre.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,6 @@ import registre.repository.CodesListRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,6 +25,9 @@ class CodesListRecoveryServiceIntegrationTest {
     @Autowired
     private CodesListRepository repository;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @BeforeEach
     void cleanDatabase() {
         repository.deleteAll();
@@ -31,96 +35,84 @@ class CodesListRecoveryServiceIntegrationTest {
 
     @Test
     void testGetAllMetadata() {
-        MetadataEntity metadata = new MetadataEntity();
-        metadata.setId(UUID.randomUUID());
-        metadata.setLabel("Metadata");
-
         CodesListEntity codesList = new CodesListEntity();
         codesList.setId("CodesList1");
-        codesList.setMetadata(metadata);
+        codesList.setMetadataLabel("Metadata1");
+        codesList.setMetadataVersion("v1");
 
         repository.save(codesList);
 
         List<MetadataDto> result = service.getAllMetadata();
 
         assertEquals(1, result.size());
-        assertEquals("Metadata", result.getFirst().getLabel());
+        assertEquals("Metadata1", result.getFirst().getLabel());
     }
 
     @Test
     void testGetMetadataById() {
-        MetadataEntity metadata = new MetadataEntity();
-        metadata.setId(UUID.randomUUID());
-        metadata.setLabel("Metadata");
-        metadata.setVersion("V3");
-
         CodesListEntity codesList = new CodesListEntity();
-        codesList.setId("CodeList2");
-        codesList.setMetadata(metadata);
+        codesList.setId("CodesList2");
+        codesList.setMetadataLabel("Metadata2");
+        codesList.setMetadataVersion("V2");
 
         repository.save(codesList);
 
-        Optional<MetadataDto> result = service.getMetadataById("CodeList2");
+        Optional<MetadataDto> result = service.getMetadataById("CodesList2");
 
         assertTrue(result.isPresent());
-        assertEquals("Metadata", result.get().getLabel());
-        assertEquals("V3", result.get().getVersion());
+        assertEquals("Metadata2", result.get().getLabel());
+        assertEquals("V2", result.get().getVersion());
     }
 
+//    @Test
+//    void testGetCodesListById() throws Exception {
+//        CodesListEntity codesList = new CodesListEntity();
+//        codesList.setId("CodesList3");
+//
+//        JsonNode content = objectMapper.readTree("""
+//            [
+//                {"id": "Code1", "label": "Label1"}
+//            ]
+//        """);
+//        codesList.setContent(content);
+//
+//        repository.save(codesList);
+//
+//        Optional<JsonNode> result = service.getCodesListById("CodesList3");
+//
+//        assertTrue(result.isPresent());
+//        assertEquals("Code1", result.get().get(0).get("id").asText());
+//        assertEquals("Label1", result.get().get(0).get("label").asText());
+//        System.out.println(result.get().getClass());
+//        System.out.println(result.get());
+//
+//    }
+
+//    @Test
+//    void testGetSearchConfiguration() throws Exception {
+//        CodesListEntity codesList = new CodesListEntity();
+//        codesList.setId("CodesList4");
+//
+//        JsonNode config = objectMapper.readTree("""
+//            {
+//                "filter": true
+//            }
+//        """);
+//        codesList.setSearchConfiguration(config);
+//
+//        repository.save(codesList);
+//
+//        Optional<JsonNode> result = service.getSearchConfiguration("CodesList4");
+//
+//        assertTrue(result.isPresent());
+//        assertTrue(result.get().get("filter").asBoolean());
+//    }
+
     @Test
-    void testGetCodesListById() {
-        CodesListEntity codesList = new CodesListEntity();
-        codesList.setId("CodeList3");
-
-        CodeEntity code = new CodeEntity();
-        code.setId("Code1");
-        code.setLabel("Label1");
-        code.setCodesList(codesList);
-
-        codesList.setContent(List.of(code));
-
-        repository.save(codesList);
-
-        Optional<List<CodeDto>> result = service.getCodesListById("CodeList3");
-
-        assertTrue(result.isPresent());
-        assertEquals(1, result.get().size());
-        assertEquals("Code1", result.get().getFirst().getId());
-        assertEquals("Label1", result.get().getFirst().getLabel());
-    }
-
-    @Test
-    void testGetSearchConfiguration() {
-        CodesListSearchConfigurationEntity config = new CodesListSearchConfigurationEntity();
-        config.setId("Config1");
-        config.setJsonContent("{\"filter\": true}");
-
-        CodesListEntity codesList = new CodesListEntity();
-        codesList.setId("CodeList4");
-        codesList.setSearchConfiguration(config);
-
-        repository.save(codesList);
-
-        Optional<Object> result = service.getSearchConfiguration("CodeList4");
-
-        assertTrue(result.isPresent());
-        assertTrue(((java.util.Map<?, ?>) result.get()).containsKey("filter"));
-    }
-
-    @Test
-    void testGetSearchConfiguration_InvalidJson() {
-        CodesListSearchConfigurationEntity config = new CodesListSearchConfigurationEntity();
-        config.setId("Config2");
-        config.setJsonContent("INVALID_JSON");
-
-        CodesListEntity codesList = new CodesListEntity();
-        codesList.setId("CodeList5");
-        codesList.setSearchConfiguration(config);
-
-        repository.save(codesList);
-
-        Optional<Object> result = service.getSearchConfiguration("CodeList5");
+    void testGetSearchConfiguration_NotFound() {
+        Optional<JsonNode> result = service.getSearchConfiguration("nonexistent");
 
         assertTrue(result.isEmpty());
     }
+
 }

@@ -1,9 +1,12 @@
 package registre.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import registre.dto.CodesListDto;
 import registre.dto.MetadataDto;
+import registre.entity.CodesListEntity;
+import registre.mapper.CodesListMapper;
 import registre.repository.CodesListRepository;
 
 import java.util.List;
@@ -14,50 +17,35 @@ import java.util.Optional;
 public class CodesListRecoveryService {
 
     private final CodesListRepository codesListRepository;
-    private final CodeMapper codeMapper;
-    private final MetadataMapper metadataMapper;
-    private final ObjectMapper objectMapper;
-
+    private final CodesListMapper codesListMapper;
     public CodesListRecoveryService(
             CodesListRepository codesListRepository,
-            CodeMapper codeMapper,
-            MetadataMapper metadataMapper,
-            ObjectMapper objectMapper
+            CodesListMapper codesListMapper
     ) {
         this.codesListRepository = codesListRepository;
-        this.codeMapper = codeMapper;
-        this.metadataMapper = metadataMapper;
-        this.objectMapper = objectMapper;
+        this.codesListMapper = codesListMapper;
     }
 
     public List<MetadataDto> getAllMetadata() {
         return codesListRepository.findAll().stream()
-                .map(entity -> metadataMapper.toDto(entity.getMetadata()))
+                .map(codesListMapper::toDto)
+                .map(CodesListDto::getMetadata)
                 .toList();
     }
 
-    public Optional<List<CodeDto>> getCodesListById(String id) {
+    public Optional<JsonNode> getCodesListById(String id) {
         return codesListRepository.findById(id)
-                .map(entity -> entity.getContent().stream()
-                        .map(codeMapper::toDto)
-                        .toList());
+                .map(CodesListEntity::getContent);
     }
 
     public Optional<MetadataDto> getMetadataById(String id) {
         return codesListRepository.findById(id)
-                .map(entity -> metadataMapper.toDto(entity.getMetadata()));
+                .map(codesListMapper::toDto)
+                .map(CodesListDto::getMetadata);
     }
 
-    public Optional<Object> getSearchConfiguration(String id) {
+    public Optional<JsonNode> getSearchConfiguration(String id) {
         return codesListRepository.findById(id)
-                .flatMap(entity -> Optional.ofNullable(entity.getSearchConfiguration()))
-                .flatMap(config -> {
-                    try {
-                        Object parsed = objectMapper.readValue(config.getJsonContent(), Object.class);
-                        return Optional.of(parsed);
-                    } catch (Exception e) {
-                        return Optional.empty();
-                    }
-                });
+                .map(CodesListEntity::getSearchConfiguration);
     }
 }

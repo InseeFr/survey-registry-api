@@ -1,14 +1,15 @@
 package registre.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import registre.dto.CodesListDto;
 import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
+import registre.mapper.CodesListMapper;
 import registre.repository.CodesListRepository;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,82 +17,83 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class CodesListRecoveryServiceTest {
+
     private CodesListRepository repository;
-    private MetadataMapper metadataMapper;
+    private CodesListMapper mapper;
     private CodesListRecoveryService service;
-    private  ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
         repository = mock(CodesListRepository.class);
-        CodeMapper codeMapper = mock(CodeMapper.class);
-        metadataMapper = mock(MetadataMapper.class);
-        objectMapper = mock(ObjectMapper.class);
-        service = new CodesListRecoveryService(repository, codeMapper, metadataMapper, objectMapper);
+        mapper = mock(CodesListMapper.class);
+        service = new CodesListRecoveryService(repository, mapper);
     }
 
     @Test
     void testGetAllMetadata() {
         CodesListEntity entity = new CodesListEntity();
-        MetadataEntity metadata = new MetadataEntity();
-        entity.setMetadata(metadata);
+        MetadataDto metadata = new MetadataDto();
+        CodesListDto dto = new CodesListDto();
+        dto.setMetadata(metadata);
 
         when(repository.findAll()).thenReturn(List.of(entity));
-        MetadataDto dto = new MetadataDto();
-        when(metadataMapper.toDto(metadata)).thenReturn(dto);
+        when(mapper.toDto(entity)).thenReturn(dto);
 
         List<MetadataDto> result = service.getAllMetadata();
+
         assertEquals(1, result.size());
-        assertSame(dto, result.getFirst());
+        assertSame(metadata, result.getFirst());
     }
 
     @Test
     void testGetMetadataById_Found() {
-        MetadataEntity metadata = new MetadataEntity();
         CodesListEntity entity = new CodesListEntity();
-        entity.setMetadata(metadata);
+        MetadataDto metadata = new MetadataDto();
+        CodesListDto dto = new CodesListDto();
+        dto.setMetadata(metadata);
+
+        when(repository.findById("id1")).thenReturn(Optional.of(entity));
+        when(mapper.toDto(entity)).thenReturn(dto);
+
+        Optional<MetadataDto> result = service.getMetadataById("id1");
+
+        assertTrue(result.isPresent());
+        assertSame(metadata, result.get());
+    }
+
+    @Test
+    void testGetCodesListById_Found() {
+        JsonNode content = mock(JsonNode.class);
+        CodesListEntity entity = new CodesListEntity();
+        entity.setContent(content);
 
         when(repository.findById("id2")).thenReturn(Optional.of(entity));
-        MetadataDto dto = new MetadataDto();
-        when(metadataMapper.toDto(metadata)).thenReturn(dto);
 
-        Optional<MetadataDto> result = service.getMetadataById("id2");
+        Optional<JsonNode> result = service.getCodesListById("id2");
 
         assertTrue(result.isPresent());
-        assertSame(dto, result.get());
+        assertSame(content, result.get());
     }
 
     @Test
-    void testGetSearchConfiguration_ValidJson() throws Exception {
-        CodesListSearchConfigurationEntity config = new CodesListSearchConfigurationEntity();
-        config.setJsonContent("{\"key\":\"value\"}");
-
+    void testGetSearchConfiguration_Found() {
+        JsonNode searchConfig = mock(JsonNode.class);
         CodesListEntity entity = new CodesListEntity();
-        entity.setSearchConfiguration(config);
+        entity.setSearchConfiguration(searchConfig);
 
         when(repository.findById("id3")).thenReturn(Optional.of(entity));
-        Object parsed = Map.of("key", "value");
-        when(objectMapper.readValue(config.getJsonContent(), Object.class)).thenReturn(parsed);
 
-        Optional<Object> result = service.getSearchConfiguration("id3");
+        Optional<JsonNode> result = service.getSearchConfiguration("id3");
 
         assertTrue(result.isPresent());
-        assertEquals(parsed, result.get());
+        assertSame(searchConfig, result.get());
     }
 
     @Test
-    void testGetSearchConfiguration_InvalidJson() throws Exception {
-        CodesListSearchConfigurationEntity config = new CodesListSearchConfigurationEntity();
-        config.setJsonContent("invalid");
+    void testGetSearchConfiguration_NotFound() {
+        when(repository.findById("missing")).thenReturn(Optional.empty());
 
-        CodesListEntity entity = new CodesListEntity();
-        entity.setSearchConfiguration(config);
-
-        when(repository.findById("id4")).thenReturn(Optional.of(entity));
-        when(objectMapper.readValue(config.getJsonContent(), Object.class))
-                .thenThrow(new RuntimeException("mocked error"));
-
-        Optional<Object> result = service.getSearchConfiguration("id4");
+        Optional<JsonNode> result = service.getSearchConfiguration("missing");
 
         assertTrue(result.isEmpty());
     }

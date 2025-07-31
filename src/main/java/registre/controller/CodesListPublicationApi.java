@@ -5,9 +5,7 @@
  */
 package registre.controller;
 
-import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLinkDto;
-import registre.dto.ErrorResponseDto;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -23,10 +21,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.NativeWebRequest;
+import registre.dto.CodesListDto;
+import registre.dto.CodesListExternalLinkDto;
+import registre.dto.ErrorResponseDto;
 
 import javax.annotation.Generated;
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Optional;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
@@ -121,19 +121,20 @@ public interface CodesListPublicationApi {
         }
     )
     @RequestMapping(
-        method = RequestMethod.PUT,
-        value = "/codes-lists/{codesListId}/content",
-        produces = { "application/json" },
-        consumes = { "application/json" }
+            method = RequestMethod.PUT,
+            value = "/codes-lists/{codesListId}/content",
+            produces = { "application/json" },
+            consumes = { "application/json" }
     )
     default ResponseEntity<Void> putCodesListContentById(
-        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") String codesListId,
-        @Parameter(name = "Code", description = "") @Valid @RequestBody(required = false) List<CodeDto> code
+            @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH)
+            @PathVariable("codesListId") String codesListId,
+
+            @Parameter(name = "content", description = "JSON content")
+            @Valid @RequestBody(required = false) JsonNode content
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
     }
-
 
     /**
      * PUT /codes-lists/{codesListId}/external-link : Set external link for a codes list

@@ -1,5 +1,6 @@
 package registre.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +22,7 @@ public class CodesListRecoveryController implements CodesListRecoveryApi {
     }
 
     @Override
-    public ResponseEntity<List<CodeDto>> getCodesListById(String codesListId) {
+    public ResponseEntity<JsonNode> getCodesListById(String codesListId) {
         return codesListRecoveryService.getCodesListById(codesListId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -35,9 +36,10 @@ public class CodesListRecoveryController implements CodesListRecoveryApi {
     }
 
     @Override
-    public ResponseEntity<Object> getCodesListSearchConfigById(String codesListId) {
-        Object config = codesListRecoveryService.getSearchConfiguration(codesListId);
-        return ResponseEntity.ok(config);
+    public ResponseEntity<JsonNode> getCodesListSearchConfigById(String codesListId) {
+        return codesListRecoveryService.getSearchConfiguration(codesListId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
 
