@@ -15,9 +15,10 @@ spring:
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
+  spring:
+    liquibase:
+      enabled: true
+      change-log: classpath:db/changelog/db.changelog-master.yaml
 
 springdoc:
   api-docs:

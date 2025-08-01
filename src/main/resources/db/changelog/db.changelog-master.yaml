@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id:
+      author:
+      changes:
+        - createTable:
+            tableName: codes_list
+            columns:
+              - column:
+                  name: id
+                  type: varchar
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: metadata_label
+                  type: varchar
+              - column:
+                  name: metadata_version
+                  type: varchar
+              - column:
+                  name: external_link_version
+                  type: varchar
+              - column:
+                  name: search_config
+                  type: jsonb
+              - column:
+                  name: content
+                  type: jsonb
