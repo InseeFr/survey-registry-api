@@ -37,30 +37,30 @@ class CodesListRecoveryServiceIntegrationTest {
     void testGetAllMetadata() {
         CodesListEntity codesList = new CodesListEntity();
         codesList.setId("CodesList1");
-        codesList.setMetadataLabel("Metadata1");
-        codesList.setMetadataVersion("v1");
+        codesList.setLabel("Label1");
+        codesList.setVersion("v1");
 
         repository.save(codesList);
 
         List<MetadataDto> result = service.getAllMetadata();
 
         assertEquals(1, result.size());
-        assertEquals("Metadata1", result.getFirst().getLabel());
+        assertEquals("Label1", result.getFirst().getLabel());
     }
 
     @Test
     void testGetMetadataById() {
         CodesListEntity codesList = new CodesListEntity();
         codesList.setId("CodesList2");
-        codesList.setMetadataLabel("Metadata2");
-        codesList.setMetadataVersion("V2");
+        codesList.setLabel("Label2");
+        codesList.setVersion("V2");
 
         repository.save(codesList);
 
         Optional<MetadataDto> result = service.getMetadataById("CodesList2");
 
         assertTrue(result.isPresent());
-        assertEquals("Metadata2", result.get().getLabel());
+        assertEquals("Label2", result.get().getLabel());
         assertEquals("V2", result.get().getVersion());
     }
 

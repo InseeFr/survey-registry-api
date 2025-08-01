@@ -27,8 +27,8 @@ class CodesListMapperTest {
         // Given
         CodesListEntity codesListEntity = new CodesListEntity();
         codesListEntity.setId("CodesList1");
-        codesListEntity.setMetadataLabel("LabelCodesList1");
-        codesListEntity.setMetadataVersion("v1");
+        codesListEntity.setLabel("Label1");
+        codesListEntity.setVersion("v1");
         codesListEntity.setExternalLinkVersion("ext-v1");
 
         JsonNode searchConfig = objectMapper.readTree("{\"enabled\": true}");
@@ -44,7 +44,7 @@ class CodesListMapperTest {
         assertNotNull(dto);
         assertEquals("CodesList1", dto.getId());
         assertNotNull(dto.getMetadata());
-        assertEquals("LabelCodesList1", dto.getMetadata().getLabel());
+        assertEquals("Label1", dto.getMetadata().getLabel());
         assertEquals("v1", dto.getMetadata().getVersion());
         assertNotNull(dto.getMetadata().getExternalLink());
         assertEquals("ext-v1", dto.getMetadata().getExternalLink().getVersion());
@@ -59,7 +59,7 @@ class CodesListMapperTest {
         dto.setId("CodesList2");
 
         MetadataDto metadata = new MetadataDto();
-        metadata.setLabel("LabelCodesList2");
+        metadata.setLabel("Label2");
         metadata.setVersion("v2");
 
         CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto();
@@ -80,8 +80,8 @@ class CodesListMapperTest {
         // Then
         assertNotNull(entity);
         assertEquals("CodesList2", entity.getId());
-        assertEquals("LabelCodesList2", entity.getMetadataLabel());
-        assertEquals("v2", entity.getMetadataVersion());
+        assertEquals("Label2", entity.getLabel());
+        assertEquals("v2", entity.getVersion());
         assertEquals("ext-v2", entity.getExternalLinkVersion());
         assertFalse(entity.getSearchConfiguration().get("enabled").asBoolean());
         assertEquals("01", entity.getContent().get(0).get("code").asText());

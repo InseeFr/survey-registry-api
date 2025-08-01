@@ -18,8 +18,8 @@ public class CodesListMapper {
         dto.setContent(entity.getContent());
 
         MetadataDto metadataDto = new MetadataDto();
-        metadataDto.setLabel(entity.getMetadataLabel());
-        metadataDto.setVersion(entity.getMetadataVersion());
+        metadataDto.setLabel(entity.getLabel());
+        metadataDto.setVersion(entity.getVersion());
 
         CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto();
         externalLink.setVersion(entity.getExternalLinkVersion());
@@ -40,8 +40,8 @@ public class CodesListMapper {
 
         MetadataDto metadata = dto.getMetadata();
         if (metadata != null) {
-            entity.setMetadataLabel(metadata.getLabel());
-            entity.setMetadataVersion(metadata.getVersion());
+            entity.setLabel(metadata.getLabel());
+            entity.setVersion(metadata.getVersion());
             if (metadata.getExternalLink() != null) {
                 entity.setExternalLinkVersion(metadata.getExternalLink().getVersion());
             }

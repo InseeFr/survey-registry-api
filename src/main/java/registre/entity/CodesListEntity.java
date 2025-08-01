@@ -20,11 +20,11 @@ public class CodesListEntity {
     @Id
     private String id;
 
-    @Column(name = "metadata_label")
-    private String metadataLabel;
+    @Column(name = "label")
+    private String label;
 
-    @Column(name = "metadata_version")
-    private String metadataVersion;
+    @Column(name = "version")
+    private String version;
 
     @Column(name = "external_link_version")
     private String externalLinkVersion;
