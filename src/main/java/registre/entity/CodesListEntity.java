@@ -1,10 +1,15 @@
 package registre.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import registre.utils.JsonNodeConverter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 
 @Getter
 @Setter
@@ -24,11 +29,12 @@ public class CodesListEntity {
     @Column(name = "external_link_version")
     private String externalLinkVersion;
 
-    @Column(name = "search_config", columnDefinition = "jsonb")
-    @Convert(converter = JsonNodeConverter.class)
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "search_config")
     private JsonNode searchConfiguration;
 
-    @Column(name = "content", columnDefinition = "jsonb")
-    @Convert(converter = JsonNodeConverter.class)
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "content")
     private JsonNode content;
+
 }

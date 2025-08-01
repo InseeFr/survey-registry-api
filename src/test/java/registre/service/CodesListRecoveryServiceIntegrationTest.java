@@ -64,49 +64,48 @@ class CodesListRecoveryServiceIntegrationTest {
         assertEquals("V2", result.get().getVersion());
     }
 
-//    @Test
-//    void testGetCodesListById() throws Exception {
-//        CodesListEntity codesList = new CodesListEntity();
-//        codesList.setId("CodesList3");
-//
-//        JsonNode content = objectMapper.readTree("""
-//            [
-//                {"id": "Code1", "label": "Label1"}
-//            ]
-//        """);
-//        codesList.setContent(content);
-//
-//        repository.save(codesList);
-//
-//        Optional<JsonNode> result = service.getCodesListById("CodesList3");
-//
-//        assertTrue(result.isPresent());
-//        assertEquals("Code1", result.get().get(0).get("id").asText());
-//        assertEquals("Label1", result.get().get(0).get("label").asText());
-//        System.out.println(result.get().getClass());
-//        System.out.println(result.get());
-//
-//    }
+    @Test
+    void testGetCodesListById() throws Exception {
+        CodesListEntity codesList = new CodesListEntity();
+        codesList.setId("CodesList3");
 
-//    @Test
-//    void testGetSearchConfiguration() throws Exception {
-//        CodesListEntity codesList = new CodesListEntity();
-//        codesList.setId("CodesList4");
-//
-//        JsonNode config = objectMapper.readTree("""
-//            {
-//                "filter": true
-//            }
-//        """);
-//        codesList.setSearchConfiguration(config);
-//
-//        repository.save(codesList);
-//
-//        Optional<JsonNode> result = service.getSearchConfiguration("CodesList4");
-//
-//        assertTrue(result.isPresent());
-//        assertTrue(result.get().get("filter").asBoolean());
-//    }
+        JsonNode content = objectMapper.readTree("""
+                    [
+                        {"id": "Code1", "label": "Label1"}
+                    ]
+                """);
+        codesList.setContent(content);
+
+        repository.save(codesList);
+
+        Optional<JsonNode> result = service.getCodesListById("CodesList3");
+
+        assertTrue(result.isPresent());
+        assertEquals("Code1", result.get().get(0).get("id").asText());
+        assertEquals("Label1", result.get().get(0).get("label").asText());
+        System.out.println(result.get().getClass());
+        System.out.println(result.get());
+    }
+
+    @Test
+    void testGetSearchConfiguration() throws Exception {
+        CodesListEntity codesList = new CodesListEntity();
+        codesList.setId("CodesList4");
+
+        JsonNode config = objectMapper.readTree("""
+            {
+                "filter": true
+            }
+        """);
+        codesList.setSearchConfiguration(config);
+
+        repository.save(codesList);
+
+        Optional<JsonNode> result = service.getSearchConfiguration("CodesList4");
+
+        assertTrue(result.isPresent());
+        assertTrue(result.get().get("filter").asBoolean());
+    }
 
     @Test
     void testGetSearchConfiguration_NotFound() {
