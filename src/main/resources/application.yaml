@@ -4,7 +4,7 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/registre
-    username:
+    username: username
     password:
     driver-class-name: org.postgresql.Driver
 
@@ -15,10 +15,9 @@ spring:
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  spring:
-    liquibase:
-      enabled: true
-      change-log: classpath:db/changelog/db.changelog-master.yaml
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
 
 springdoc:
   api-docs:
