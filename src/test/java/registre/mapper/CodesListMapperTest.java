@@ -8,6 +8,7 @@ import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
 import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
+import registre.entity.CodesListExternalLinkEntity;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,7 +19,7 @@ class CodesListMapperTest {
 
     @BeforeEach
     void setUp() {
-        codesListMapper = new CodesListMapper();
+        codesListMapper = new CodesListMapper(new CodesListExternalLinkMapper());
         objectMapper = new ObjectMapper();
     }
 
@@ -29,7 +30,11 @@ class CodesListMapperTest {
         codesListEntity.setId("CodesList1");
         codesListEntity.setLabel("Label1");
         codesListEntity.setVersion("v1");
-        codesListEntity.setExternalLinkVersion("ext-v1");
+
+        CodesListExternalLinkEntity externalLink = new CodesListExternalLinkEntity();
+        externalLink.setId("ExternalLink1");
+        externalLink.setVersion("v1");
+        codesListEntity.setCodesListExternalLink(externalLink);
 
         JsonNode searchConfig = objectMapper.readTree("{\"enabled\": true}");
         JsonNode content = objectMapper.readTree("[{\"code\": \"01\"}]");
@@ -47,7 +52,8 @@ class CodesListMapperTest {
         assertEquals("Label1", dto.getMetadata().getLabel());
         assertEquals("v1", dto.getMetadata().getVersion());
         assertNotNull(dto.getMetadata().getExternalLink());
-        assertEquals("ext-v1", dto.getMetadata().getExternalLink().getVersion());
+        assertEquals("ExternalLink1", dto.getMetadata().getExternalLink().getId());
+        assertEquals("v1", dto.getMetadata().getExternalLink().getVersion());
         assertTrue(dto.getSearchConfiguration().get("enabled").asBoolean());
         assertEquals("01", dto.getContent().get(0).get("code").asText());
     }
@@ -63,7 +69,7 @@ class CodesListMapperTest {
         metadata.setVersion("v2");
 
         CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto();
-        externalLink.setVersion("ext-v2");
+        externalLink.setVersion("v2");
         metadata.setExternalLink(externalLink);
 
         dto.setMetadata(metadata);
@@ -82,7 +88,7 @@ class CodesListMapperTest {
         assertEquals("CodesList2", entity.getId());
         assertEquals("Label2", entity.getLabel());
         assertEquals("v2", entity.getVersion());
-        assertEquals("ext-v2", entity.getExternalLinkVersion());
+        assertEquals("v2", entity.getCodesListExternalLink().getVersion());
         assertFalse(entity.getSearchConfiguration().get("enabled").asBoolean());
         assertEquals("01", entity.getContent().get(0).get("code").asText());
     }

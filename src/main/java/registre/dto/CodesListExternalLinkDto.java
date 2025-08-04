@@ -2,100 +2,60 @@ package registre.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
-import javax.annotation.Generated;
-import javax.validation.Valid;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
- * CodesListExternalLink
+ * CodesListExternalLinkDto
  */
-
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
+@Setter
+@Getter
 public class CodesListExternalLinkDto {
 
-  private UUID uuid;
+  @Schema(description = "ID from RMeS", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("id")
+  private String id;
 
+  @Schema(description = "Version of code-list from RMeS", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("version")
   private String version;
 
-  public CodesListExternalLinkDto uuid(UUID uuid) {
-    this.uuid = uuid;
+  public CodesListExternalLinkDto id(String id) {
+    this.id = id;
     return this;
   }
 
-  /**
-   * UUID from RMeS
-   * @return uuid
-  */
-  @Valid 
-  @Schema(name = "uuid", description = "UUID from RMeS", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("uuid")
-  public UUID getUuid() {
-    return uuid;
-  }
-
-  public void setUuid(UUID uuid) {
-    this.uuid = uuid;
-  }
-
-  public CodesListExternalLinkDto version(String version) {
+    public CodesListExternalLinkDto version(String version) {
     this.version = version;
     return this;
-  }
-
-  /**
-   * version of code-list from RMeS
-   * @return version
-  */
-  
-  @Schema(name = "version", description = "version of code-list from RMeS", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("version")
-  public String getVersion() {
-    return version;
-  }
-
-  public void setVersion(String version) {
-    this.version = version;
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    CodesListExternalLinkDto codesListExternalLink = (CodesListExternalLinkDto) o;
-    return Objects.equals(this.uuid, codesListExternalLink.uuid) &&
-        Objects.equals(this.version, codesListExternalLink.version);
+    if (this == o) return true;
+    if (!(o instanceof CodesListExternalLinkDto that)) return false;
+    return Objects.equals(id, that.id) &&
+            Objects.equals(version, that.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, version);
+    return Objects.hash(id, version);
   }
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class CodesListExternalLink {\n");
-    sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
-    sb.append("    version: ").append(toIndentedString(version)).append("\n");
-    sb.append("}");
-    return sb.toString();
+    return "CodesListExternalLinkDto {\n" +
+            "    id: " + toIndentedString(id) + "\n" +
+            "    version: " + toIndentedString(version) + "\n" +
+            "}";
   }
 
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
   private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
+    return o == null ? "null" : o.toString().replace("\n", "\n    ");
   }
 }
+
 

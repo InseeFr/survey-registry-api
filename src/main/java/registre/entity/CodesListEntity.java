@@ -1,10 +1,7 @@
 package registre.entity;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -26,8 +23,9 @@ public class CodesListEntity {
     @Column(name = "version")
     private String version;
 
-    @Column(name = "external_link_version")
-    private String externalLinkVersion;
+    @ManyToOne
+    @JoinColumn(name = "external_link_id")
+    private CodesListExternalLinkEntity codesListExternalLink;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "search_config")

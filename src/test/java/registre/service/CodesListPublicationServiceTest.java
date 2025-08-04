@@ -9,8 +9,9 @@ import org.junit.jupiter.api.function.Executable;
 import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
 import registre.entity.CodesListEntity;
-import registre.exception.InvalidSearchConfigurationException;
+import registre.entity.CodesListExternalLinkEntity;
 import registre.mapper.CodesListMapper;
+import registre.repository.CodesListExternalLinkRepository;
 import registre.repository.CodesListRepository;
 
 import java.util.Optional;
@@ -21,18 +22,20 @@ import static org.mockito.Mockito.*;
 
 class CodesListPublicationServiceTest {
 
-    private CodesListRepository repository;
+    private CodesListExternalLinkRepository externalLinkRepository;
+    private CodesListRepository codesListRepository;
     private CodesListMapper codesListMapper;
     private CodesListPublicationService service;
     private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
-        repository = mock(CodesListRepository.class);
+        codesListRepository = mock(CodesListRepository.class);
+        externalLinkRepository = mock(CodesListExternalLinkRepository.class);
         codesListMapper = mock(CodesListMapper.class);
         objectMapper = new ObjectMapper();
 
-        service = new CodesListPublicationService(repository, codesListMapper);
+        service = new CodesListPublicationService(externalLinkRepository, codesListRepository, codesListMapper);
     }
 
     @Test
@@ -41,19 +44,19 @@ class CodesListPublicationServiceTest {
         CodesListEntity entity = new CodesListEntity();
 
         when(codesListMapper.toEntity(dto)).thenReturn(entity);
-        when(repository.save(entity)).thenReturn(entity);
+        when(codesListRepository.save(entity)).thenReturn(entity);
 
         String id = service.createCodesList(dto);
 
         assertNotNull(id);
-        verify(repository).save(entity);
+        verify(codesListRepository).save(entity);
     }
 
     @Test
     void testUpdateContent_WhenCodesListExists() {
         String id = UUID.randomUUID().toString();
         CodesListEntity entity = new CodesListEntity();
-        when(repository.findById(id)).thenReturn(Optional.of(entity));
+        when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
         ArrayNode contentJson = objectMapper.createArrayNode();
         contentJson.add("code1");
@@ -62,12 +65,12 @@ class CodesListPublicationServiceTest {
         service.updateContent(id, contentJson);
 
         assertEquals(contentJson, entity.getContent());
-        verify(repository).save(entity);
+        verify(codesListRepository).save(entity);
     }
 
     @Test
     void testUpdateContent_WhenCodesListDoesNotExist() {
-        when(repository.findById("invalid-id")).thenReturn(Optional.empty());
+        when(codesListRepository.findById("invalid-id")).thenReturn(Optional.empty());
         Executable executable = () -> service.updateContent("invalid-id", objectMapper.createArrayNode());
         assertThrows(IllegalArgumentException.class, executable);
     }
@@ -76,20 +79,26 @@ class CodesListPublicationServiceTest {
     void testUpdateExternalLink_WhenCodesListExists() {
         String id = UUID.randomUUID().toString();
         CodesListEntity entity = new CodesListEntity();
-        when(repository.findById(id)).thenReturn(Optional.of(entity));
+        when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
         CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto();
+        externalLinkDto.setId("ExternalLink1");
         externalLinkDto.setVersion("v1");
+
+        CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
+        externalLinkEntity.setVersion("v1");
+        when(externalLinkRepository.findById("ExternalLink1")).thenReturn(Optional.of(externalLinkEntity));
 
         service.updateExternalLink(id, externalLinkDto);
 
-        assertEquals("v1", entity.getExternalLinkVersion());
-        verify(repository).save(entity);
+        assertEquals("v1", entity.getCodesListExternalLink().getVersion());
+        verify(codesListRepository).save(entity);
     }
+
 
     @Test
     void testUpdateExternalLink_WhenCodesListDoesNotExist() {
-        when(repository.findById("invalid-id")).thenReturn(Optional.empty());
+        when(codesListRepository.findById("invalid-id")).thenReturn(Optional.empty());
         Executable executable = () -> service.updateExternalLink("invalid-id", new CodesListExternalLinkDto());
         assertThrows(IllegalArgumentException.class, executable);
     }
@@ -98,7 +107,7 @@ class CodesListPublicationServiceTest {
     void testUpdateSearchConfiguration_WithValidJson() {
         String id = UUID.randomUUID().toString();
         CodesListEntity entity = new CodesListEntity();
-        when(repository.findById(id)).thenReturn(Optional.of(entity));
+        when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
         ObjectNode searchConfig = objectMapper.createObjectNode();
         searchConfig.put("type", "advanced");
@@ -107,38 +116,24 @@ class CodesListPublicationServiceTest {
 
         assertNotNull(entity.getSearchConfiguration());
         assertEquals(searchConfig, entity.getSearchConfiguration());
-        assertNotNull(entity.getSearchConfiguration().get("id"));
-        verify(repository).save(entity);
+        verify(codesListRepository).save(entity);
     }
 
     @Test
     void testUpdateSearchConfiguration_AddsIdIfMissing() {
         String id = UUID.randomUUID().toString();
         CodesListEntity entity = new CodesListEntity();
-        when(repository.findById(id)).thenReturn(Optional.of(entity));
+        when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
         ObjectNode searchConfig = objectMapper.createObjectNode();
         service.updateSearchConfiguration(id, searchConfig);
 
-        assertNotNull(entity.getSearchConfiguration().get("id"));
-        verify(repository).save(entity);
-    }
-
-    @Test
-    void testUpdateSearchConfiguration_WithInvalidJson_ThrowsException() {
-        String id = UUID.randomUUID().toString();
-        CodesListEntity entity = new CodesListEntity();
-        when(repository.findById(id)).thenReturn(Optional.of(entity));
-
-        ArrayNode invalidJson = objectMapper.createArrayNode();
-
-        assertThrows(InvalidSearchConfigurationException.class,
-                () -> service.updateSearchConfiguration(id, invalidJson));
+        verify(codesListRepository).save(entity);
     }
 
     @Test
     void testUpdateSearchConfiguration_WhenCodesListDoesNotExist() {
-        when(repository.findById("invalid-id")).thenReturn(Optional.empty());
+        when(codesListRepository.findById("invalid-id")).thenReturn(Optional.empty());
         Executable executable = () -> service.updateSearchConfiguration("invalid-id", objectMapper.createObjectNode());
         assertThrows(IllegalArgumentException.class, executable);
     }

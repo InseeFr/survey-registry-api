@@ -15,8 +15,6 @@ import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
 import registre.service.CodesListPublicationService;
 
-import java.util.UUID;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -109,7 +107,7 @@ class CodesListPublicationControllerTest {
     @Test
     void testPutCodesListExternalLinkById() throws Exception {
         CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto();
-        externalLink.setUuid(UUID.randomUUID());
+        externalLink.setId("ExternalLink1");
         externalLink.setVersion("v1");
 
         mockMvc.perform(put("/codes-lists/CodesList2/external-link")

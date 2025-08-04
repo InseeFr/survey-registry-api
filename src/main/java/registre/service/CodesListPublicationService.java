@@ -1,15 +1,15 @@
 package registre.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
 import registre.entity.CodesListEntity;
-import registre.exception.InvalidSearchConfigurationException;
+import registre.entity.CodesListExternalLinkEntity;
 import registre.mapper.CodesListMapper;
+import registre.repository.CodesListExternalLinkRepository;
 import registre.repository.CodesListRepository;
 
 import java.util.UUID;
@@ -20,6 +20,7 @@ public class CodesListPublicationService {
 
     private static final String CODES_LIST_NOT_FOUND = "Codes list not found";
 
+    private final CodesListExternalLinkRepository codesListExternalLinkRepository;
     private final CodesListRepository codesListRepository;
     private final CodesListMapper codesListMapper;
 
@@ -46,7 +47,13 @@ public class CodesListPublicationService {
                 .orElseThrow(() -> new IllegalArgumentException(CODES_LIST_NOT_FOUND));
 
         if (externalLinkDto != null) {
-            entity.setExternalLinkVersion(externalLinkDto.getVersion());
+            CodesListExternalLinkEntity externalLinkEntity = codesListExternalLinkRepository
+                    .findById(externalLinkDto.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("External link not found"));
+
+            entity.setCodesListExternalLink(externalLinkEntity);
+        } else {
+            entity.setCodesListExternalLink(null);
         }
 
         codesListRepository.save(entity);
@@ -57,17 +64,7 @@ public class CodesListPublicationService {
         CodesListEntity entity = codesListRepository.findById(codesListId)
                 .orElseThrow(() -> new IllegalArgumentException(CODES_LIST_NOT_FOUND));
 
-        if (!configJson.isObject()) {
-            throw new InvalidSearchConfigurationException("The provided JSON must be an object");
-        }
-
-        ObjectNode objectNode = (ObjectNode) configJson;
-
-        if (!objectNode.has("id") || objectNode.get("id").isNull()) {
-            objectNode.put("id", UUID.randomUUID().toString());
-        }
-
-        entity.setSearchConfiguration(objectNode);
+        entity.setSearchConfiguration(configJson);
         codesListRepository.save(entity);
     }
 }

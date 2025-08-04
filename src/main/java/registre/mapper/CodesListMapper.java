@@ -2,12 +2,18 @@ package registre.mapper;
 
 import org.springframework.stereotype.Component;
 import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLinkDto;
 import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
+import registre.entity.CodesListExternalLinkEntity;
 
 @Component
 public class CodesListMapper {
+
+    private final CodesListExternalLinkMapper externalLinkMapper;
+
+    public CodesListMapper(CodesListExternalLinkMapper externalLinkMapper) {
+        this.externalLinkMapper = externalLinkMapper;
+    }
 
     public CodesListDto toDto(CodesListEntity entity) {
         if (entity == null) return null;
@@ -21,9 +27,11 @@ public class CodesListMapper {
         metadataDto.setLabel(entity.getLabel());
         metadataDto.setVersion(entity.getVersion());
 
-        CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto();
-        externalLink.setVersion(entity.getExternalLinkVersion());
-        metadataDto.setExternalLink(externalLink);
+        if (entity.getCodesListExternalLink() != null) {
+            metadataDto.setExternalLink(
+                    externalLinkMapper.toDto(entity.getCodesListExternalLink())
+            );
+        }
 
         dto.setMetadata(metadataDto);
 
@@ -42,8 +50,11 @@ public class CodesListMapper {
         if (metadata != null) {
             entity.setLabel(metadata.getLabel());
             entity.setVersion(metadata.getVersion());
+
             if (metadata.getExternalLink() != null) {
-                entity.setExternalLinkVersion(metadata.getExternalLink().getVersion());
+                CodesListExternalLinkEntity externalLinkEntity =
+                        externalLinkMapper.toEntity(metadata.getExternalLink());
+                entity.setCodesListExternalLink(externalLinkEntity);
             }
         }
 

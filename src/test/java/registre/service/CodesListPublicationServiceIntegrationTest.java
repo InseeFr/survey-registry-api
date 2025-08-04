@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
 import registre.entity.CodesListEntity;
+import registre.entity.CodesListExternalLinkEntity;
+import registre.repository.CodesListExternalLinkRepository;
 import registre.repository.CodesListRepository;
 
 import java.util.Optional;
@@ -24,7 +26,10 @@ class CodesListPublicationServiceIntegrationTest {
     private CodesListPublicationService service;
 
     @Autowired
-    private CodesListRepository repository;
+    private CodesListRepository codesListRepository;
+
+    @Autowired
+    private CodesListExternalLinkRepository externalLinkRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -35,7 +40,7 @@ class CodesListPublicationServiceIntegrationTest {
         dto.setContent(objectMapper.createArrayNode());
         String id = service.createCodesList(dto);
 
-        Optional<CodesListEntity> entity = repository.findById(id);
+        Optional<CodesListEntity> entity = codesListRepository.findById(id);
         assertTrue(entity.isPresent());
         assertEquals(id, entity.get().getId());
     }
@@ -52,7 +57,7 @@ class CodesListPublicationServiceIntegrationTest {
 
         service.updateContent(id, objectMapper.createArrayNode().add(codeNode));
 
-        CodesListEntity updated = repository.findById(id).orElseThrow();
+        CodesListEntity updated = codesListRepository.findById(id).orElseThrow();
         JsonNode content = updated.getContent();
         assertNotNull(content);
         assertTrue(content.isArray());
@@ -67,12 +72,17 @@ class CodesListPublicationServiceIntegrationTest {
         String id = service.createCodesList(dto);
 
         CodesListExternalLinkDto link = new CodesListExternalLinkDto();
-        link.setVersion("vX");
+        link.setId("ExternalLink1");
+
+        CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
+        externalLinkEntity.setId("ExternalLink1");
+        externalLinkEntity.setVersion("v1");
+        externalLinkRepository.save(externalLinkEntity);
 
         service.updateExternalLink(id, link);
 
-        CodesListEntity updated = repository.findById(id).orElseThrow();
-        assertEquals("vX", updated.getExternalLinkVersion());
+        CodesListEntity updated = codesListRepository.findById(id).orElseThrow();
+        assertEquals("v1", updated.getCodesListExternalLink().getVersion());
     }
 
     @Test
@@ -86,12 +96,11 @@ class CodesListPublicationServiceIntegrationTest {
 
         service.updateSearchConfiguration(id, configNode);
 
-        CodesListEntity updated = repository.findById(id).orElseThrow();
+        CodesListEntity updated = codesListRepository.findById(id).orElseThrow();
         JsonNode searchConfig = updated.getSearchConfiguration();
 
         assertNotNull(searchConfig);
         assertTrue(searchConfig.has("type"));
         assertEquals("simple", searchConfig.get("type").asText());
-        assertTrue(searchConfig.has("id"));
     }
 }

@@ -3,8 +3,8 @@ spring:
     name: Registre
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/registre
-    username: username
+    url: jdbc:postgresql://dvregistrylg001.ad.insee.intra:1983/di_pg_registry_dv01
+    username: bcbab8
     password:
     driver-class-name: org.postgresql.Driver
 
