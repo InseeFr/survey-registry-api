@@ -68,6 +68,8 @@ class CodesListRecoveryServiceIntegrationTest {
     void testGetCodesListById() throws Exception {
         CodesListEntity codesList = new CodesListEntity();
         codesList.setId("CodesList3");
+        codesList.setLabel("Label3");
+        codesList.setVersion("V3");
 
         JsonNode content = objectMapper.readTree("""
                     [
@@ -91,6 +93,8 @@ class CodesListRecoveryServiceIntegrationTest {
     void testGetSearchConfiguration() throws Exception {
         CodesListEntity codesList = new CodesListEntity();
         codesList.setId("CodesList4");
+        codesList.setLabel("Label4");
+        codesList.setVersion("V4");
 
         JsonNode config = objectMapper.readTree("""
             {
