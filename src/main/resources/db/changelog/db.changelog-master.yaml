@@ -20,7 +20,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 1
-      author: sa
+      author: bcbab8
       changes:
         - createTable:
             tableName: codes_list
