@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 2
-      author: sa
+      author: bcbab8
       changes:
         - createTable:
             tableName: external_link
