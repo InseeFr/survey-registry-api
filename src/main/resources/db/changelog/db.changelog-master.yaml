@@ -1,5 +1,24 @@
 databaseChangeLog:
   - changeSet:
+      id: 2
+      author: sa
+      changes:
+        - createTable:
+            tableName: external_link
+            columns:
+              - column:
+                  name: id
+                  type: varchar
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: version
+                  type: varchar
+                  constraints:
+                    nullable: false
+
+  - changeSet:
       id: 1
       author: sa
       changes:
@@ -11,18 +30,31 @@ databaseChangeLog:
                   type: varchar
                   constraints:
                     primaryKey: true
+                    nullable: false
               - column:
-                  name: metadata_label
+                  name: label
                   type: varchar
+                  constraints:
+                    nullable: false
               - column:
-                  name: metadata_version
+                  name: version
                   type: varchar
+                  constraints:
+                    nullable: false
               - column:
-                  name: external_link_version
+                  name: external_link_id
                   type: varchar
+                  constraints:
+                    nullable: false
               - column:
                   name: search_config
                   type: jsonb
               - column:
                   name: content
                   type: jsonb
+        - addForeignKeyConstraint:
+            baseTableName: codes_list
+            baseColumnNames: external_link_id
+            referencedTableName: external_link
+            referencedColumnNames: id
+            constraintName: fk_codes_list_external_link
