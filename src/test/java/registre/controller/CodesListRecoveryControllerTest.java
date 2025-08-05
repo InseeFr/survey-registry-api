@@ -15,7 +15,6 @@ import registre.service.CodesListRecoveryService;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -55,7 +54,6 @@ class CodesListRecoveryControllerTest {
     @Test
     void testGetAllCodesLists() throws Exception {
         MetadataDto metadata = new MetadataDto();
-        metadata.setId(UUID.randomUUID());
         metadata.label("CodesList1");
         metadata.version("V1");
 
@@ -101,7 +99,6 @@ class CodesListRecoveryControllerTest {
     @Test
     void testGetCodesListMetadataById_found() throws Exception {
         MetadataDto metadata = new MetadataDto();
-        metadata.setId(UUID.randomUUID());
         metadata.label("CodesList1");
         metadata.version("V1");
 

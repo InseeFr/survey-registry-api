@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import registre.dto.CodesListDto;
 import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
+import registre.entity.CodesListExternalLinkEntity;
+import registre.mapper.CodesListExternalLinkMapper;
 import registre.mapper.CodesListMapper;
 import registre.repository.CodesListRepository;
 
@@ -19,30 +21,53 @@ import static org.mockito.Mockito.when;
 class CodesListRecoveryServiceTest {
 
     private CodesListRepository repository;
-    private CodesListMapper mapper;
+    private CodesListMapper codesListMapper;
+    private CodesListExternalLinkMapper externalLinkMapper;
     private CodesListRecoveryService service;
 
     @BeforeEach
     void setUp() {
         repository = mock(CodesListRepository.class);
-        mapper = mock(CodesListMapper.class);
-        service = new CodesListRecoveryService(repository, mapper);
+        codesListMapper = mock(CodesListMapper.class);
+        externalLinkMapper = mock(CodesListExternalLinkMapper.class);
+        service = new CodesListRecoveryService(repository, codesListMapper, externalLinkMapper);
     }
 
     @Test
-    void testGetAllMetadata() {
-        CodesListEntity entity = new CodesListEntity();
-        MetadataDto metadata = new MetadataDto();
-        CodesListDto dto = new CodesListDto();
-        dto.setMetadata(metadata);
+    void testGetAllMetadata_withoutExternalLink() {
+        CodesListRepository.MetadataProjection projection = mock(CodesListRepository.MetadataProjection.class);
+        when(projection.getLabel()).thenReturn("Label1");
+        when(projection.getVersion()).thenReturn("V1");
+        when(projection.getCodesListExternalLink()).thenReturn(null);
 
-        when(repository.findAll()).thenReturn(List.of(entity));
-        when(mapper.toDto(entity)).thenReturn(dto);
+        when(repository.findAllBy()).thenReturn(List.of(projection));
 
         List<MetadataDto> result = service.getAllMetadata();
 
         assertEquals(1, result.size());
-        assertSame(metadata, result.getFirst());
+        MetadataDto dto = result.getFirst();
+        assertEquals("Label1", dto.getLabel());
+        assertEquals("V1", dto.getVersion());
+        assertNull(dto.getExternalLink());
+    }
+
+    @Test
+    void testGetAllMetadata_withExternalLink() {
+        CodesListRepository.MetadataProjection projection = mock(CodesListRepository.MetadataProjection.class);
+        CodesListExternalLinkEntity linkEntity = new CodesListExternalLinkEntity();
+
+        when(projection.getLabel()).thenReturn("Label2");
+        when(projection.getVersion()).thenReturn("V2");
+        when(projection.getCodesListExternalLink()).thenReturn(linkEntity);
+
+        when(externalLinkMapper.toDto(linkEntity)).thenReturn(new registre.dto.CodesListExternalLinkDto());
+
+        when(repository.findAllBy()).thenReturn(List.of(projection));
+
+        List<MetadataDto> result = service.getAllMetadata();
+
+        assertEquals(1, result.size());
+        assertNotNull(result.getFirst().getExternalLink());
     }
 
     @Test
@@ -53,7 +78,7 @@ class CodesListRecoveryServiceTest {
         dto.setMetadata(metadata);
 
         when(repository.findById("id1")).thenReturn(Optional.of(entity));
-        when(mapper.toDto(entity)).thenReturn(dto);
+        when(codesListMapper.toDto(entity)).thenReturn(dto);
 
         Optional<MetadataDto> result = service.getMetadataById("id1");
 

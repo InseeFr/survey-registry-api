@@ -46,6 +46,7 @@ class CodesListRecoveryServiceIntegrationTest {
 
         assertEquals(1, result.size());
         assertEquals("Label1", result.getFirst().getLabel());
+        assertEquals("v1", result.getFirst().getVersion());
     }
 
     @Test
