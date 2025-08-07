@@ -3,7 +3,7 @@ spring:
     name: Registre
 
   datasource:
-    url: jdbc:postgresql://dvregistrylg001.ad.insee.intra:1983/di_pg_registry_dv01
+    url:
     username:
     password:
     driver-class-name: org.postgresql.Driver
