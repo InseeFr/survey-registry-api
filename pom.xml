@@ -8,8 +8,8 @@
 		<version>3.5.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
-	<artifactId>Registre</artifactId>
+	<groupId>fr.insee</groupId>
+	<artifactId>Registry-API</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>registre</name>
 	<description>API registre for code lists and questionnaires</description>
@@ -28,6 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<final.asset.name>registry-api</final.asset.name>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -102,6 +103,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>${final.asset.name}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
