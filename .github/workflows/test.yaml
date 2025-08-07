@@ -1,0 +1,22 @@
+name: Survey-Registry-API tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      ["Dockerfile", "LICENSE", "CHANGELOG.md", "README.md"]
+
+jobs:
+  test:
+    if: ${{ (github.event.pull_request.draft == false) && !contains(github.event.pull_request.labels.*.name, 'deploy-snapshot') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+      - name: Run tests with Maven
+        run: mvn test --no-transfer-progress
