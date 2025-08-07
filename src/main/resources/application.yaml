@@ -4,7 +4,7 @@ spring:
 
   datasource:
     url: jdbc:postgresql://dvregistrylg001.ad.insee.intra:1983/di_pg_registry_dv01
-    username: 
+    username:
     password:
     driver-class-name: org.postgresql.Driver
 
@@ -24,4 +24,3 @@ springdoc:
     enabled: true
   swagger-ui:
     path: /swagger-ui.html
-    title: Registre
