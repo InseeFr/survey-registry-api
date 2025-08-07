@@ -12,6 +12,7 @@ import registre.repository.CodesListRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,7 +37,8 @@ class CodesListRecoveryServiceIntegrationTest {
     @Test
     void testGetAllMetadata() {
         CodesListEntity codesList = new CodesListEntity();
-        codesList.setId("CodesList1");
+        UUID id = UUID.randomUUID();
+        codesList.setId(id);
         codesList.setLabel("Label1");
         codesList.setVersion("v1");
 
@@ -52,13 +54,14 @@ class CodesListRecoveryServiceIntegrationTest {
     @Test
     void testGetMetadataById() {
         CodesListEntity codesList = new CodesListEntity();
-        codesList.setId("CodesList2");
+        UUID id = UUID.randomUUID();
+        codesList.setId(id);
         codesList.setLabel("Label2");
         codesList.setVersion("V2");
 
         repository.save(codesList);
 
-        Optional<MetadataDto> result = service.getMetadataById("CodesList2");
+        Optional<MetadataDto> result = service.getMetadataById(id);
 
         assertTrue(result.isPresent());
         assertEquals("Label2", result.get().getLabel());
@@ -68,7 +71,8 @@ class CodesListRecoveryServiceIntegrationTest {
     @Test
     void testGetCodesListById() throws Exception {
         CodesListEntity codesList = new CodesListEntity();
-        codesList.setId("CodesList3");
+        UUID id = UUID.randomUUID();
+        codesList.setId(id);
         codesList.setLabel("Label3");
         codesList.setVersion("V3");
 
@@ -81,7 +85,7 @@ class CodesListRecoveryServiceIntegrationTest {
 
         repository.save(codesList);
 
-        Optional<JsonNode> result = service.getCodesListById("CodesList3");
+        Optional<JsonNode> result = service.getCodesListById(id);
 
         assertTrue(result.isPresent());
         assertEquals("Code1", result.get().get(0).get("id").asText());
@@ -93,7 +97,8 @@ class CodesListRecoveryServiceIntegrationTest {
     @Test
     void testGetSearchConfiguration() throws Exception {
         CodesListEntity codesList = new CodesListEntity();
-        codesList.setId("CodesList4");
+        UUID id = UUID.randomUUID();
+        codesList.setId(id);
         codesList.setLabel("Label4");
         codesList.setVersion("V4");
 
@@ -106,7 +111,7 @@ class CodesListRecoveryServiceIntegrationTest {
 
         repository.save(codesList);
 
-        Optional<JsonNode> result = service.getSearchConfiguration("CodesList4");
+        Optional<JsonNode> result = service.getSearchConfiguration(id);
 
         assertTrue(result.isPresent());
         assertTrue(result.get().get("filter").asBoolean());
@@ -114,7 +119,8 @@ class CodesListRecoveryServiceIntegrationTest {
 
     @Test
     void testGetSearchConfiguration_NotFound() {
-        Optional<JsonNode> result = service.getSearchConfiguration("nonexistent");
+        UUID id = UUID.randomUUID();
+        Optional<JsonNode> result = service.getSearchConfiguration(id);
 
         assertTrue(result.isEmpty());
     }

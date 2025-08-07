@@ -27,7 +27,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: varchar
+                  type: uuid
                   constraints:
                     primaryKey: true
                     nullable: false

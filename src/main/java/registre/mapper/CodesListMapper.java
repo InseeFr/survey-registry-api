@@ -24,6 +24,7 @@ public class CodesListMapper {
         dto.setContent(entity.getContent());
 
         MetadataDto metadataDto = new MetadataDto();
+        metadataDto.setId(entity.getId());
         metadataDto.setLabel(entity.getLabel());
         metadataDto.setVersion(entity.getVersion());
 

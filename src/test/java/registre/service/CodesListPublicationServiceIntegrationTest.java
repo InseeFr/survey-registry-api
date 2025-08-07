@@ -15,6 +15,7 @@ import registre.repository.CodesListExternalLinkRepository;
 import registre.repository.CodesListRepository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,7 +39,7 @@ class CodesListPublicationServiceIntegrationTest {
     void testCreateAndFetchCodesList() {
         CodesListDto dto = new CodesListDto();
         dto.setContent(objectMapper.createArrayNode());
-        String id = service.createCodesList(dto);
+        UUID id = service.createCodesList(dto);
 
         Optional<CodesListEntity> entity = codesListRepository.findById(id);
         assertTrue(entity.isPresent());
@@ -49,7 +50,7 @@ class CodesListPublicationServiceIntegrationTest {
     void testUpdateContentAndVerify() {
         CodesListDto dto = new CodesListDto();
         dto.setContent(objectMapper.createArrayNode());
-        String id = service.createCodesList(dto);
+        UUID id = service.createCodesList(dto);
 
         ObjectNode codeNode = objectMapper.createObjectNode();
         codeNode.put("id", "code1");
@@ -69,7 +70,7 @@ class CodesListPublicationServiceIntegrationTest {
     void testUpdateExternalLink() {
         CodesListDto dto = new CodesListDto();
         dto.setContent(objectMapper.createArrayNode());
-        String id = service.createCodesList(dto);
+        UUID id = service.createCodesList(dto);
 
         CodesListExternalLinkDto link = new CodesListExternalLinkDto();
         link.setId("ExternalLink1");
@@ -89,7 +90,7 @@ class CodesListPublicationServiceIntegrationTest {
     void testUpdateSearchConfiguration() {
         CodesListDto dto = new CodesListDto();
         dto.setContent(objectMapper.createArrayNode());
-        String id = service.createCodesList(dto);
+        UUID id = service.createCodesList(dto);
 
         ObjectNode configNode = objectMapper.createObjectNode();
         configNode.put("type", "simple");

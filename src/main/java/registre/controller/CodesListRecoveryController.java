@@ -8,6 +8,7 @@ import registre.dto.MetadataDto;
 import registre.service.CodesListRecoveryService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,21 +23,21 @@ public class CodesListRecoveryController implements CodesListRecoveryApi {
     }
 
     @Override
-    public ResponseEntity<JsonNode> getCodesListById(String codesListId) {
+    public ResponseEntity<JsonNode> getCodesListById(UUID codesListId) {
         return codesListRecoveryService.getCodesListById(codesListId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @Override
-    public ResponseEntity<MetadataDto> getCodesListMetadataById(String codesListId) {
+    public ResponseEntity<MetadataDto> getCodesListMetadataById(UUID codesListId) {
         return codesListRecoveryService.getMetadataById(codesListId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @Override
-    public ResponseEntity<JsonNode> getCodesListSearchConfigById(String codesListId) {
+    public ResponseEntity<JsonNode> getCodesListSearchConfigById(UUID codesListId) {
         return codesListRecoveryService.getSearchConfiguration(codesListId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

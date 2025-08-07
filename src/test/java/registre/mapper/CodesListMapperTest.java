@@ -10,6 +10,8 @@ import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
 import registre.entity.CodesListExternalLinkEntity;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class CodesListMapperTest {
@@ -27,7 +29,8 @@ class CodesListMapperTest {
     void testToDto_WithValidEntity() throws Exception {
         // Given
         CodesListEntity codesListEntity = new CodesListEntity();
-        codesListEntity.setId("CodesList1");
+        UUID testId = UUID.randomUUID();
+        codesListEntity.setId(testId);
         codesListEntity.setLabel("Label1");
         codesListEntity.setVersion("v1");
 
@@ -47,7 +50,7 @@ class CodesListMapperTest {
 
         // Then
         assertNotNull(dto);
-        assertEquals("CodesList1", dto.getId());
+        assertEquals(testId, dto.getId());
         assertNotNull(dto.getMetadata());
         assertEquals("Label1", dto.getMetadata().getLabel());
         assertEquals("v1", dto.getMetadata().getVersion());
@@ -62,7 +65,8 @@ class CodesListMapperTest {
     void testToEntity_WithValidDto() throws Exception {
         // Given
         CodesListDto dto = new CodesListDto();
-        dto.setId("CodesList2");
+        UUID testId = UUID.randomUUID();
+        dto.setId(testId);
 
         MetadataDto metadata = new MetadataDto();
         metadata.setLabel("Label2");
@@ -85,7 +89,7 @@ class CodesListMapperTest {
 
         // Then
         assertNotNull(entity);
-        assertEquals("CodesList2", entity.getId());
+        assertEquals(testId, entity.getId());
         assertEquals("Label2", entity.getLabel());
         assertEquals("v2", entity.getVersion());
         assertEquals("v2", entity.getCodesListExternalLink().getVersion());

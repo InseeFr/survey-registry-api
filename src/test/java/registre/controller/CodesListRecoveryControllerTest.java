@@ -15,8 +15,8 @@ import registre.service.CodesListRecoveryService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -78,10 +78,12 @@ class CodesListRecoveryControllerTest {
         """;
         JsonNode content = objectMapper.readTree(json);
 
-        Mockito.when(codesListRecoveryService.getCodesListById("CodesList1"))
+        UUID testId = UUID.randomUUID();
+
+        Mockito.when(codesListRecoveryService.getCodesListById(testId))
                 .thenReturn(Optional.of(content));
 
-        mockMvc.perform(get("/codes-lists/CodesList1"))
+        mockMvc.perform(get("/codes-lists/" + testId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value("Code1"))
@@ -90,9 +92,12 @@ class CodesListRecoveryControllerTest {
 
     @Test
     void testGetCodesListById_notFound() throws Exception {
-        Mockito.when(codesListRecoveryService.getCodesListById("CodesListX")).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/codes-lists/CodesListX"))
+        UUID testId = UUID.randomUUID();
+
+        Mockito.when(codesListRecoveryService.getCodesListById(testId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/codes-lists/" + testId))
                 .andExpect(status().isNotFound());
     }
 
@@ -102,9 +107,11 @@ class CodesListRecoveryControllerTest {
         metadata.label("CodesList1");
         metadata.version("V1");
 
-        Mockito.when(codesListRecoveryService.getMetadataById("CodesList1")).thenReturn(Optional.of(metadata));
+        UUID testId = UUID.randomUUID();
 
-        mockMvc.perform(get("/codes-lists/CodesList1/metadata"))
+        Mockito.when(codesListRecoveryService.getMetadataById(testId)).thenReturn(Optional.of(metadata));
+
+        mockMvc.perform(get("/codes-lists/"+ testId +"/metadata"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.label").value("CodesList1"))
                 .andExpect(jsonPath("$.version").value("V1"));
@@ -112,9 +119,12 @@ class CodesListRecoveryControllerTest {
 
     @Test
     void testGetCodesListMetadataById_notFound() throws Exception {
-        Mockito.when(codesListRecoveryService.getMetadataById(anyString())).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/codes-lists/any-id/metadata"))
+        UUID testId = UUID.randomUUID();
+
+        Mockito.when(codesListRecoveryService.getMetadataById(testId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/codes-lists/"+ testId +"/metadata"))
                 .andExpect(status().isNotFound());
     }
 
@@ -123,10 +133,12 @@ class CodesListRecoveryControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode searchConfig = mapper.readTree("{\"filter\": true}");
 
-        Mockito.when(codesListRecoveryService.getSearchConfiguration("CodesList1"))
+        UUID testId = UUID.randomUUID();
+
+        Mockito.when(codesListRecoveryService.getSearchConfiguration(testId))
                 .thenReturn(Optional.of(searchConfig));
 
-        mockMvc.perform(get("/codes-lists/CodesList1/search-configuration"))
+        mockMvc.perform(get("/codes-lists/"+ testId +"/search-configuration"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.filter").value(true));
     }

@@ -8,10 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @OpenAPIDefinition(
 		info = @Info(
 				title = "Registre",
-				version = "1.0",
-				description = ""
-		)
+				version = "1.0")
 )
+
 @SpringBootApplication
 public class RegistreApplication {
 	public static void main(String[] args) {

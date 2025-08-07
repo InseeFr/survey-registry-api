@@ -6,11 +6,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Setter;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Setter
 public class CodesListDto {
 
-  private String id;
+  private UUID id;
 
   @Setter
   private MetadataDto metadata;
@@ -19,9 +20,9 @@ public class CodesListDto {
 
   private JsonNode content;
 
-  @Schema(name = "id", example = "my-list-id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Schema(name = "id", example = "123e4567-e89b-12d3-a456-426614174000", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("id")
-  public String getId() {
+  public UUID getId() {
     return id;
   }
 
@@ -31,7 +32,7 @@ public class CodesListDto {
     return metadata;
   }
 
-    @Schema(name = "searchConfiguration", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Schema(name = "searchConfiguration", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("searchConfiguration")
   public JsonNode getSearchConfiguration() {
     return searchConfiguration;
@@ -61,7 +62,7 @@ public class CodesListDto {
   @Override
   public String toString() {
     return "CodesListDto{" +
-            "id='" + id + '\'' +
+            "id=" + id +
             ", metadata=" + metadata +
             ", searchConfiguration=" + searchConfiguration +
             ", content=" + content +

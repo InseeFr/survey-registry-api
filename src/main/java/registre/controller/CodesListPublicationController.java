@@ -12,6 +12,8 @@ import registre.service.CodesListPublicationService;
 
 import jakarta.validation.Valid;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 public class CodesListPublicationController implements CodesListPublicationApi {
@@ -27,7 +29,7 @@ public class CodesListPublicationController implements CodesListPublicationApi {
 
     @Override
     public ResponseEntity<Void> createFullCodesList(@Valid CodesListDto codesListDto) {
-        String id = codesListPublicationService.createCodesList(codesListDto);
+        UUID id = codesListPublicationService.createCodesList(codesListDto);
 
         if (codesListDto.getContent() != null && !codesListDto.getContent().isEmpty()) {
             codesListPublicationService.updateContent(id, codesListDto.getContent());
@@ -45,19 +47,19 @@ public class CodesListPublicationController implements CodesListPublicationApi {
     }
 
     @Override
-    public ResponseEntity<Void> putCodesListContentById(String codesListId, @Valid JsonNode body) {
+    public ResponseEntity<Void> putCodesListContentById(UUID codesListId, @Valid JsonNode body) {
         codesListPublicationService.updateContent(codesListId, body);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Override
-    public ResponseEntity<Void> putCodesListExternalLinkById(String codesListId, @Valid CodesListExternalLinkDto codesListExternalLink) {
+    public ResponseEntity<Void> putCodesListExternalLinkById(UUID codesListId, @Valid CodesListExternalLinkDto codesListExternalLink) {
         codesListPublicationService.updateExternalLink(codesListId, codesListExternalLink);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Override
-    public ResponseEntity<Void> putCodesListSearchConfigById(String codesListId, Object body) {
+    public ResponseEntity<Void> putCodesListSearchConfigById(UUID codesListId, Object body) {
         JsonNode jsonNode = objectMapper.valueToTree(body);
         codesListPublicationService.updateSearchConfiguration(codesListId, jsonNode);
         return ResponseEntity.status(HttpStatus.CREATED).build();

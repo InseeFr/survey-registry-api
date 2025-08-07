@@ -13,6 +13,7 @@ import registre.repository.CodesListRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -77,10 +78,12 @@ class CodesListRecoveryServiceTest {
         CodesListDto dto = new CodesListDto();
         dto.setMetadata(metadata);
 
-        when(repository.findById("id1")).thenReturn(Optional.of(entity));
+        UUID id = UUID.randomUUID();
+
+        when(repository.findById(id)).thenReturn(Optional.of(entity));
         when(codesListMapper.toDto(entity)).thenReturn(dto);
 
-        Optional<MetadataDto> result = service.getMetadataById("id1");
+        Optional<MetadataDto> result = service.getMetadataById(id);
 
         assertTrue(result.isPresent());
         assertSame(metadata, result.get());
@@ -92,9 +95,11 @@ class CodesListRecoveryServiceTest {
         CodesListEntity entity = new CodesListEntity();
         entity.setContent(content);
 
-        when(repository.findById("id2")).thenReturn(Optional.of(entity));
+        UUID id = UUID.randomUUID();
 
-        Optional<JsonNode> result = service.getCodesListById("id2");
+        when(repository.findById(id)).thenReturn(Optional.of(entity));
+
+        Optional<JsonNode> result = service.getCodesListById(id);
 
         assertTrue(result.isPresent());
         assertSame(content, result.get());
@@ -106,9 +111,11 @@ class CodesListRecoveryServiceTest {
         CodesListEntity entity = new CodesListEntity();
         entity.setSearchConfiguration(searchConfig);
 
-        when(repository.findById("id3")).thenReturn(Optional.of(entity));
+        UUID id = UUID.randomUUID();
 
-        Optional<JsonNode> result = service.getSearchConfiguration("id3");
+        when(repository.findById(id)).thenReturn(Optional.of(entity));
+
+        Optional<JsonNode> result = service.getSearchConfiguration(id);
 
         assertTrue(result.isPresent());
         assertSame(searchConfig, result.get());
@@ -116,9 +123,10 @@ class CodesListRecoveryServiceTest {
 
     @Test
     void testGetSearchConfiguration_NotFound() {
-        when(repository.findById("missing")).thenReturn(Optional.empty());
+        UUID id = UUID.randomUUID();
+        when(repository.findById(id)).thenReturn(Optional.empty());
 
-        Optional<JsonNode> result = service.getSearchConfiguration("missing");
+        Optional<JsonNode> result = service.getSearchConfiguration(id);
 
         assertTrue(result.isEmpty());
     }

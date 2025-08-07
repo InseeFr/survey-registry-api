@@ -25,15 +25,19 @@ public class CodesListPublicationService {
     private final CodesListMapper codesListMapper;
 
     @Transactional
-    public String createCodesList(CodesListDto dto) {
+    public UUID createCodesList(CodesListDto dto) {
         CodesListEntity entity = codesListMapper.toEntity(dto);
-        entity.setId(UUID.randomUUID().toString());
+
+        if (entity.getId() == null) {
+            entity.setId(UUID.randomUUID());
+        }
+
         codesListRepository.save(entity);
         return entity.getId();
     }
 
     @Transactional
-    public void updateContent(String codesListId, JsonNode contentJson) {
+    public void updateContent(UUID codesListId, JsonNode contentJson) {
         CodesListEntity entity = codesListRepository.findById(codesListId)
                 .orElseThrow(() -> new IllegalArgumentException(CODES_LIST_NOT_FOUND));
 
@@ -42,7 +46,7 @@ public class CodesListPublicationService {
     }
 
     @Transactional
-    public void updateExternalLink(String codesListId, CodesListExternalLinkDto externalLinkDto) {
+    public void updateExternalLink(UUID codesListId, CodesListExternalLinkDto externalLinkDto) {
         CodesListEntity entity = codesListRepository.findById(codesListId)
                 .orElseThrow(() -> new IllegalArgumentException(CODES_LIST_NOT_FOUND));
 
@@ -60,7 +64,7 @@ public class CodesListPublicationService {
     }
 
     @Transactional
-    public void updateSearchConfiguration(String codesListId, JsonNode configJson) {
+    public void updateSearchConfiguration(UUID codesListId, JsonNode configJson) {
         CodesListEntity entity = codesListRepository.findById(codesListId)
                 .orElseThrow(() -> new IllegalArgumentException(CODES_LIST_NOT_FOUND));
 

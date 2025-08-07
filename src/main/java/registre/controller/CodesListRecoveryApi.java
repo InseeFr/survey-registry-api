@@ -27,6 +27,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import javax.annotation.Generated;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
 @Validated
@@ -105,7 +106,7 @@ public interface CodesListRecoveryApi {
     )
     ResponseEntity<JsonNode> getCodesListById(
             @Parameter(name = "codesListId", required = true, in = ParameterIn.PATH)
-            @PathVariable("codesListId") String codesListId
+            @PathVariable("codesListId") UUID codesListId
     );
 
     /**
@@ -130,7 +131,7 @@ public interface CodesListRecoveryApi {
         produces = { "application/json" }
     )
     default ResponseEntity<MetadataDto> getCodesListMetadataById(
-        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") String codesListId
+        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
@@ -167,7 +168,7 @@ public interface CodesListRecoveryApi {
         produces = { "application/json" }
     )
     default ResponseEntity<JsonNode> getCodesListSearchConfigById(
-        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") String codesListId
+        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 

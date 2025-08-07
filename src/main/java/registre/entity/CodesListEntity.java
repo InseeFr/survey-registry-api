@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,7 +16,8 @@ import org.hibernate.type.SqlTypes;
 public class CodesListEntity {
 
     @Id
-    private String id;
+    @Column(name = "id", columnDefinition = "uuid")
+    private UUID id;
 
     @Column(name = "label")
     private String label;

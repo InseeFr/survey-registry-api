@@ -28,6 +28,7 @@ import registre.dto.ErrorResponseDto;
 import javax.annotation.Generated;
 import jakarta.validation.Valid;
 import java.util.Optional;
+import java.util.UUID;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
 @Validated
@@ -128,7 +129,7 @@ public interface CodesListPublicationApi {
     )
     default ResponseEntity<Void> putCodesListContentById(
             @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH)
-            @PathVariable("codesListId") String codesListId,
+            @PathVariable("codesListId") UUID codesListId,
 
             @Parameter(name = "content", description = "JSON content")
             @Valid @RequestBody(required = false) JsonNode content
@@ -162,7 +163,7 @@ public interface CodesListPublicationApi {
         consumes = { "application/json" }
     )
     default ResponseEntity<Void> putCodesListExternalLinkById(
-        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") String codesListId,
+        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
         @Parameter(name = "CodesListExternalLink", description = "") @Valid @RequestBody(required = false) CodesListExternalLinkDto codesListExternalLink
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -196,7 +197,7 @@ public interface CodesListPublicationApi {
         consumes = { "application/json" }
     )
     default ResponseEntity<Void> putCodesListSearchConfigById(
-        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") String codesListId,
+        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
         @Parameter(name = "body", description = "") @Valid @RequestBody(required = false) Object body
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);

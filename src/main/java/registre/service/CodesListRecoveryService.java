@@ -12,6 +12,7 @@ import registre.repository.CodesListRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -34,6 +35,7 @@ public class CodesListRecoveryService {
         return codesListRepository.findAllBy().stream()
                 .map(projection -> {
                     MetadataDto dto = new MetadataDto();
+                    dto.setId(projection.getId());
                     dto.setLabel(projection.getLabel());
                     dto.setVersion(projection.getVersion());
 
@@ -47,18 +49,18 @@ public class CodesListRecoveryService {
                 .toList();
     }
 
-    public Optional<JsonNode> getCodesListById(String id) {
+    public Optional<JsonNode> getCodesListById(UUID id) {
         return codesListRepository.findById(id)
                 .map(CodesListEntity::getContent);
     }
 
-    public Optional<MetadataDto> getMetadataById(String id) {
+    public Optional<MetadataDto> getMetadataById(UUID id) {
         return codesListRepository.findById(id)
                 .map(codesListMapper::toDto)
                 .map(CodesListDto::getMetadata);
     }
 
-    public Optional<JsonNode> getSearchConfiguration(String id) {
+    public Optional<JsonNode> getSearchConfiguration(UUID id) {
         return codesListRepository.findById(id)
                 .map(CodesListEntity::getSearchConfiguration);
     }

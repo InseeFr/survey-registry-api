@@ -15,6 +15,8 @@ import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
 import registre.service.CodesListPublicationService;
 
+import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -61,7 +63,6 @@ class CodesListPublicationControllerTest {
     @Test
     void testCreateFullCodesList() throws Exception {
         CodesListDto codesListDto = new CodesListDto();
-        codesListDto.setId("CodeList1");
 
         JsonNode contentJson = objectMapper.readTree("""
             [
@@ -76,7 +77,9 @@ class CodesListPublicationControllerTest {
         codesListDto.setContent(contentJson);
         codesListDto.setSearchConfiguration(searchConfigJson);
 
-        Mockito.when(codesListPublicationService.createCodesList(any())).thenReturn("TestCodesList");
+        UUID testId = UUID.randomUUID();
+
+        Mockito.when(codesListPublicationService.createCodesList(any())).thenReturn(testId);
 
         mockMvc.perform(post("/codes-lists/full")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -84,8 +87,8 @@ class CodesListPublicationControllerTest {
                 .andExpect(status().isCreated());
 
         Mockito.verify(codesListPublicationService).createCodesList(any());
-        Mockito.verify(codesListPublicationService).updateContent(eq("TestCodesList"), any(JsonNode.class));
-        Mockito.verify(codesListPublicationService).updateSearchConfiguration(eq("TestCodesList"), any(JsonNode.class));
+        Mockito.verify(codesListPublicationService).updateContent(eq(testId), any(JsonNode.class));
+        Mockito.verify(codesListPublicationService).updateSearchConfiguration(eq(testId), any(JsonNode.class));
     }
 
     @Test
@@ -96,12 +99,14 @@ class CodesListPublicationControllerTest {
             ]
         """);
 
-        mockMvc.perform(put("/codes-lists/CodesList1/content")
+        UUID testId = UUID.randomUUID();
+
+        mockMvc.perform(put("/codes-lists/" + testId + "/content")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(contentJson)))
                 .andExpect(status().isCreated());
 
-        Mockito.verify(codesListPublicationService).updateContent(eq("CodesList1"), any(JsonNode.class));
+        Mockito.verify(codesListPublicationService).updateContent(eq(testId), any(JsonNode.class));
     }
 
     @Test
@@ -110,12 +115,14 @@ class CodesListPublicationControllerTest {
         externalLink.setId("ExternalLink1");
         externalLink.setVersion("v1");
 
-        mockMvc.perform(put("/codes-lists/CodesList2/external-link")
+        UUID testId = UUID.randomUUID();
+
+        mockMvc.perform(put("/codes-lists/" + testId + "/external-link")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(externalLink)))
                 .andExpect(status().isCreated());
 
-        Mockito.verify(codesListPublicationService).updateExternalLink(eq("CodesList2"), any());
+        Mockito.verify(codesListPublicationService).updateExternalLink(eq(testId), any());
     }
 
     @Test
@@ -126,12 +133,14 @@ class CodesListPublicationControllerTest {
             }
         """);
 
-        mockMvc.perform(put("/codes-lists/CodesList3/search-configuration")
+        UUID testId = UUID.randomUUID();
+
+        mockMvc.perform(put("/codes-lists/" + testId + "/search-configuration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(searchConfig)))
                 .andExpect(status().isCreated());
 
-        Mockito.verify(codesListPublicationService).updateSearchConfiguration(eq("CodesList3"), any(JsonNode.class));
+        Mockito.verify(codesListPublicationService).updateSearchConfiguration(eq(testId), any(JsonNode.class));
     }
 }
 
