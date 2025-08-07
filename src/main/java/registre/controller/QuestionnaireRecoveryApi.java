@@ -5,8 +5,6 @@
  */
 package registre.controller;
 
-import registre.dto.MetadataDto;
-import registre.dto.QuestionnaireVariablesDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -15,16 +13,17 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Generated;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.NativeWebRequest;
+import registre.dto.MetadataDto;
+import registre.dto.QuestionnaireVariablesDto;
 
-import javax.annotation.Generated;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,8 +54,7 @@ public interface QuestionnaireRecoveryApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.GET,
+    @GetMapping(
         value = "/questionnaires/{questionnaireId}/capi-model",
         produces = { "application/json" }
     )
@@ -86,8 +84,7 @@ public interface QuestionnaireRecoveryApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.GET,
+    @GetMapping(
         value = "/questionnaires/{questionnaireId}/cawi-model",
         produces = { "application/json" }
     )
@@ -117,8 +114,7 @@ public interface QuestionnaireRecoveryApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.GET,
+    @GetMapping(
         value = "/questionnaires/{questionnaireId}/codes-list",
         produces = { "application/json" }
     )
@@ -157,8 +153,7 @@ public interface QuestionnaireRecoveryApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.GET,
+    @GetMapping(
         value = "/questionnaires/{questionnaireId}/papi-model",
         produces = { "application/xml" }
     )
@@ -188,8 +183,7 @@ public interface QuestionnaireRecoveryApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.GET,
+    @GetMapping(
         value = "/questionnaires/{questionnaireId}/variables",
         produces = { "application/json" }
     )

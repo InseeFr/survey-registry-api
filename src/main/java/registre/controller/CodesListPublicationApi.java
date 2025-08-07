@@ -13,19 +13,15 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Generated;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
 import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
 import registre.dto.ErrorResponseDto;
-
-import javax.annotation.Generated;
 import jakarta.validation.Valid;
 import java.util.Optional;
 import java.util.UUID;
@@ -59,8 +55,7 @@ public interface CodesListPublicationApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.POST,
+    @PostMapping(
         value = "/codes-lists",
         produces = { "application/json" },
         consumes = { "application/json" }
@@ -89,8 +84,7 @@ public interface CodesListPublicationApi {
             @ApiResponse(responseCode = "201", description = "Created")
         }
     )
-    @RequestMapping(
-        method = RequestMethod.POST,
+    @PostMapping(
         value = "/codes-lists/full",
         consumes = { "application/json" }
     )
@@ -106,7 +100,7 @@ public interface CodesListPublicationApi {
      * PUT /codes-lists/{codesListId}/content : Add content to a codes list
      *
      * @param codesListId  (required)
-     * @param code  (optional)
+     * @param content  (optional) JSON content to add
      * @return Content set successfully (status code 201)
      *         or Structured error (status code 409)
      */
@@ -121,8 +115,7 @@ public interface CodesListPublicationApi {
             })
         }
     )
-    @RequestMapping(
-            method = RequestMethod.PUT,
+    @PutMapping(
             value = "/codes-lists/{codesListId}/content",
             produces = { "application/json" },
             consumes = { "application/json" }
@@ -156,8 +149,7 @@ public interface CodesListPublicationApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.PUT,
+    @PutMapping(
         value = "/codes-lists/{codesListId}/external-link",
         produces = { "application/json" },
         consumes = { "application/json" }
@@ -190,8 +182,7 @@ public interface CodesListPublicationApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.PUT,
+    @PutMapping(
         value = "/codes-lists/{codesListId}/search-configuration",
         produces = { "application/json" },
         consumes = { "application/json" }

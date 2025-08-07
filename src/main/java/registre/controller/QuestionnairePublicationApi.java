@@ -5,6 +5,7 @@
  */
 package registre.controller;
 
+import org.springframework.web.bind.annotation.*;
 import registre.dto.ErrorResponseDto;
 import registre.dto.QuestionnaireDto;
 import registre.dto.QuestionnaireVariablesDto;
@@ -18,13 +19,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.NativeWebRequest;
-
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -52,8 +48,7 @@ public interface QuestionnairePublicationApi {
             @ApiResponse(responseCode = "201", description = "Questionnaire initialized")
         }
     )
-    @RequestMapping(
-        method = RequestMethod.POST,
+    @PostMapping(
         value = "/questionnaires",
         consumes = { "application/json" }
     )
@@ -86,8 +81,7 @@ public interface QuestionnairePublicationApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.PUT,
+    @PutMapping(
         value = "/questionnaires/{questionnaireId}/capi-model",
         produces = { "application/json" },
         consumes = { "application/json" }
@@ -122,8 +116,7 @@ public interface QuestionnairePublicationApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.PUT,
+    @PutMapping(
         value = "/questionnaires/{questionnaireId}/cawi-model",
         produces = { "application/json" },
         consumes = { "application/json" }
@@ -158,8 +151,7 @@ public interface QuestionnairePublicationApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.PUT,
+    @PutMapping(
         value = "/questionnaires/{questionnaireId}/conceptual-model",
         produces = { "application/json" },
         consumes = { "application/json" }
@@ -194,8 +186,7 @@ public interface QuestionnairePublicationApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.PUT,
+    @PutMapping(
         value = "/questionnaires/{questionnaireId}/papi-model",
         produces = { "application/json" },
         consumes = { "application/xml" }
@@ -230,8 +221,7 @@ public interface QuestionnairePublicationApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.PUT,
+    @PutMapping(
         value = "/questionnaires/{questionnaireId}/variables",
         produces = { "application/json" },
         consumes = { "application/json" }

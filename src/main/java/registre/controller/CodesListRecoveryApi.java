@@ -6,7 +6,6 @@
 package registre.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import registre.dto.MetadataDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -15,16 +14,15 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Generated;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.NativeWebRequest;
-
-import javax.annotation.Generated;
+import registre.dto.MetadataDto;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -53,8 +51,7 @@ public interface CodesListRecoveryApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.GET,
+    @GetMapping(
         value = "/codes-lists",
         produces = { "application/json" }
     )
@@ -99,8 +96,7 @@ public interface CodesListRecoveryApi {
                     )
             }
     )
-    @RequestMapping(
-            method = RequestMethod.GET,
+    @GetMapping(
             value = "/codes-lists/{codesListId}",
             produces = { "application/json" }
     )
@@ -125,8 +121,7 @@ public interface CodesListRecoveryApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.GET,
+    @GetMapping(
         value = "/codes-lists/{codesListId}/metadata",
         produces = { "application/json" }
     )
@@ -162,8 +157,7 @@ public interface CodesListRecoveryApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.GET,
+    @GetMapping(
         value = "/codes-lists/{codesListId}/search-configuration",
         produces = { "application/json" }
     )

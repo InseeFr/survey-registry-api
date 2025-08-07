@@ -3,14 +3,17 @@ package registre.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
+import lombok.Setter;
+
 import java.util.Objects;
 import java.util.UUID;
 
 /**
  * Metadata
  */
+@Setter
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
 public class MetadataDto {
 
@@ -37,11 +40,7 @@ public class MetadataDto {
     return id;
   }
 
-  public void setId(UUID id) {
-    this.id = id;
-  }
-
-  public MetadataDto label(String label) {
+    public MetadataDto label(String label) {
     this.label = label;
     return this;
   }
@@ -52,11 +51,7 @@ public class MetadataDto {
     return label;
   }
 
-  public void setLabel(String label) {
-    this.label = label;
-  }
-
-  public MetadataDto version(String version) {
+    public MetadataDto version(String version) {
     this.version = version;
     return this;
   }
@@ -67,11 +62,7 @@ public class MetadataDto {
     return version;
   }
 
-  public void setVersion(String version) {
-    this.version = version;
-  }
-
-  public MetadataDto externalLink(CodesListExternalLinkDto externalLink) {
+    public MetadataDto externalLink(CodesListExternalLinkDto externalLink) {
     this.externalLink = externalLink;
     return this;
   }
@@ -83,11 +74,7 @@ public class MetadataDto {
     return externalLink;
   }
 
-  public void setExternalLink(CodesListExternalLinkDto externalLink) {
-    this.externalLink = externalLink;
-  }
-
-  @Override
+    @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;

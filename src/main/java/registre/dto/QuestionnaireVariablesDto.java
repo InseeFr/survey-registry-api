@@ -3,14 +3,16 @@ package registre.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.annotation.Generated;
+import lombok.Setter;
 
-import javax.annotation.Generated;
 import java.util.Objects;
 
 /**
  * QuestionnaireVariables
  */
 
+@Setter
 @JsonTypeName("QuestionnaireVariables")
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
 public class QuestionnaireVariablesDto {
@@ -38,11 +40,7 @@ public class QuestionnaireVariablesDto {
     return id;
   }
 
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public QuestionnaireVariablesDto name(String name) {
+    public QuestionnaireVariablesDto name(String name) {
     this.name = name;
     return this;
   }
@@ -57,11 +55,7 @@ public class QuestionnaireVariablesDto {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public QuestionnaireVariablesDto dataType(Object dataType) {
+    public QuestionnaireVariablesDto dataType(Object dataType) {
     this.dataType = dataType;
     return this;
   }
@@ -76,11 +70,7 @@ public class QuestionnaireVariablesDto {
     return dataType;
   }
 
-  public void setDataType(Object dataType) {
-    this.dataType = dataType;
-  }
-
-  public QuestionnaireVariablesDto scope(String scope) {
+    public QuestionnaireVariablesDto scope(String scope) {
     this.scope = scope;
     return this;
   }
@@ -95,11 +85,7 @@ public class QuestionnaireVariablesDto {
     return scope;
   }
 
-  public void setScope(String scope) {
-    this.scope = scope;
-  }
-
-  @Override
+    @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -121,14 +107,12 @@ public class QuestionnaireVariablesDto {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class QuestionnaireVariables {\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    dataType: ").append(toIndentedString(dataType)).append("\n");
-    sb.append("    scope: ").append(toIndentedString(scope)).append("\n");
-    sb.append("}");
-    return sb.toString();
+    return "class QuestionnaireVariables {\n" +
+            "    id: " + toIndentedString(id) + "\n" +
+            "    name: " + toIndentedString(name) + "\n" +
+            "    dataType: " + toIndentedString(dataType) + "\n" +
+            "    scope: " + toIndentedString(scope) + "\n" +
+            "}";
   }
 
   /**

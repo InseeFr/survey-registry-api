@@ -2,14 +2,16 @@ package registre.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.annotation.Generated;
+import lombok.Setter;
 
-import javax.annotation.Generated;
 import java.util.Objects;
 
 /**
  * ErrorResponse
  */
 
+@Setter
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
 public class ErrorResponseDto {
 
@@ -33,11 +35,7 @@ public class ErrorResponseDto {
     return code;
   }
 
-  public void setCode(Integer code) {
-    this.code = code;
-  }
-
-  public ErrorResponseDto message(String message) {
+    public ErrorResponseDto message(String message) {
     this.message = message;
     return this;
   }
@@ -53,11 +51,7 @@ public class ErrorResponseDto {
     return message;
   }
 
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
-  @Override
+    @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -77,12 +71,10 @@ public class ErrorResponseDto {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class ErrorResponse {\n");
-    sb.append("    code: ").append(toIndentedString(code)).append("\n");
-    sb.append("    message: ").append(toIndentedString(message)).append("\n");
-    sb.append("}");
-    return sb.toString();
+    return "class ErrorResponse {\n" +
+            "    code: " + toIndentedString(code) + "\n" +
+            "    message: " + toIndentedString(message) + "\n" +
+            "}";
   }
 
   /**

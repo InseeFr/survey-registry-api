@@ -2,15 +2,17 @@ package registre.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
+import lombok.Setter;
+
 import java.util.Objects;
 
 /**
  * QuestionnaireDto
  */
 
+@Setter
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
 public class QuestionnaireDto {
 
@@ -32,11 +34,7 @@ public class QuestionnaireDto {
     return metadata;
   }
 
-  public void setMetadata(MetadataDto metadata) {
-    this.metadata = metadata;
-  }
-
-  @Override
+    @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -55,11 +53,9 @@ public class QuestionnaireDto {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class QuestionnaireDto {\n");
-    sb.append("    metadata: ").append(toIndentedString(metadata)).append("\n");
-    sb.append("}");
-    return sb.toString();
+    return "class QuestionnaireDto {\n" +
+            "    metadata: " + toIndentedString(metadata) + "\n" +
+            "}";
   }
 
   /**
