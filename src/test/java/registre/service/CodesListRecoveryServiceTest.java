@@ -36,7 +36,9 @@ class CodesListRecoveryServiceTest {
 
     @Test
     void testGetAllMetadata_withoutExternalLink() {
+        UUID id1 = UUID.randomUUID();
         CodesListRepository.MetadataProjection projection = mock(CodesListRepository.MetadataProjection.class);
+        when(projection.getId()).thenReturn(id1);
         when(projection.getLabel()).thenReturn("Label1");
         when(projection.getVersion()).thenReturn("V1");
         when(projection.getCodesListExternalLink()).thenReturn(null);
@@ -47,6 +49,7 @@ class CodesListRecoveryServiceTest {
 
         assertEquals(1, result.size());
         MetadataDto dto = result.getFirst();
+        assertEquals(id1, dto.getId());
         assertEquals("Label1", dto.getLabel());
         assertEquals("V1", dto.getVersion());
         assertNull(dto.getExternalLink());
@@ -54,9 +57,11 @@ class CodesListRecoveryServiceTest {
 
     @Test
     void testGetAllMetadata_withExternalLink() {
+        UUID id2 = UUID.randomUUID();
         CodesListRepository.MetadataProjection projection = mock(CodesListRepository.MetadataProjection.class);
         CodesListExternalLinkEntity linkEntity = new CodesListExternalLinkEntity();
 
+        when(projection.getId()).thenReturn(id2);
         when(projection.getLabel()).thenReturn("Label2");
         when(projection.getVersion()).thenReturn("V2");
         when(projection.getCodesListExternalLink()).thenReturn(linkEntity);
@@ -68,6 +73,10 @@ class CodesListRecoveryServiceTest {
         List<MetadataDto> result = service.getAllMetadata();
 
         assertEquals(1, result.size());
+        MetadataDto dto = result.getFirst();
+        assertEquals(id2, dto.getId());
+        assertEquals("Label2", dto.getLabel());
+        assertEquals("V2", dto.getVersion());
         assertNotNull(result.getFirst().getExternalLink());
     }
 

@@ -37,8 +37,8 @@ class CodesListRecoveryServiceIntegrationTest {
     @Test
     void testGetAllMetadata() {
         CodesListEntity codesList = new CodesListEntity();
-        UUID id = UUID.randomUUID();
-        codesList.setId(id);
+        UUID id1 = UUID.randomUUID();
+        codesList.setId(id1);
         codesList.setLabel("Label1");
         codesList.setVersion("v1");
 
@@ -54,14 +54,14 @@ class CodesListRecoveryServiceIntegrationTest {
     @Test
     void testGetMetadataById() {
         CodesListEntity codesList = new CodesListEntity();
-        UUID id = UUID.randomUUID();
-        codesList.setId(id);
+        UUID id2 = UUID.randomUUID();
+        codesList.setId(id2);
         codesList.setLabel("Label2");
         codesList.setVersion("V2");
 
         repository.save(codesList);
 
-        Optional<MetadataDto> result = service.getMetadataById(id);
+        Optional<MetadataDto> result = service.getMetadataById(id2);
 
         assertTrue(result.isPresent());
         assertEquals("Label2", result.get().getLabel());
@@ -71,8 +71,8 @@ class CodesListRecoveryServiceIntegrationTest {
     @Test
     void testGetCodesListById() throws Exception {
         CodesListEntity codesList = new CodesListEntity();
-        UUID id = UUID.randomUUID();
-        codesList.setId(id);
+        UUID id3 = UUID.randomUUID();
+        codesList.setId(id3);
         codesList.setLabel("Label3");
         codesList.setVersion("V3");
 
@@ -85,7 +85,7 @@ class CodesListRecoveryServiceIntegrationTest {
 
         repository.save(codesList);
 
-        Optional<JsonNode> result = service.getCodesListById(id);
+        Optional<JsonNode> result = service.getCodesListById(id3);
 
         assertTrue(result.isPresent());
         assertEquals("Code1", result.get().get(0).get("id").asText());
@@ -97,8 +97,8 @@ class CodesListRecoveryServiceIntegrationTest {
     @Test
     void testGetSearchConfiguration() throws Exception {
         CodesListEntity codesList = new CodesListEntity();
-        UUID id = UUID.randomUUID();
-        codesList.setId(id);
+        UUID id4 = UUID.randomUUID();
+        codesList.setId(id4);
         codesList.setLabel("Label4");
         codesList.setVersion("V4");
 
@@ -111,7 +111,7 @@ class CodesListRecoveryServiceIntegrationTest {
 
         repository.save(codesList);
 
-        Optional<JsonNode> result = service.getSearchConfiguration(id);
+        Optional<JsonNode> result = service.getSearchConfiguration(id4);
 
         assertTrue(result.isPresent());
         assertTrue(result.get().get("filter").asBoolean());

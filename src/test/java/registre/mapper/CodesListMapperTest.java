@@ -52,6 +52,7 @@ class CodesListMapperTest {
         assertNotNull(dto);
         assertEquals(testId, dto.getId());
         assertNotNull(dto.getMetadata());
+        assertEquals(testId, dto.getMetadata().getId());
         assertEquals("Label1", dto.getMetadata().getLabel());
         assertEquals("v1", dto.getMetadata().getVersion());
         assertNotNull(dto.getMetadata().getExternalLink());
