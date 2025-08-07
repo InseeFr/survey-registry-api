@@ -26,7 +26,7 @@ import registre.dto.CodesListExternalLinkDto;
 import registre.dto.ErrorResponseDto;
 
 import javax.annotation.Generated;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.Optional;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")

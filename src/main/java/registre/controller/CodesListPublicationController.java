@@ -10,7 +10,7 @@ import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
 import registre.service.CodesListPublicationService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
