@@ -11,17 +11,17 @@ public class CodesListExternalLinkMapper {
         if (dto == null) return null;
 
         CodesListExternalLinkEntity entity = new CodesListExternalLinkEntity();
-        entity.setId(dto.getId());
-        entity.setVersion(dto.getVersion());
+        entity.setId(dto.id());
+        entity.setVersion(dto.version());
         return entity;
     }
 
     public CodesListExternalLinkDto toDto(CodesListExternalLinkEntity entity) {
         if (entity == null) return null;
 
-        CodesListExternalLinkDto dto = new CodesListExternalLinkDto();
-        dto.setId(entity.getId());
-        dto.setVersion(entity.getVersion());
-        return dto;
+        return new CodesListExternalLinkDto(
+                entity.getId(),
+                entity.getVersion()
+        );
     }
 }

@@ -50,50 +50,43 @@ class CodesListMapperTest {
 
         // Then
         assertNotNull(dto);
-        assertEquals(testId, dto.getId());
-        assertNotNull(dto.getMetadata());
-        assertEquals(testId, dto.getMetadata().getId());
-        assertEquals("Label1", dto.getMetadata().getLabel());
-        assertEquals("v1", dto.getMetadata().getVersion());
-        assertNotNull(dto.getMetadata().getExternalLink());
-        assertEquals("ExternalLink1", dto.getMetadata().getExternalLink().getId());
-        assertEquals("v1", dto.getMetadata().getExternalLink().getVersion());
-        assertTrue(dto.getSearchConfiguration().get("enabled").asBoolean());
-        assertEquals("01", dto.getContent().get(0).get("code").asText());
+        assertEquals(testId, dto.id());
+        assertNotNull(dto.metadata());
+        assertEquals(testId, dto.metadata().id());
+        assertEquals("Label1", dto.metadata().label());
+        assertEquals("v1", dto.metadata().version());
+        assertNotNull(dto.metadata().externalLink());
+        assertEquals("ExternalLink1", dto.metadata().externalLink().id());
+        assertEquals("v1", dto.metadata().externalLink().version());
+        assertTrue(dto.searchConfiguration().get("enabled").asBoolean());
+        assertEquals("01", dto.content().get(0).get("code").asText());
     }
 
     @Test
     void testToEntity_WithValidDto() throws Exception {
         // Given
-        CodesListDto dto = new CodesListDto();
-        UUID testId = UUID.randomUUID();
-        dto.setId(testId);
+        String testId1 = UUID.randomUUID().toString();
+        UUID testId2 = UUID.randomUUID();
 
-        MetadataDto metadata = new MetadataDto();
-        metadata.setLabel("Label2");
-        metadata.setVersion("v2");
+        CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto(testId1, "v1");
 
-        CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto();
-        externalLink.setVersion("v2");
-        metadata.setExternalLink(externalLink);
-
-        dto.setMetadata(metadata);
+        MetadataDto metadata = new MetadataDto(testId2, "Label2", "v2", externalLink);
 
         JsonNode searchConfig = objectMapper.readTree("{\"enabled\": false}");
         JsonNode content = objectMapper.readTree("[{\"code\": \"01\"}]");
 
-        dto.setSearchConfiguration(searchConfig);
-        dto.setContent(content);
+        CodesListDto dto = new CodesListDto(testId2, metadata, searchConfig, content);
 
         // When
         CodesListEntity entity = codesListMapper.toEntity(dto);
 
         // Then
         assertNotNull(entity);
-        assertEquals(testId, entity.getId());
+        assertEquals(testId2, entity.getId());
         assertEquals("Label2", entity.getLabel());
         assertEquals("v2", entity.getVersion());
-        assertEquals("v2", entity.getCodesListExternalLink().getVersion());
+        assertEquals("v1", entity.getCodesListExternalLink().getVersion());
+        assertEquals(testId1, entity.getCodesListExternalLink().getId());
         assertFalse(entity.getSearchConfiguration().get("enabled").asBoolean());
         assertEquals("01", entity.getContent().get(0).get("code").asText());
     }

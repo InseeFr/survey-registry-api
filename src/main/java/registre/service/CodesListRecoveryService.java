@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import registre.dto.CodesListDto;
+import registre.dto.CodesListExternalLinkDto;
 import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
 import registre.mapper.CodesListExternalLinkMapper;
@@ -34,17 +35,16 @@ public class CodesListRecoveryService {
     public List<MetadataDto> getAllMetadata() {
         return codesListRepository.findAllBy().stream()
                 .map(projection -> {
-                    MetadataDto dto = new MetadataDto();
-                    dto.setId(projection.getId());
-                    dto.setLabel(projection.getLabel());
-                    dto.setVersion(projection.getVersion());
-
+                    CodesListExternalLinkDto externalLinkDto = null;
                     if (projection.getCodesListExternalLink() != null) {
-                        dto.setExternalLink(
-                                codesListExternalLinkMapper.toDto(projection.getCodesListExternalLink())
-                        );
+                        externalLinkDto = codesListExternalLinkMapper.toDto(projection.getCodesListExternalLink());
                     }
-                    return dto;
+                    return new MetadataDto(
+                            projection.getId(),
+                            projection.getLabel(),
+                            projection.getVersion(),
+                            externalLinkDto
+                    );
                 })
                 .toList();
     }
@@ -57,7 +57,7 @@ public class CodesListRecoveryService {
     public Optional<MetadataDto> getMetadataById(UUID id) {
         return codesListRepository.findById(id)
                 .map(codesListMapper::toDto)
-                .map(CodesListDto::getMetadata);
+                .map(CodesListDto::metadata);
     }
 
     public Optional<JsonNode> getSearchConfiguration(UUID id) {

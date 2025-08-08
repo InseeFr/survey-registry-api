@@ -36,9 +36,14 @@ class CodesListPublicationServiceIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void testCreateAndFetchCodesList() {
-        CodesListDto dto = new CodesListDto();
-        dto.setContent(objectMapper.createArrayNode());
+    void testCreateAndFetchCodesList_WithRecord() {
+        CodesListDto dto = new CodesListDto(
+                null,
+                null,
+                null,
+                objectMapper.createArrayNode()
+        );
+
         UUID id = service.createCodesList(dto);
 
         Optional<CodesListEntity> entity = codesListRepository.findById(id);
@@ -48,8 +53,13 @@ class CodesListPublicationServiceIntegrationTest {
 
     @Test
     void testUpdateContentAndVerify() {
-        CodesListDto dto = new CodesListDto();
-        dto.setContent(objectMapper.createArrayNode());
+        CodesListDto dto = new CodesListDto(
+                null,
+                null,
+                null,
+                objectMapper.createArrayNode()
+        );
+
         UUID id = service.createCodesList(dto);
 
         ObjectNode codeNode = objectMapper.createObjectNode();
@@ -68,12 +78,16 @@ class CodesListPublicationServiceIntegrationTest {
 
     @Test
     void testUpdateExternalLink() {
-        CodesListDto dto = new CodesListDto();
-        dto.setContent(objectMapper.createArrayNode());
+        CodesListDto dto = new CodesListDto(
+                null,
+                null,
+                null,
+                objectMapper.createArrayNode()
+        );
+
         UUID id = service.createCodesList(dto);
 
-        CodesListExternalLinkDto link = new CodesListExternalLinkDto();
-        link.setId("ExternalLink1");
+        CodesListExternalLinkDto link = new CodesListExternalLinkDto("ExternalLink1", "v1");
 
         CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
         externalLinkEntity.setId("ExternalLink1");
@@ -88,8 +102,13 @@ class CodesListPublicationServiceIntegrationTest {
 
     @Test
     void testUpdateSearchConfiguration() {
-        CodesListDto dto = new CodesListDto();
-        dto.setContent(objectMapper.createArrayNode());
+        CodesListDto dto = new CodesListDto(
+                null,
+                null,
+                null,
+                objectMapper.createArrayNode()
+        );
+
         UUID id = service.createCodesList(dto);
 
         ObjectNode configNode = objectMapper.createObjectNode();

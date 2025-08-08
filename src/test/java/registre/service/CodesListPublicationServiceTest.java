@@ -40,7 +40,7 @@ class CodesListPublicationServiceTest {
 
     @Test
     void testCreateCodesList() {
-        CodesListDto dto = new CodesListDto();
+        CodesListDto dto = new CodesListDto(null,null,null,null);
         CodesListEntity entity = new CodesListEntity();
 
         when(codesListMapper.toEntity(dto)).thenReturn(entity);
@@ -82,9 +82,7 @@ class CodesListPublicationServiceTest {
         CodesListEntity entity = new CodesListEntity();
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
-        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto();
-        externalLinkDto.setId("ExternalLink1");
-        externalLinkDto.setVersion("v1");
+        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1", "v1");
 
         CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
         externalLinkEntity.setVersion("v1");
@@ -101,7 +99,7 @@ class CodesListPublicationServiceTest {
     void testUpdateExternalLink_WhenCodesListDoesNotExist() {
         UUID id = UUID.randomUUID();
         when(codesListRepository.findById(id)).thenReturn(Optional.empty());
-        Executable executable = () -> service.updateExternalLink(id, new CodesListExternalLinkDto());
+        Executable executable = () -> service.updateExternalLink(id, new CodesListExternalLinkDto("ExternalLink1", "v1"));
         assertThrows(IllegalArgumentException.class, executable);
     }
 

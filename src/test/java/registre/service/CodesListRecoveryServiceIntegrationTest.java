@@ -47,8 +47,8 @@ class CodesListRecoveryServiceIntegrationTest {
         List<MetadataDto> result = service.getAllMetadata();
 
         assertEquals(1, result.size());
-        assertEquals("Label1", result.getFirst().getLabel());
-        assertEquals("v1", result.getFirst().getVersion());
+        assertEquals("Label1", result.getFirst().label());
+        assertEquals("v1", result.getFirst().version());
     }
 
     @Test
@@ -64,8 +64,8 @@ class CodesListRecoveryServiceIntegrationTest {
         Optional<MetadataDto> result = service.getMetadataById(id2);
 
         assertTrue(result.isPresent());
-        assertEquals("Label2", result.get().getLabel());
-        assertEquals("V2", result.get().getVersion());
+        assertEquals("Label2", result.get().label());
+        assertEquals("V2", result.get().version());
     }
 
     @Test

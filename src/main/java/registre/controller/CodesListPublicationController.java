@@ -31,16 +31,16 @@ public class CodesListPublicationController implements CodesListPublicationApi {
     public ResponseEntity<Void> createFullCodesList(@Valid CodesListDto codesListDto) {
         UUID id = codesListPublicationService.createCodesList(codesListDto);
 
-        if (codesListDto.getContent() != null && !codesListDto.getContent().isEmpty()) {
-            codesListPublicationService.updateContent(id, codesListDto.getContent());
+        if (codesListDto.content() != null && !codesListDto.content().isEmpty()) {
+            codesListPublicationService.updateContent(id, codesListDto.content());
         }
 
-        if (codesListDto.getMetadata() != null && codesListDto.getMetadata().getExternalLink() != null) {
-            codesListPublicationService.updateExternalLink(id, codesListDto.getMetadata().getExternalLink());
+        if (codesListDto.metadata() != null && codesListDto.metadata().externalLink() != null) {
+            codesListPublicationService.updateExternalLink(id, codesListDto.metadata().externalLink());
         }
 
-        if (codesListDto.getSearchConfiguration() != null && !codesListDto.getSearchConfiguration().isEmpty()) {
-            codesListPublicationService.updateSearchConfiguration(id, codesListDto.getSearchConfiguration());
+        if (codesListDto.searchConfiguration() != null && !codesListDto.searchConfiguration().isEmpty()) {
+            codesListPublicationService.updateSearchConfiguration(id, codesListDto.searchConfiguration());
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).build();

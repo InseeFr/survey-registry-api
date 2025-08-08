@@ -52,7 +52,7 @@ public class CodesListPublicationService {
 
         if (externalLinkDto != null) {
             CodesListExternalLinkEntity externalLinkEntity = codesListExternalLinkRepository
-                    .findById(externalLinkDto.getId())
+                    .findById(externalLinkDto.id())
                     .orElseThrow(() -> new IllegalArgumentException("External link not found"));
 
             entity.setCodesListExternalLink(externalLinkEntity);

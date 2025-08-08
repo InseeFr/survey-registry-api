@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import registre.dto.CodesListDto;
 import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
-import registre.entity.CodesListExternalLinkEntity;
 
 @Component
 public class CodesListMapper {
@@ -18,47 +17,44 @@ public class CodesListMapper {
     public CodesListDto toDto(CodesListEntity entity) {
         if (entity == null) return null;
 
-        CodesListDto dto = new CodesListDto();
-        dto.setId(entity.getId());
-        dto.setSearchConfiguration(entity.getSearchConfiguration());
-        dto.setContent(entity.getContent());
+        MetadataDto metadataDto = new MetadataDto(
+                entity.getId(),
+                entity.getLabel(),
+                entity.getVersion(),
+                entity.getCodesListExternalLink() != null
+                        ? externalLinkMapper.toDto(entity.getCodesListExternalLink())
+                        : null
+        );
 
-        MetadataDto metadataDto = new MetadataDto();
-        metadataDto.setId(entity.getId());
-        metadataDto.setLabel(entity.getLabel());
-        metadataDto.setVersion(entity.getVersion());
-
-        if (entity.getCodesListExternalLink() != null) {
-            metadataDto.setExternalLink(
-                    externalLinkMapper.toDto(entity.getCodesListExternalLink())
-            );
-        }
-
-        dto.setMetadata(metadataDto);
-
-        return dto;
+        return new CodesListDto(
+                entity.getId(),
+                metadataDto,
+                entity.getSearchConfiguration(),
+                entity.getContent()
+        );
     }
 
     public CodesListEntity toEntity(CodesListDto dto) {
         if (dto == null) return null;
 
         CodesListEntity entity = new CodesListEntity();
-        entity.setId(dto.getId());
-        entity.setSearchConfiguration(dto.getSearchConfiguration());
-        entity.setContent(dto.getContent());
+        entity.setId(dto.id());
+        entity.setSearchConfiguration(dto.searchConfiguration());
+        entity.setContent(dto.content());
 
-        MetadataDto metadata = dto.getMetadata();
+        MetadataDto metadata = dto.metadata();
         if (metadata != null) {
-            entity.setLabel(metadata.getLabel());
-            entity.setVersion(metadata.getVersion());
+            entity.setLabel(metadata.label());
+            entity.setVersion(metadata.version());
 
-            if (metadata.getExternalLink() != null) {
-                CodesListExternalLinkEntity externalLinkEntity =
-                        externalLinkMapper.toEntity(metadata.getExternalLink());
-                entity.setCodesListExternalLink(externalLinkEntity);
+            if (metadata.externalLink() != null) {
+                entity.setCodesListExternalLink(
+                        externalLinkMapper.toEntity(metadata.externalLink())
+                );
             }
         }
 
         return entity;
     }
 }
+

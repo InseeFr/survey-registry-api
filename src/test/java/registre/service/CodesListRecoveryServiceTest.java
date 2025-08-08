@@ -49,10 +49,10 @@ class CodesListRecoveryServiceTest {
 
         assertEquals(1, result.size());
         MetadataDto dto = result.getFirst();
-        assertEquals(id1, dto.getId());
-        assertEquals("Label1", dto.getLabel());
-        assertEquals("V1", dto.getVersion());
-        assertNull(dto.getExternalLink());
+        assertEquals(id1, dto.id());
+        assertEquals("Label1", dto.label());
+        assertEquals("V1", dto.version());
+        assertNull(dto.externalLink());
     }
 
     @Test
@@ -66,7 +66,7 @@ class CodesListRecoveryServiceTest {
         when(projection.getVersion()).thenReturn("V2");
         when(projection.getCodesListExternalLink()).thenReturn(linkEntity);
 
-        when(externalLinkMapper.toDto(linkEntity)).thenReturn(new registre.dto.CodesListExternalLinkDto());
+        when(externalLinkMapper.toDto(linkEntity)).thenReturn(new registre.dto.CodesListExternalLinkDto("ExternalLink1","v1"));
 
         when(repository.findAllBy()).thenReturn(List.of(projection));
 
@@ -74,18 +74,17 @@ class CodesListRecoveryServiceTest {
 
         assertEquals(1, result.size());
         MetadataDto dto = result.getFirst();
-        assertEquals(id2, dto.getId());
-        assertEquals("Label2", dto.getLabel());
-        assertEquals("V2", dto.getVersion());
-        assertNotNull(result.getFirst().getExternalLink());
+        assertEquals(id2, dto.id());
+        assertEquals("Label2", dto.label());
+        assertEquals("V2", dto.version());
+        assertNotNull(result.getFirst().externalLink());
     }
 
     @Test
     void testGetMetadataById_Found() {
         CodesListEntity entity = new CodesListEntity();
-        MetadataDto metadata = new MetadataDto();
-        CodesListDto dto = new CodesListDto();
-        dto.setMetadata(metadata);
+        MetadataDto metadata = new MetadataDto(null,null,null,null);
+        CodesListDto dto = new CodesListDto(null, metadata,null,null);
 
         UUID id = UUID.randomUUID();
 
