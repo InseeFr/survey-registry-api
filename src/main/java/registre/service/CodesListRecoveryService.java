@@ -4,11 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLinkDto;
 import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
-import registre.mapper.CodesListExternalLinkMapper;
 import registre.mapper.CodesListMapper;
+import registre.mapper.MetadataMapper;
 import registre.repository.CodesListRepository;
 
 import java.util.List;
@@ -21,31 +20,20 @@ public class CodesListRecoveryService {
 
     private final CodesListRepository codesListRepository;
     private final CodesListMapper codesListMapper;
-    private final CodesListExternalLinkMapper codesListExternalLinkMapper;
+    private final MetadataMapper metadataMapper;
     public CodesListRecoveryService(
             CodesListRepository codesListRepository,
             CodesListMapper codesListMapper,
-            CodesListExternalLinkMapper codesListExternalLinkMapper
+            MetadataMapper metadataMapper
     ) {
         this.codesListRepository = codesListRepository;
         this.codesListMapper = codesListMapper;
-        this.codesListExternalLinkMapper = codesListExternalLinkMapper;
+        this.metadataMapper = metadataMapper;
     }
 
     public List<MetadataDto> getAllMetadata() {
         return codesListRepository.findAllBy().stream()
-                .map(projection -> {
-                    CodesListExternalLinkDto externalLinkDto = null;
-                    if (projection.getCodesListExternalLink() != null) {
-                        externalLinkDto = codesListExternalLinkMapper.toDto(projection.getCodesListExternalLink());
-                    }
-                    return new MetadataDto(
-                            projection.getId(),
-                            projection.getLabel(),
-                            projection.getVersion(),
-                            externalLinkDto
-                    );
-                })
+                .map(metadataMapper::toDto)
                 .toList();
     }
 
