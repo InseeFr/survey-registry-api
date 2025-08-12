@@ -13,7 +13,7 @@ public class QuestionnaireEntity {
     @Id
     private String id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "metadata_id")
-    private MetadataEntity metadata;
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "metadata_id")
+//    private MetadataEntity metadata;
 }

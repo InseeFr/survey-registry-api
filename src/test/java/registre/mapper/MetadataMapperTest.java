@@ -2,10 +2,10 @@ package registre.mapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import registre.dto.Metadata;
-import registre.dto.CodesListExternalLink;
-import registre.entity.MetadataEntity;
+import registre.dto.CodesListExternalLinkDto;
+import registre.dto.MetadataDto;
 import registre.entity.CodesListExternalLinkEntity;
+import registre.repository.CodesListRepository.MetadataProjection;
 
 import java.util.UUID;
 
@@ -18,68 +18,60 @@ class MetadataMapperTest {
     private MetadataMapper metadataMapper;
 
     @BeforeEach
-    void setUp() {
+    void setup() {
         externalLinkMapper = mock(CodesListExternalLinkMapper.class);
         metadataMapper = new MetadataMapper(externalLinkMapper);
     }
 
     @Test
-    void testToEntity_WithValidDto() {
-        // Given
-        UUID uuid = UUID.randomUUID();
-        Metadata dto = new Metadata();
-        dto.setId(uuid);
-        dto.setLabel("Label1");
-        dto.setVersion("v1");
-
-        CodesListExternalLink externalLinkDto = new CodesListExternalLink();
-        CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
-        dto.setExternalLink(externalLinkDto);
-        when(externalLinkMapper.toEntity(externalLinkDto)).thenReturn(externalLinkEntity);
-
-        // When
-        MetadataEntity entity = metadataMapper.toEntity(dto);
-
-        // Then
-        assertNotNull(entity);
-        assertEquals(uuid, entity.getId());
-        assertEquals("Label1", entity.getLabel());
-        assertEquals("v1", entity.getVersion());
-        assertEquals(externalLinkEntity, entity.getExternalLink());
+    void toDto_shouldReturnNull_whenProjectionIsNull() {
+        MetadataDto dto = metadataMapper.toDto(null);
+        assertNull(dto);
     }
 
     @Test
-    void testToEntity_WithNullDto() {
-        assertNull(metadataMapper.toEntity(null));
-    }
-
-    @Test
-    void testToDto_WithValidEntity() {
-        // Given
-        UUID uuid = UUID.randomUUID();
-        MetadataEntity entity = new MetadataEntity();
-        entity.setId(uuid);
-        entity.setLabel("Label2");
-        entity.setVersion("v2");
-
+    void toDto_shouldMapFieldsAndExternalLink_whenProjectionHasExternalLink() {
+        MetadataProjection projection = mock(MetadataProjection.class);
+        UUID id = UUID.randomUUID();
         CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
-        CodesListExternalLink externalLinkDto = new CodesListExternalLink();
-        entity.setExternalLink(externalLinkEntity);
+
+        when(projection.getId()).thenReturn(id);
+        when(projection.getLabel()).thenReturn("Label1");
+        when(projection.getVersion()).thenReturn("v1");
+        when(projection.getCodesListExternalLink()).thenReturn(externalLinkEntity);
+
+        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1", "v1");
         when(externalLinkMapper.toDto(externalLinkEntity)).thenReturn(externalLinkDto);
 
-        // When
-        Metadata dto = metadataMapper.toDto(entity);
+        MetadataDto dto = metadataMapper.toDto(projection);
 
-        // Then
         assertNotNull(dto);
-        assertEquals(uuid, dto.getId());
-        assertEquals("Label2", dto.getLabel());
-        assertEquals("v2", dto.getVersion());
-        assertEquals(externalLinkDto, dto.getExternalLink());
+        assertEquals(id, dto.id());
+        assertEquals("Label1", dto.label());
+        assertEquals("v1", dto.version());
+        assertEquals(externalLinkDto, dto.externalLink());
+
+        verify(externalLinkMapper, times(1)).toDto(externalLinkEntity);
     }
 
     @Test
-    void testToDto_WithNullEntity() {
-        assertNull(metadataMapper.toDto(null));
+    void toDto_shouldMapFieldsAndSetExternalLinkNull_whenProjectionHasNoExternalLink() {
+        MetadataProjection projection = mock(MetadataProjection.class);
+        UUID id = UUID.randomUUID();
+
+        when(projection.getId()).thenReturn(id);
+        when(projection.getLabel()).thenReturn("Label1");
+        when(projection.getVersion()).thenReturn("v1");
+        when(projection.getCodesListExternalLink()).thenReturn(null);
+
+        MetadataDto dto = metadataMapper.toDto(projection);
+
+        assertNotNull(dto);
+        assertEquals(id, dto.id());
+        assertEquals("Label1", dto.label());
+        assertEquals("v1", dto.version());
+        assertNull(dto.externalLink());
+
+        verify(externalLinkMapper, never()).toDto(any());
     }
 }

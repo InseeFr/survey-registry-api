@@ -5,8 +5,7 @@
  */
 package registre.controller;
 
-import registre.dto.Code;
-import registre.dto.Metadata;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -15,18 +14,18 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Generated;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.NativeWebRequest;
-
-import javax.annotation.Generated;
+import registre.dto.MetadataDto;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]")
 @Validated
@@ -48,16 +47,15 @@ public interface CodesListRecoveryApi {
         tags = { "Codes List Recovery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "List of codes list metadata", content = {
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Metadata.class)))
+                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = MetadataDto.class)))
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.GET,
+    @GetMapping(
         value = "/codes-lists",
         produces = { "application/json" }
     )
-    default ResponseEntity<List<Metadata>> getAllCodesLists(
+    default ResponseEntity<List<MetadataDto>> getAllCodesLists(
         
     ) {
         getRequest().ifPresent(request -> {
@@ -73,44 +71,39 @@ public interface CodesListRecoveryApi {
 
     }
 
-
     /**
      * GET /codes-lists/{codesListId} : Get full content of a codes list
      *
      * @param codesListId  (required)
-     * @return Codes list content (status code 200)
+     * @return Codes list content as raw JSON (status code 200)
      */
     @Operation(
-        operationId = "getCodesListById",
-        summary = "Get full content of a codes list",
-        tags = { "Codes List Recovery" },
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Codes list content", content = {
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Code.class)))
-            })
-        }
-    )
-    @RequestMapping(
-        method = RequestMethod.GET,
-        value = "/codes-lists/{codesListId}",
-        produces = { "application/json" }
-    )
-    default ResponseEntity<List<Code>> getCodesListById(
-        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") String codesListId
-    ) {
-        getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
-                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "[ { \"id\" : \"id\", \"label\" : \"label\" }, { \"id\" : \"id\", \"label\" : \"label\" } ]";
-                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
-                    break;
-                }
+            operationId = "getCodesListById",
+            summary = "Get full content of a codes list",
+            tags = { "Codes List Recovery" },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Codes list content",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(type = "array", example = "[ { \"id\": \"code1\", \"label\": \"Label1\" } ]")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Codes list not found"
+                    )
             }
-        });
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
-    }
-
+    )
+    @GetMapping(
+            value = "/codes-lists/{codesListId}",
+            produces = { "application/json" }
+    )
+    ResponseEntity<JsonNode> getCodesListById(
+            @Parameter(name = "codesListId", required = true, in = ParameterIn.PATH)
+            @PathVariable("codesListId") UUID codesListId
+    );
 
     /**
      * GET /codes-lists/{codesListId}/metadata : Get codes list metadata
@@ -124,17 +117,16 @@ public interface CodesListRecoveryApi {
         tags = { "Codes List Recovery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "Metadata of a codes list", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Metadata.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = MetadataDto.class))
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.GET,
+    @GetMapping(
         value = "/codes-lists/{codesListId}/metadata",
         produces = { "application/json" }
     )
-    default ResponseEntity<Metadata> getCodesListMetadataById(
-        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") String codesListId
+    default ResponseEntity<MetadataDto> getCodesListMetadataById(
+        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
@@ -149,11 +141,10 @@ public interface CodesListRecoveryApi {
 
     }
 
-
     /**
      * GET /codes-lists/{codesListId}/search-configuration : Get search configuration
      *
-     * @param codesListId  (required)
+     * @param codesListId (required)
      * @return Search configuration (status code 200)
      */
     @Operation(
@@ -166,13 +157,12 @@ public interface CodesListRecoveryApi {
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.GET,
+    @GetMapping(
         value = "/codes-lists/{codesListId}/search-configuration",
         produces = { "application/json" }
     )
-    default ResponseEntity<Object> getCodesListSearchConfigById(
-        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") String codesListId
+    default ResponseEntity<JsonNode> getCodesListSearchConfigById(
+        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 

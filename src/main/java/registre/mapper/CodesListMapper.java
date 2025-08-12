@@ -1,86 +1,60 @@
 package registre.mapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import registre.dto.CodesListDto;
+import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
-import registre.entity.CodesListSearchConfigurationEntity;
-import registre.exception.InvalidSearchConfigurationException;
-
-import java.util.stream.Collectors;
 
 @Component
 public class CodesListMapper {
 
-    private final MetadataMapper metadataMapper;
-    private final CodeMapper codeMapper;
-    private final ObjectMapper objectMapper;
+    private final CodesListExternalLinkMapper externalLinkMapper;
 
-    public CodesListMapper(
-            MetadataMapper metadataMapper,
-            CodeMapper codeMapper,
-            ObjectMapper objectMapper) {
-        this.metadataMapper = metadataMapper;
-        this.codeMapper = codeMapper;
-        this.objectMapper = objectMapper;
+    public CodesListMapper(CodesListExternalLinkMapper externalLinkMapper) {
+        this.externalLinkMapper = externalLinkMapper;
     }
 
     public CodesListDto toDto(CodesListEntity entity) {
         if (entity == null) return null;
 
-        CodesListDto dto = new CodesListDto();
-        dto.setId(entity.getId());
-        dto.setMetadata(metadataMapper.toDto(entity.getMetadata()));
+        MetadataDto metadataDto = new MetadataDto(
+                entity.getId(),
+                entity.getLabel(),
+                entity.getVersion(),
+                entity.getCodesListExternalLink() != null
+                        ? externalLinkMapper.toDto(entity.getCodesListExternalLink())
+                        : null
+        );
 
-        if (entity.getSearchConfiguration() != null) {
-            try {
-                Object configObject = objectMapper.readValue(
-                        entity.getSearchConfiguration().getJsonContent(),
-                        Object.class
-                );
-                dto.setSearchConfiguration(configObject);
-            } catch (JsonProcessingException e) {
-                throw new InvalidSearchConfigurationException("Erreur lors du parsing du searchConfiguration JSON", e);
-            }
-        }
-
-        if (entity.getContent() != null) {
-            dto.setContent(entity.getContent().stream()
-                    .map(codeMapper::toDto)
-                    .collect(Collectors.toList()));
-        }
-
-        return dto;
+        return new CodesListDto(
+                entity.getId(),
+                metadataDto,
+                entity.getSearchConfiguration(),
+                entity.getContent()
+        );
     }
 
     public CodesListEntity toEntity(CodesListDto dto) {
         if (dto == null) return null;
 
         CodesListEntity entity = new CodesListEntity();
+        entity.setId(dto.id());
+        entity.setSearchConfiguration(dto.searchConfiguration());
+        entity.setContent(dto.content());
 
-        if (dto.getId() != null) {
-            entity.setId(dto.getId());
-        }
+        MetadataDto metadata = dto.metadata();
+        if (metadata != null) {
+            entity.setLabel(metadata.label());
+            entity.setVersion(metadata.version());
 
-        entity.setMetadata(metadataMapper.toEntity(dto.getMetadata()));
-
-        if (dto.getSearchConfiguration() != null) {
-            CodesListSearchConfigurationEntity configEntity = new CodesListSearchConfigurationEntity();
-            try {
-                configEntity.setJsonContent(objectMapper.writeValueAsString(dto.getSearchConfiguration()));
-            } catch (JsonProcessingException e) {
-                throw new InvalidSearchConfigurationException("Erreur lors de la sérialisation du searchConfiguration en JSON", e);
+            if (metadata.externalLink() != null) {
+                entity.setCodesListExternalLink(
+                        externalLinkMapper.toEntity(metadata.externalLink())
+                );
             }
-            entity.setSearchConfiguration(configEntity);
-        }
-
-        if (dto.getContent() != null) {
-            entity.setContent(dto.getContent().stream()
-                    .map(codeMapper::toEntity)
-                    .collect(Collectors.toList()));
         }
 
         return entity;
     }
 }
+

@@ -1,8 +1,8 @@
 package registre.mapper;
 
 import org.springframework.stereotype.Component;
-import registre.dto.Metadata;
-import registre.entity.MetadataEntity;
+import registre.dto.MetadataDto;
+import registre.repository.CodesListRepository.MetadataProjection;
 
 @Component
 public class MetadataMapper {
@@ -13,25 +13,18 @@ public class MetadataMapper {
         this.externalLinkMapper = externalLinkMapper;
     }
 
-    public MetadataEntity toEntity(Metadata dto) {
-        if (dto == null) return null;
+    public MetadataDto toDto(MetadataProjection projection) {
+        if (projection == null) {
+            return null;
+        }
 
-        MetadataEntity entity = new MetadataEntity();
-        entity.setId(dto.getId());
-        entity.setLabel(dto.getLabel());
-        entity.setVersion(dto.getVersion());
-        entity.setExternalLink(externalLinkMapper.toEntity(dto.getExternalLink()));
-        return entity;
-    }
-
-    public Metadata toDto(MetadataEntity entity) {
-        if (entity == null) return null;
-
-        Metadata dto = new Metadata();
-        dto.setId(entity.getId());
-        dto.setLabel(entity.getLabel());
-        dto.setVersion(entity.getVersion());
-        dto.setExternalLink(externalLinkMapper.toDto(entity.getExternalLink()));
-        return dto;
+        return new MetadataDto(
+                projection.getId(),
+                projection.getLabel(),
+                projection.getVersion(),
+                projection.getCodesListExternalLink() != null
+                        ? externalLinkMapper.toDto(projection.getCodesListExternalLink())
+                        : null
+        );
     }
 }

@@ -1,27 +1,27 @@
 package registre.mapper;
 
 import org.springframework.stereotype.Component;
-import registre.dto.CodesListExternalLink;
+import registre.dto.CodesListExternalLinkDto;
 import registre.entity.CodesListExternalLinkEntity;
 
 @Component
 public class CodesListExternalLinkMapper {
 
-    public CodesListExternalLinkEntity toEntity(CodesListExternalLink dto) {
+    public CodesListExternalLinkEntity toEntity(CodesListExternalLinkDto dto) {
         if (dto == null) return null;
 
         CodesListExternalLinkEntity entity = new CodesListExternalLinkEntity();
-        entity.setUuid(dto.getUuid());
-        entity.setVersion(dto.getVersion());
+        entity.setId(dto.id());
+        entity.setVersion(dto.version());
         return entity;
     }
 
-    public CodesListExternalLink toDto(CodesListExternalLinkEntity entity) {
+    public CodesListExternalLinkDto toDto(CodesListExternalLinkEntity entity) {
         if (entity == null) return null;
 
-        CodesListExternalLink dto = new CodesListExternalLink();
-        dto.setUuid(entity.getUuid());
-        dto.setVersion(entity.getVersion());
-        return dto;
+        return new CodesListExternalLinkDto(
+                entity.getId(),
+                entity.getVersion()
+        );
     }
 }
