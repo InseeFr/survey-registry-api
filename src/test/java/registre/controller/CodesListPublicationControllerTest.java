@@ -106,9 +106,9 @@ class CodesListPublicationControllerTest {
                 .andExpect(status().isCreated());
 
         Mockito.verify(codesListPublicationService).createCodesList(any());
-        Mockito.verify(codesListPublicationService).updateContent(eq(testId), any(JsonNode.class));
-        Mockito.verify(codesListPublicationService).updateExternalLink(eq(testId), eq(externalLinkDto));
-        Mockito.verify(codesListPublicationService).updateSearchConfiguration(eq(testId), any(JsonNode.class));
+        Mockito.verify(codesListPublicationService).createContent(eq(testId), any(JsonNode.class));
+        Mockito.verify(codesListPublicationService).createExternalLink(eq(testId), eq(externalLinkDto));
+        Mockito.verify(codesListPublicationService).createSearchConfiguration(eq(testId), any(JsonNode.class));
     }
 
 
@@ -127,7 +127,7 @@ class CodesListPublicationControllerTest {
                         .content(objectMapper.writeValueAsString(contentJson)))
                 .andExpect(status().isCreated());
 
-        Mockito.verify(codesListPublicationService).updateContent(eq(testId), any(JsonNode.class));
+        Mockito.verify(codesListPublicationService).createContent(eq(testId), any(JsonNode.class));
     }
 
     @Test
@@ -141,7 +141,7 @@ class CodesListPublicationControllerTest {
                         .content(objectMapper.writeValueAsString(externalLink)))
                 .andExpect(status().isCreated());
 
-        Mockito.verify(codesListPublicationService).updateExternalLink(eq(testId), any());
+        Mockito.verify(codesListPublicationService).createExternalLink(eq(testId), any());
     }
 
     @Test
@@ -159,7 +159,7 @@ class CodesListPublicationControllerTest {
                         .content(objectMapper.writeValueAsString(searchConfig)))
                 .andExpect(status().isCreated());
 
-        Mockito.verify(codesListPublicationService).updateSearchConfiguration(eq(testId), any(JsonNode.class));
+        Mockito.verify(codesListPublicationService).createSearchConfiguration(eq(testId), any(JsonNode.class));
     }
 }
 

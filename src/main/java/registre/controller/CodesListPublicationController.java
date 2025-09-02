@@ -32,15 +32,15 @@ public class CodesListPublicationController implements CodesListPublicationApi {
         UUID id = codesListPublicationService.createCodesList(codesListDto);
 
         if (codesListDto.content() != null && !codesListDto.content().isEmpty()) {
-            codesListPublicationService.updateContent(id, codesListDto.content());
+            codesListPublicationService.createContent(id, codesListDto.content());
         }
 
         if (codesListDto.metadata() != null && codesListDto.metadata().externalLink() != null) {
-            codesListPublicationService.updateExternalLink(id, codesListDto.metadata().externalLink());
+            codesListPublicationService.createExternalLink(id, codesListDto.metadata().externalLink());
         }
 
         if (codesListDto.searchConfiguration() != null && !codesListDto.searchConfiguration().isEmpty()) {
-            codesListPublicationService.updateSearchConfiguration(id, codesListDto.searchConfiguration());
+            codesListPublicationService.createSearchConfiguration(id, codesListDto.searchConfiguration());
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -48,20 +48,20 @@ public class CodesListPublicationController implements CodesListPublicationApi {
 
     @Override
     public ResponseEntity<Void> putCodesListContentById(UUID codesListId, @Valid JsonNode body) {
-        codesListPublicationService.updateContent(codesListId, body);
+        codesListPublicationService.createContent(codesListId, body);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Override
     public ResponseEntity<Void> putCodesListExternalLinkById(UUID codesListId, @Valid CodesListExternalLinkDto codesListExternalLink) {
-        codesListPublicationService.updateExternalLink(codesListId, codesListExternalLink);
+        codesListPublicationService.createExternalLink(codesListId, codesListExternalLink);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Override
     public ResponseEntity<Void> putCodesListSearchConfigById(UUID codesListId, Object body) {
         JsonNode jsonNode = objectMapper.valueToTree(body);
-        codesListPublicationService.updateSearchConfiguration(codesListId, jsonNode);
+        codesListPublicationService.createSearchConfiguration(codesListId, jsonNode);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

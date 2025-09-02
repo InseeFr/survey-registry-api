@@ -2,8 +2,10 @@ package registre.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
 import registre.entity.CodesListEntity;
@@ -19,6 +21,7 @@ import java.util.UUID;
 public class CodesListPublicationService {
 
     private static final String CODES_LIST_NOT_FOUND = "Codes list not found";
+    private static final String ALREADY_EXISTS = " already exists";
 
     private final CodesListExternalLinkRepository codesListExternalLinkRepository;
     private final CodesListRepository codesListRepository;
@@ -37,38 +40,65 @@ public class CodesListPublicationService {
     }
 
     @Transactional
-    public void updateContent(UUID codesListId, JsonNode contentJson) {
-        CodesListEntity entity = codesListRepository.findById(codesListId)
-                .orElseThrow(() -> new IllegalArgumentException(CODES_LIST_NOT_FOUND));
-
-        entity.setContent(contentJson);
-        codesListRepository.save(entity);
-    }
-
-    @Transactional
-    public void updateExternalLink(UUID codesListId, CodesListExternalLinkDto externalLinkDto) {
-        CodesListEntity entity = codesListRepository.findById(codesListId)
-                .orElseThrow(() -> new IllegalArgumentException(CODES_LIST_NOT_FOUND));
-
-        if (externalLinkDto != null) {
-            CodesListExternalLinkEntity externalLinkEntity = codesListExternalLinkRepository
-                    .findById(externalLinkDto.id())
-                    .orElseThrow(() -> new IllegalArgumentException("External link not found"));
-
-            entity.setCodesListExternalLink(externalLinkEntity);
-        } else {
-            entity.setCodesListExternalLink(null);
+    public void createContent(UUID codesListId, JsonNode contentJson) {
+        if (!codesListRepository.existsById(codesListId)) {
+            throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
         }
 
-        codesListRepository.save(entity);
+        if (codesListRepository.existsContent(codesListId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Content of " + codesListId + ALREADY_EXISTS
+            );
+        }
+
+        codesListRepository.findById(codesListId).ifPresent(entity -> {
+            entity.setContent(contentJson);
+            codesListRepository.save(entity);
+        });
     }
 
     @Transactional
-    public void updateSearchConfiguration(UUID codesListId, JsonNode configJson) {
-        CodesListEntity entity = codesListRepository.findById(codesListId)
-                .orElseThrow(() -> new IllegalArgumentException(CODES_LIST_NOT_FOUND));
+    public void createExternalLink(UUID codesListId, CodesListExternalLinkDto externalLinkDto) {
+        if (!codesListRepository.existsById(codesListId)) {
+            throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
+        }
 
-        entity.setSearchConfiguration(configJson);
-        codesListRepository.save(entity);
+        if (codesListRepository.existsExternalLink(codesListId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "External link of " + codesListId + ALREADY_EXISTS
+            );
+        }
+
+        codesListRepository.findById(codesListId).ifPresent(entity -> {
+            if (externalLinkDto != null) {
+                CodesListExternalLinkEntity externalLinkEntity = codesListExternalLinkRepository
+                        .findById(externalLinkDto.id())
+                        .orElseThrow(() -> new IllegalArgumentException("External link not found"));
+
+                entity.setCodesListExternalLink(externalLinkEntity);
+            }
+            codesListRepository.save(entity);
+        });
+    }
+
+    @Transactional
+    public void createSearchConfiguration(UUID codesListId, JsonNode configJson) {
+        if (!codesListRepository.existsById(codesListId)) {
+            throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
+        }
+
+        if (codesListRepository.existsSearchConfiguration(codesListId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Search configuration of " + codesListId + ALREADY_EXISTS
+            );
+        }
+
+        codesListRepository.findById(codesListId).ifPresent(entity -> {
+            entity.setSearchConfiguration(configJson);
+            codesListRepository.save(entity);
+        });
     }
 }
