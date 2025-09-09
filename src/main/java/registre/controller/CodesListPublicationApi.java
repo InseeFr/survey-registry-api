@@ -5,7 +5,6 @@
  */
 package registre.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -14,13 +13,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Generated;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.request.NativeWebRequest;
-import registre.dto.*;
-import jakarta.validation.Valid;
+import registre.dto.CodesListDto;
+import registre.dto.CodesListExternalLinkDto;
+import registre.dto.ErrorResponseDto;
+import registre.dto.MetadataDto;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -119,11 +125,8 @@ public interface CodesListPublicationApi {
             consumes = { "application/json" }
     )
     default ResponseEntity<Void> putCodesListContentById(
-            @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH)
-            @PathVariable("codesListId") UUID codesListId,
-
-            @Parameter(name = "content", description = "JSON content")
-            @Valid @RequestBody(required = false) JsonNode content
+            @Parameter(name = "codesListId", description = "JSON content", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
+            @Parameter(name = "content", description = "") @Valid @RequestBody(required = false) Object content
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
@@ -186,7 +189,7 @@ public interface CodesListPublicationApi {
         consumes = { "application/json" }
     )
     default ResponseEntity<Void> putCodesListSearchConfigById(
-        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
+        @Parameter(name = "codesListId", description = "JSON content", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
         @Parameter(name = "body", description = "") @Valid @RequestBody(required = false) Object body
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);

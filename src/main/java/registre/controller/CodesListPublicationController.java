@@ -59,8 +59,9 @@ public class CodesListPublicationController implements CodesListPublicationApi {
     }
 
     @Override
-    public ResponseEntity<Void> putCodesListContentById(UUID codesListId, @Valid JsonNode body) {
-        codesListPublicationService.createContent(codesListId, body);
+    public ResponseEntity<Void> putCodesListContentById(UUID codesListId, Object content) {
+        JsonNode jsonNode = objectMapper.valueToTree(content);
+        codesListPublicationService.createContent(codesListId, jsonNode);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
