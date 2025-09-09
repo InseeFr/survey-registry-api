@@ -40,7 +40,7 @@ class MetadataMapperTest {
         when(projection.getVersion()).thenReturn("v1");
         when(projection.getCodesListExternalLink()).thenReturn(externalLinkEntity);
 
-        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1", "v1");
+        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1");
         when(externalLinkMapper.toDto(externalLinkEntity)).thenReturn(externalLinkDto);
 
         MetadataDto dto = metadataMapper.toDto(projection);

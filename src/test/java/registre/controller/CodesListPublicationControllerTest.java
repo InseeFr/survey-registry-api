@@ -50,14 +50,17 @@ class CodesListPublicationControllerTest {
     }
 
     @Test
-    void testCreateCodesList() throws Exception {
-        UUID testId = UUID.randomUUID();
-
-        CodesListDto dto = new CodesListDto(testId, null, null, null);
+    void testCreateCodesListMetadataOnly() throws Exception {
+        MetadataDto metadataDto = new MetadataDto(
+                null,
+                "CodesList1",
+                "v1",
+                new CodesListExternalLinkDto("ExternalLink1")
+        );
 
         mockMvc.perform(post("/codes-lists")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
+                        .content(objectMapper.writeValueAsString(metadataDto)))
                 .andExpect(status().isCreated());
 
         Mockito.verify(codesListPublicationService).createCodesList(any(CodesListDto.class));
@@ -68,9 +71,7 @@ class CodesListPublicationControllerTest {
         UUID testId = UUID.randomUUID();
 
         CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto(
-                "ExternalLink1",
-                "v1"
-        );
+                "ExternalLink1");
 
         MetadataDto metadataDto = new MetadataDto(
                 testId,
@@ -132,7 +133,7 @@ class CodesListPublicationControllerTest {
 
     @Test
     void testPutCodesListExternalLinkById() throws Exception {
-        CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto("ExternalLink1", "v1");
+        CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto("ExternalLink1");
 
         UUID testId = UUID.randomUUID();
 

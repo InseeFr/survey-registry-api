@@ -86,7 +86,7 @@ class CodesListPublicationServiceIntegrationTest {
         externalLinkEntity.setVersion("v1");
         externalLinkRepository.save(externalLinkEntity);
 
-        CodesListExternalLinkDto link = new CodesListExternalLinkDto("ExternalLink1", "v1");
+        CodesListExternalLinkDto link = new CodesListExternalLinkDto("ExternalLink1");
         service.createExternalLink(id, link);
 
         CodesListEntity updated = codesListRepository.findById(id).orElseThrow();
@@ -138,7 +138,7 @@ class CodesListPublicationServiceIntegrationTest {
         externalLinkEntity.setVersion("v1");
         externalLinkRepository.save(externalLinkEntity);
 
-        CodesListExternalLinkDto link = new CodesListExternalLinkDto("ExternalLink1", "v1");
+        CodesListExternalLinkDto link = new CodesListExternalLinkDto("ExternalLink1");
         service.createExternalLink(id, link);
 
         Executable action = () -> service.createExternalLink(id, link);

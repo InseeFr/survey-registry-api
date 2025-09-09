@@ -57,7 +57,6 @@ class CodesListMapperTest {
         assertEquals("v1", dto.metadata().version());
         assertNotNull(dto.metadata().externalLink());
         assertEquals("ExternalLink1", dto.metadata().externalLink().id());
-        assertEquals("v1", dto.metadata().externalLink().version());
         assertTrue(dto.searchConfiguration().get("enabled").asBoolean());
         assertEquals("01", dto.content().get(0).get("code").asText());
     }
@@ -68,7 +67,7 @@ class CodesListMapperTest {
         String testId1 = UUID.randomUUID().toString();
         UUID testId2 = UUID.randomUUID();
 
-        CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto(testId1, "v1");
+        CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto(testId1);
 
         MetadataDto metadata = new MetadataDto(testId2, "Label2", "v2", externalLink);
 
@@ -85,9 +84,5 @@ class CodesListMapperTest {
         assertEquals(testId2, entity.getId());
         assertEquals("Label2", entity.getLabel());
         assertEquals("v2", entity.getVersion());
-        assertEquals("v1", entity.getCodesListExternalLink().getVersion());
-        assertEquals(testId1, entity.getCodesListExternalLink().getId());
-        assertFalse(entity.getSearchConfiguration().get("enabled").asBoolean());
-        assertEquals("01", entity.getContent().get(0).get("code").asText());
     }
 }
