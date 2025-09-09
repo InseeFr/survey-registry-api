@@ -83,7 +83,7 @@ class CodesListRecoveryControllerTest {
         Mockito.when(codesListRecoveryService.getCodesListById(testId))
                 .thenReturn(Optional.of(content));
 
-        mockMvc.perform(get("/codes-lists/" + testId))
+        mockMvc.perform(get("/codes-lists/" + testId +"/content"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value("Code1"))
