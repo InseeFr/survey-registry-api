@@ -19,9 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
-import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLinkDto;
-import registre.dto.ErrorResponseDto;
+import registre.dto.*;
 import jakarta.validation.Valid;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,12 +37,12 @@ public interface CodesListPublicationApi {
      * POST /codes-lists : Create codes list (metadata only)
      * Admin only. Create a code list without content or search config. These must be added later via PUT endpoints. 
      *
-     * @param codesListDto  (optional)
+     * @param metadataDto (optional)
      * @return Created (status code 201)
      *         or Structured error (status code 409)
      */
     @Operation(
-        operationId = "createCodesList",
+        operationId = "createCodesListMetadataOnly",
         summary = "Create codes list (metadata only)",
         description = "Admin only. Create a code list without content or search config. These must be added later via PUT endpoints. ",
         tags = { "Codes List Publication" },
@@ -60,8 +58,8 @@ public interface CodesListPublicationApi {
         produces = { "application/json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<Void> createCodesList(
-        @Parameter(name = "CodesListDto", description = "") @Valid @RequestBody(required = false) CodesListDto codesListDto
+    default ResponseEntity<Void> createCodesListMetadataOnly(
+        @Parameter(name = "MetadataDto", description = "") @Valid @RequestBody(required = false) MetadataDto metadataDto
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 

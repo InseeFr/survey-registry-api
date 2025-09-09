@@ -11,18 +11,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record CodesListExternalLinkDto(
 
         @Schema(
-                description = "ID from RMeS",
-                requiredMode = Schema.RequiredMode.NOT_REQUIRED
+                description = "ID from RMeS (must already exist in externalLink repository)",
+                example = "c2778306-858b-40f7-9fcb-eb88f35916dd",
+                requiredMode = Schema.RequiredMode.REQUIRED
         )
         @JsonProperty("id")
-        String id,
-
-        @Schema(
-                description = "Version of codes list from RMeS",
-                requiredMode = Schema.RequiredMode.NOT_REQUIRED
-        )
-        @JsonProperty("version")
-        String version
+        String id
 
 ) { }
 

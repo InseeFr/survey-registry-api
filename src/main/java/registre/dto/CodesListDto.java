@@ -12,31 +12,34 @@ public record CodesListDto(
         @Schema(
                 name = "id",
                 example = "123e4567-e89b-12d3-a456-426614174000",
-                requiredMode = Schema.RequiredMode.NOT_REQUIRED
+                accessMode = Schema.AccessMode.READ_ONLY
         )
         @JsonProperty("id")
         UUID id,
 
         @Schema(
                 name = "metadata",
-                requiredMode = Schema.RequiredMode.NOT_REQUIRED
+                requiredMode = Schema.RequiredMode.REQUIRED
         )
         @JsonProperty("metadata")
         MetadataDto metadata,
 
         @Schema(
                 name = "searchConfiguration",
-                requiredMode = Schema.RequiredMode.NOT_REQUIRED
+                description = "Search configuration JSON object",
+                type = "object",
+                example = "{\"searchType\": \"fulltext\", \"caseSensitive\": false}"
         )
         @JsonProperty("searchConfiguration")
         JsonNode searchConfiguration,
 
         @Schema(
                 name = "content",
-                requiredMode = Schema.RequiredMode.NOT_REQUIRED
+                description = "Codes list content JSON object",
+                type = "object",
+                example = "{\"codes\": [{\"code\": \"C1\", \"label\": \"Paris\"}]}"
         )
         @JsonProperty("content")
         JsonNode content
 
 ) { }
-

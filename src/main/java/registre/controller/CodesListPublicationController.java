@@ -2,15 +2,15 @@ package registre.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
+import registre.dto.MetadataDto;
 import registre.service.CodesListPublicationService;
-
-import jakarta.validation.Valid;
 
 import java.util.UUID;
 
@@ -22,8 +22,20 @@ public class CodesListPublicationController implements CodesListPublicationApi {
     private final ObjectMapper objectMapper;
 
     @Override
-    public ResponseEntity<Void> createCodesList(@Valid CodesListDto codesListDto) {
-        codesListPublicationService.createCodesList(codesListDto);
+    public ResponseEntity<Void> createCodesListMetadataOnly(@Valid MetadataDto metadataDto) {
+        CodesListDto dto = new CodesListDto(
+                null,
+                new MetadataDto(
+                        null,
+                        metadataDto.label(),
+                        metadataDto.version(),
+                        metadataDto.externalLink()
+                ),
+                null,
+                null
+        );
+
+        codesListPublicationService.createCodesList(dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
