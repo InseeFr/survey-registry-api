@@ -28,7 +28,7 @@ public record CodesListDto(
                 name = "searchConfiguration",
                 description = "Search configuration JSON object",
                 type = "object",
-                example = "{\"searchType\": \"fulltext\", \"caseSensitive\": false}"
+                example = "{}"
         )
         @JsonProperty("searchConfiguration")
         JsonNode searchConfiguration,
@@ -37,7 +37,7 @@ public record CodesListDto(
                 name = "content",
                 description = "Codes list content JSON object",
                 type = "object",
-                example = "{\"codes\": [{\"code\": \"C1\", \"label\": \"Paris\"}]}"
+                example = "[]"
         )
         @JsonProperty("content")
         JsonNode content

@@ -125,8 +125,8 @@ public interface CodesListPublicationApi {
             consumes = { "application/json" }
     )
     default ResponseEntity<Void> putCodesListContentById(
-            @Parameter(name = "codesListId", description = "JSON content", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
-            @Parameter(name = "content", description = "") @Valid @RequestBody(required = false) Object content
+            @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
+            @Parameter(name = "content", description = "JSON content") @Valid @RequestBody(required = false) Object content
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
@@ -189,8 +189,8 @@ public interface CodesListPublicationApi {
         consumes = { "application/json" }
     )
     default ResponseEntity<Void> putCodesListSearchConfigById(
-        @Parameter(name = "codesListId", description = "JSON content", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
-        @Parameter(name = "body", description = "") @Valid @RequestBody(required = false) Object body
+        @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
+        @Parameter(name = "body", description = "JSON content") @Valid @RequestBody(required = false) Object body
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
