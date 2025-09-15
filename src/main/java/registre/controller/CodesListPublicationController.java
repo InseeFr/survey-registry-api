@@ -35,7 +35,12 @@ public class CodesListPublicationController implements CodesListPublicationApi {
                 null
         );
 
-        codesListPublicationService.createCodesList(dto);
+        UUID id = codesListPublicationService.createCodesList(dto);
+
+        if (metadataDto.externalLink() != null) {
+            codesListPublicationService.createExternalLink(id, metadataDto.externalLink());
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
