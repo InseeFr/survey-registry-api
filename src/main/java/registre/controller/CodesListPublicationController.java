@@ -12,6 +12,8 @@ import registre.dto.CodesListExternalLinkDto;
 import registre.dto.MetadataDto;
 import registre.service.CodesListPublicationService;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -64,7 +66,7 @@ public class CodesListPublicationController implements CodesListPublicationApi {
     }
 
     @Override
-    public ResponseEntity<Void> putCodesListContentById(UUID codesListId, Object content) {
+    public ResponseEntity<Void> putCodesListContentById(UUID codesListId, List<Object> content) {
         JsonNode jsonNode = objectMapper.valueToTree(content);
         codesListPublicationService.createContent(codesListId, jsonNode);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -77,7 +79,7 @@ public class CodesListPublicationController implements CodesListPublicationApi {
     }
 
     @Override
-    public ResponseEntity<Void> putCodesListSearchConfigById(UUID codesListId, Object body) {
+    public ResponseEntity<Void> putCodesListSearchConfigById(UUID codesListId, List<Object> body) {
         JsonNode jsonNode = objectMapper.valueToTree(body);
         codesListPublicationService.createSearchConfiguration(codesListId, jsonNode);
         return ResponseEntity.status(HttpStatus.CREATED).build();

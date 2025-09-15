@@ -27,6 +27,7 @@ import registre.dto.CodesListExternalLinkDto;
 import registre.dto.ErrorResponseDto;
 import registre.dto.MetadataDto;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -126,7 +127,7 @@ public interface CodesListPublicationApi {
     )
     default ResponseEntity<Void> putCodesListContentById(
             @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
-            @Parameter(name = "content", description = "JSON content") @Valid @RequestBody(required = false) Object content
+            @Parameter(name = "content", description = "JSON content") @Valid @RequestBody(required = false) List<Object> content
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
@@ -190,7 +191,7 @@ public interface CodesListPublicationApi {
     )
     default ResponseEntity<Void> putCodesListSearchConfigById(
         @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
-        @Parameter(name = "body", description = "JSON content") @Valid @RequestBody(required = false) Object body
+        @Parameter(name = "body", description = "JSON content") @Valid @RequestBody(required = false) List<Object> body
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 

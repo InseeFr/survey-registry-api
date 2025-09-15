@@ -28,7 +28,7 @@ public record CodesListDto(
                 name = "searchConfiguration",
                 description = "Search configuration JSON object",
                 type = "object",
-                example = "{}"
+                example = "[]"
         )
         @JsonProperty("searchConfiguration")
         JsonNode searchConfiguration,
