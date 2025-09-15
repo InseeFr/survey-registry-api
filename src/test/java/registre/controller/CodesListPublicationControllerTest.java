@@ -148,9 +148,9 @@ class CodesListPublicationControllerTest {
     @Test
     void testPutCodesListSearchConfigById() throws Exception {
         JsonNode searchConfig = objectMapper.readTree("""
-            {
-                "filter": true
-            }
+            [
+                { "filter": true }
+            ]
         """);
 
         UUID testId = UUID.randomUUID();
