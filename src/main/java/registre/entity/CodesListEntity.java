@@ -1,10 +1,13 @@
 package registre.entity;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
-import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -13,16 +16,25 @@ import java.util.List;
 public class CodesListEntity {
 
     @Id
-    private String id;
+    @Column(name = "id", columnDefinition = "uuid")
+    private UUID id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "metadata_id")
-    private MetadataEntity metadata;
+    @Column(name = "label")
+    private String label;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "search_config_id")
-    private CodesListSearchConfigurationEntity searchConfiguration;
+    @Column(name = "version")
+    private String version;
 
-    @OneToMany(mappedBy = "codesList", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CodeEntity> content;
+    @ManyToOne
+    @JoinColumn(name = "external_link_id")
+    private CodesListExternalLinkEntity codesListExternalLink;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "search_config")
+    private JsonNode searchConfiguration;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "content")
+    private JsonNode content;
+
 }

@@ -1,15 +1,13 @@
 package registre.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import registre.dto.Code;
-import registre.dto.Metadata;
-import registre.entity.CodeEntity;
+import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
-import registre.entity.CodesListSearchConfigurationEntity;
-import registre.entity.MetadataEntity;
 import registre.repository.CodesListRepository;
 
 import java.util.List;
@@ -28,6 +26,9 @@ class CodesListRecoveryServiceIntegrationTest {
     @Autowired
     private CodesListRepository repository;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @BeforeEach
     void cleanDatabase() {
         repository.deleteAll();
@@ -35,96 +36,93 @@ class CodesListRecoveryServiceIntegrationTest {
 
     @Test
     void testGetAllMetadata() {
-        MetadataEntity metadata = new MetadataEntity();
-        metadata.setId(UUID.randomUUID());
-        metadata.setLabel("Metadata");
-
         CodesListEntity codesList = new CodesListEntity();
-        codesList.setId("CodesList1");
-        codesList.setMetadata(metadata);
+        UUID id1 = UUID.randomUUID();
+        codesList.setId(id1);
+        codesList.setLabel("Label1");
+        codesList.setVersion("v1");
 
         repository.save(codesList);
 
-        List<Metadata> result = service.getAllMetadata();
+        List<MetadataDto> result = service.getAllMetadata();
 
         assertEquals(1, result.size());
-        assertEquals("Metadata", result.getFirst().getLabel());
+        assertEquals("Label1", result.getFirst().label());
+        assertEquals("v1", result.getFirst().version());
     }
 
     @Test
     void testGetMetadataById() {
-        MetadataEntity metadata = new MetadataEntity();
-        metadata.setId(UUID.randomUUID());
-        metadata.setLabel("Metadata");
-        metadata.setVersion("V3");
-
         CodesListEntity codesList = new CodesListEntity();
-        codesList.setId("CodeList2");
-        codesList.setMetadata(metadata);
+        UUID id2 = UUID.randomUUID();
+        codesList.setId(id2);
+        codesList.setLabel("Label2");
+        codesList.setVersion("V2");
 
         repository.save(codesList);
 
-        Optional<Metadata> result = service.getMetadataById("CodeList2");
+        Optional<MetadataDto> result = service.getMetadataById(id2);
 
         assertTrue(result.isPresent());
-        assertEquals("Metadata", result.get().getLabel());
-        assertEquals("V3", result.get().getVersion());
+        assertEquals("Label2", result.get().label());
+        assertEquals("V2", result.get().version());
     }
 
     @Test
-    void testGetCodesListById() {
+    void testGetCodesListById() throws Exception {
         CodesListEntity codesList = new CodesListEntity();
-        codesList.setId("CodeList3");
+        UUID id3 = UUID.randomUUID();
+        codesList.setId(id3);
+        codesList.setLabel("Label3");
+        codesList.setVersion("V3");
 
-        CodeEntity code = new CodeEntity();
-        code.setId("Code1");
-        code.setLabel("Label1");
-        code.setCodesList(codesList);
-
-        codesList.setContent(List.of(code));
+        JsonNode content = objectMapper.readTree("""
+                    [
+                        {"id": "Code1", "label": "Label1"}
+                    ]
+                """);
+        codesList.setContent(content);
 
         repository.save(codesList);
 
-        Optional<List<Code>> result = service.getCodesListById("CodeList3");
+        Optional<JsonNode> result = service.getCodesListById(id3);
 
         assertTrue(result.isPresent());
-        assertEquals(1, result.get().size());
-        assertEquals("Code1", result.get().getFirst().getId());
-        assertEquals("Label1", result.get().getFirst().getLabel());
+        assertEquals("Code1", result.get().get(0).get("id").asText());
+        assertEquals("Label1", result.get().get(0).get("label").asText());
+        System.out.println(result.get().getClass());
+        System.out.println(result.get());
     }
 
     @Test
-    void testGetSearchConfiguration() {
-        CodesListSearchConfigurationEntity config = new CodesListSearchConfigurationEntity();
-        config.setId("Config1");
-        config.setJsonContent("{\"filter\": true}");
-
+    void testGetSearchConfiguration() throws Exception {
         CodesListEntity codesList = new CodesListEntity();
-        codesList.setId("CodeList4");
+        UUID id4 = UUID.randomUUID();
+        codesList.setId(id4);
+        codesList.setLabel("Label4");
+        codesList.setVersion("V4");
+
+        JsonNode config = objectMapper.readTree("""
+            {
+                "filter": true
+            }
+        """);
         codesList.setSearchConfiguration(config);
 
         repository.save(codesList);
 
-        Optional<Object> result = service.getSearchConfiguration("CodeList4");
+        Optional<JsonNode> result = service.getSearchConfiguration(id4);
 
         assertTrue(result.isPresent());
-        assertTrue(((java.util.Map<?, ?>) result.get()).containsKey("filter"));
+        assertTrue(result.get().get("filter").asBoolean());
     }
 
     @Test
-    void testGetSearchConfiguration_InvalidJson() {
-        CodesListSearchConfigurationEntity config = new CodesListSearchConfigurationEntity();
-        config.setId("Config2");
-        config.setJsonContent("INVALID_JSON");
-
-        CodesListEntity codesList = new CodesListEntity();
-        codesList.setId("CodeList5");
-        codesList.setSearchConfiguration(config);
-
-        repository.save(codesList);
-
-        Optional<Object> result = service.getSearchConfiguration("CodeList5");
+    void testGetSearchConfiguration_NotFound() {
+        UUID id = UUID.randomUUID();
+        Optional<JsonNode> result = service.getSearchConfiguration(id);
 
         assertTrue(result.isEmpty());
     }
+
 }

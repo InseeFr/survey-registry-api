@@ -2,10 +2,8 @@ package registre.mapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import registre.dto.CodesListExternalLink;
+import registre.dto.CodesListExternalLinkDto;
 import registre.entity.CodesListExternalLinkEntity;
-
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,46 +17,38 @@ class CodesListExternalLinkMapperTest {
     }
 
     @Test
-    void testToEntity_WithValidDto() {
-        // Given
-        UUID uuid = UUID.randomUUID();
-        CodesListExternalLink dto = new CodesListExternalLink();
-        dto.setUuid(uuid);
-        dto.setVersion("v1");
+    void testToEntity() {
+        CodesListExternalLinkDto dto = new CodesListExternalLinkDto("ExternalLink1", "v1");
 
-        // When
         CodesListExternalLinkEntity entity = mapper.toEntity(dto);
 
-        // Then
         assertNotNull(entity);
-        assertEquals(uuid, entity.getUuid());
+        assertEquals("ExternalLink1", entity.getId());
         assertEquals("v1", entity.getVersion());
     }
 
     @Test
-    void testToEntity_WithNullDto() {
-        assertNull(mapper.toEntity(null));
+    void testToEntity_NullInput() {
+        CodesListExternalLinkEntity entity = mapper.toEntity(null);
+        assertNull(entity);
     }
 
     @Test
-    void testToDto_WithValidEntity() {
-        // Given
-        UUID uuid = UUID.randomUUID();
+    void testToDto() {
         CodesListExternalLinkEntity entity = new CodesListExternalLinkEntity();
-        entity.setUuid(uuid);
+        entity.setId("ExternalLink2");
         entity.setVersion("v2");
 
-        // When
-        CodesListExternalLink dto = mapper.toDto(entity);
+        CodesListExternalLinkDto dto = mapper.toDto(entity);
 
-        // Then
         assertNotNull(dto);
-        assertEquals(uuid, dto.getUuid());
-        assertEquals("v2", dto.getVersion());
+        assertEquals("ExternalLink2", dto.id());
+        assertEquals("v2", dto.version());
     }
 
     @Test
-    void testToDto_WithNullEntity() {
-        assertNull(mapper.toDto(null));
+    void testToDto_NullInput() {
+        CodesListExternalLinkDto dto = mapper.toDto(null);
+        assertNull(dto);
     }
 }

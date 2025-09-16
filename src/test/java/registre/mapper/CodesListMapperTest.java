@@ -1,107 +1,93 @@
 package registre.mapper;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import registre.dto.Code;
 import registre.dto.CodesListDto;
-import registre.dto.Metadata;
-import registre.entity.CodeEntity;
+import registre.dto.CodesListExternalLinkDto;
+import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
-import registre.entity.CodesListSearchConfigurationEntity;
-import registre.entity.MetadataEntity;
-import registre.exception.InvalidSearchConfigurationException;
+import registre.entity.CodesListExternalLinkEntity;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class CodesListMapperTest {
 
-    private MetadataMapper metadataMapper;
-    private CodeMapper codeMapper;
     private CodesListMapper codesListMapper;
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
-        metadataMapper = mock(MetadataMapper.class);
-        codeMapper = mock(CodeMapper.class);
-        ObjectMapper objectMapper = new ObjectMapper();
-        codesListMapper = new CodesListMapper(metadataMapper, codeMapper, objectMapper);
+        codesListMapper = new CodesListMapper(new CodesListExternalLinkMapper());
+        objectMapper = new ObjectMapper();
     }
 
     @Test
-    void testToDto_WithValidEntity() {
+    void testToDto_WithValidEntity() throws Exception {
         // Given
-        CodesListEntity entity = new CodesListEntity();
-        entity.setId(String.valueOf(1L));
+        CodesListEntity codesListEntity = new CodesListEntity();
+        UUID testId = UUID.randomUUID();
+        codesListEntity.setId(testId);
+        codesListEntity.setLabel("Label1");
+        codesListEntity.setVersion("v1");
 
-        MetadataEntity metadataEntity = new MetadataEntity();
-        Metadata metadataDto = new Metadata();
-        when(metadataMapper.toDto(metadataEntity)).thenReturn(metadataDto);
-        entity.setMetadata(metadataEntity);
+        CodesListExternalLinkEntity externalLink = new CodesListExternalLinkEntity();
+        externalLink.setId("ExternalLink1");
+        externalLink.setVersion("v1");
+        codesListEntity.setCodesListExternalLink(externalLink);
 
-        CodesListSearchConfigurationEntity configEntity = new CodesListSearchConfigurationEntity();
-        String jsonConfig = "{\"key\":\"value\"}";
-        configEntity.setJsonContent(jsonConfig);
-        entity.setSearchConfiguration(configEntity);
+        JsonNode searchConfig = objectMapper.readTree("{\"enabled\": true}");
+        JsonNode content = objectMapper.readTree("[{\"code\": \"01\"}]");
 
-        CodeEntity codeEntity = new CodeEntity();
-        Code codeDto = new Code();
-        when(codeMapper.toDto(codeEntity)).thenReturn(codeDto);
-        entity.setContent(Collections.singletonList(codeEntity));
+        codesListEntity.setSearchConfiguration(searchConfig);
+        codesListEntity.setContent(content);
 
         // When
-        CodesListDto dto = codesListMapper.toDto(entity);
+        CodesListDto dto = codesListMapper.toDto(codesListEntity);
 
         // Then
         assertNotNull(dto);
-        assertEquals(String.valueOf(1L), dto.getId());
-        assertEquals(metadataDto, dto.getMetadata());
-        assertEquals(Map.of("key", "value"), dto.getSearchConfiguration());
-        assertEquals(1, dto.getContent().size());
-        assertEquals(codeDto, dto.getContent().getFirst());
+        assertEquals(testId, dto.id());
+        assertNotNull(dto.metadata());
+        assertEquals(testId, dto.metadata().id());
+        assertEquals("Label1", dto.metadata().label());
+        assertEquals("v1", dto.metadata().version());
+        assertNotNull(dto.metadata().externalLink());
+        assertEquals("ExternalLink1", dto.metadata().externalLink().id());
+        assertEquals("v1", dto.metadata().externalLink().version());
+        assertTrue(dto.searchConfiguration().get("enabled").asBoolean());
+        assertEquals("01", dto.content().get(0).get("code").asText());
     }
 
     @Test
-    void testToDto_WithInvalidJson_ThrowsException() {
-        CodesListEntity entity = new CodesListEntity();
-        CodesListSearchConfigurationEntity config = new CodesListSearchConfigurationEntity();
-        config.setJsonContent("invalid json");
-        entity.setSearchConfiguration(config);
+    void testToEntity_WithValidDto() throws Exception {
+        // Given
+        String testId1 = UUID.randomUUID().toString();
+        UUID testId2 = UUID.randomUUID();
 
-        assertThrows(InvalidSearchConfigurationException.class, () -> codesListMapper.toDto(entity));
-    }
+        CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto(testId1, "v1");
 
-    @Test
-    void testToEntity_WithValidDto() {
-        CodesListDto dto = new CodesListDto();
-        dto.setId(String.valueOf(42L));
+        MetadataDto metadata = new MetadataDto(testId2, "Label2", "v2", externalLink);
 
-        Metadata metadataDto = new Metadata();
-        MetadataEntity metadataEntity = new MetadataEntity();
-        when(metadataMapper.toEntity(metadataDto)).thenReturn(metadataEntity);
-        dto.setMetadata(metadataDto);
+        JsonNode searchConfig = objectMapper.readTree("{\"enabled\": false}");
+        JsonNode content = objectMapper.readTree("[{\"code\": \"01\"}]");
 
-        dto.setSearchConfiguration(Map.of("key", "value"));
+        CodesListDto dto = new CodesListDto(testId2, metadata, searchConfig, content);
 
-        Code codeDto = new Code();
-        CodeEntity codeEntity = new CodeEntity();
-        when(codeMapper.toEntity(codeDto)).thenReturn(codeEntity);
-        dto.setContent(List.of(codeDto));
-
+        // When
         CodesListEntity entity = codesListMapper.toEntity(dto);
 
+        // Then
         assertNotNull(entity);
-        assertEquals(String.valueOf(42L), entity.getId());
-        assertEquals(metadataEntity, entity.getMetadata());
-        assertNotNull(entity.getSearchConfiguration());
-        assertTrue(entity.getSearchConfiguration().getJsonContent().contains("\"key\":\"value\""));
-        assertEquals(1, entity.getContent().size());
-        assertEquals(codeEntity, entity.getContent().getFirst());
+        assertEquals(testId2, entity.getId());
+        assertEquals("Label2", entity.getLabel());
+        assertEquals("v2", entity.getVersion());
+        assertEquals("v1", entity.getCodesListExternalLink().getVersion());
+        assertEquals(testId1, entity.getCodesListExternalLink().getId());
+        assertFalse(entity.getSearchConfiguration().get("enabled").asBoolean());
+        assertEquals("01", entity.getContent().get(0).get("code").asText());
     }
 }

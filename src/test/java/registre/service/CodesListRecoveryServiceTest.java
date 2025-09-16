@@ -1,101 +1,147 @@
 package registre.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import registre.dto.Metadata;
+import registre.dto.CodesListDto;
+import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
-import registre.entity.CodesListSearchConfigurationEntity;
-import registre.entity.MetadataEntity;
-import registre.mapper.CodeMapper;
+import registre.entity.CodesListExternalLinkEntity;
+import registre.mapper.CodesListMapper;
 import registre.mapper.MetadataMapper;
 import registre.repository.CodesListRepository;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class CodesListRecoveryServiceTest {
+
     private CodesListRepository repository;
+    private CodesListMapper codesListMapper;
     private MetadataMapper metadataMapper;
     private CodesListRecoveryService service;
-    private  ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
         repository = mock(CodesListRepository.class);
-        CodeMapper codeMapper = mock(CodeMapper.class);
+        codesListMapper = mock(CodesListMapper.class);
         metadataMapper = mock(MetadataMapper.class);
-        objectMapper = mock(ObjectMapper.class);
-        service = new CodesListRecoveryService(repository, codeMapper, metadataMapper, objectMapper);
+        service = new CodesListRecoveryService(repository, codesListMapper, metadataMapper);
     }
 
     @Test
-    void testGetAllMetadata() {
-        CodesListEntity entity = new CodesListEntity();
-        MetadataEntity metadata = new MetadataEntity();
-        entity.setMetadata(metadata);
+    void testGetAllMetadata_withoutExternalLink() {
+        UUID id1 = UUID.randomUUID();
+        CodesListRepository.MetadataProjection projection = mock(CodesListRepository.MetadataProjection.class);
+        when(projection.getId()).thenReturn(id1);
+        when(projection.getLabel()).thenReturn("Label1");
+        when(projection.getVersion()).thenReturn("v1");
+        when(projection.getCodesListExternalLink()).thenReturn(null);
 
-        when(repository.findAll()).thenReturn(List.of(entity));
-        Metadata dto = new Metadata();
-        when(metadataMapper.toDto(metadata)).thenReturn(dto);
+        when(repository.findAllBy()).thenReturn(List.of(projection));
 
-        List<Metadata> result = service.getAllMetadata();
+        MetadataDto dtoMock = new MetadataDto(id1, "Label1", "v1", null);
+        when(metadataMapper.toDto(projection)).thenReturn(dtoMock);
+
+        List<MetadataDto> result = service.getAllMetadata();
+
         assertEquals(1, result.size());
-        assertSame(dto, result.getFirst());
+        MetadataDto dto = result.getFirst();
+        assertEquals(id1, dto.id());
+        assertEquals("Label1", dto.label());
+        assertEquals("v1", dto.version());
+        assertNull(dto.externalLink());
+    }
+
+    @Test
+    void testGetAllMetadata_withExternalLink() {
+        UUID id2 = UUID.randomUUID();
+        CodesListRepository.MetadataProjection projection = mock(CodesListRepository.MetadataProjection.class);
+        CodesListExternalLinkEntity linkEntity = new CodesListExternalLinkEntity();
+
+        when(projection.getId()).thenReturn(id2);
+        when(projection.getLabel()).thenReturn("Label2");
+        when(projection.getVersion()).thenReturn("v2");
+        when(projection.getCodesListExternalLink()).thenReturn(linkEntity);
+
+        registre.dto.CodesListExternalLinkDto externalLinkDto = new registre.dto.CodesListExternalLinkDto("ExternalLink1","v1");
+
+        MetadataDto mappedDto = new MetadataDto(id2, "Label2", "v2", externalLinkDto);
+
+        when(repository.findAllBy()).thenReturn(List.of(projection));
+
+        when(metadataMapper.toDto(projection)).thenReturn(mappedDto);
+
+        List<MetadataDto> result = service.getAllMetadata();
+
+        assertEquals(1, result.size());
+        MetadataDto dto = result.getFirst();
+        assertEquals(id2, dto.id());
+        assertEquals("Label2", dto.label());
+        assertEquals("v2", dto.version());
+        assertNotNull(dto.externalLink());
     }
 
     @Test
     void testGetMetadataById_Found() {
-        MetadataEntity metadata = new MetadataEntity();
         CodesListEntity entity = new CodesListEntity();
-        entity.setMetadata(metadata);
+        MetadataDto metadata = new MetadataDto(null,null,null,null);
+        CodesListDto dto = new CodesListDto(null, metadata,null,null);
 
-        when(repository.findById("id2")).thenReturn(Optional.of(entity));
-        Metadata dto = new Metadata();
-        when(metadataMapper.toDto(metadata)).thenReturn(dto);
+        UUID id = UUID.randomUUID();
 
-        Optional<Metadata> result = service.getMetadataById("id2");
+        when(repository.findById(id)).thenReturn(Optional.of(entity));
+        when(codesListMapper.toDto(entity)).thenReturn(dto);
+
+        Optional<MetadataDto> result = service.getMetadataById(id);
 
         assertTrue(result.isPresent());
-        assertSame(dto, result.get());
+        assertSame(metadata, result.get());
     }
 
     @Test
-    void testGetSearchConfiguration_ValidJson() throws Exception {
-        CodesListSearchConfigurationEntity config = new CodesListSearchConfigurationEntity();
-        config.setJsonContent("{\"key\":\"value\"}");
-
+    void testGetCodesListById_Found() {
+        JsonNode content = mock(JsonNode.class);
         CodesListEntity entity = new CodesListEntity();
-        entity.setSearchConfiguration(config);
+        entity.setContent(content);
 
-        when(repository.findById("id3")).thenReturn(Optional.of(entity));
-        Object parsed = Map.of("key", "value");
-        when(objectMapper.readValue(config.getJsonContent(), Object.class)).thenReturn(parsed);
+        UUID id = UUID.randomUUID();
 
-        Optional<Object> result = service.getSearchConfiguration("id3");
+        when(repository.findById(id)).thenReturn(Optional.of(entity));
+
+        Optional<JsonNode> result = service.getCodesListById(id);
 
         assertTrue(result.isPresent());
-        assertEquals(parsed, result.get());
+        assertSame(content, result.get());
     }
 
     @Test
-    void testGetSearchConfiguration_InvalidJson() throws Exception {
-        CodesListSearchConfigurationEntity config = new CodesListSearchConfigurationEntity();
-        config.setJsonContent("invalid");
-
+    void testGetSearchConfiguration_Found() {
+        JsonNode searchConfig = mock(JsonNode.class);
         CodesListEntity entity = new CodesListEntity();
-        entity.setSearchConfiguration(config);
+        entity.setSearchConfiguration(searchConfig);
 
-        when(repository.findById("id4")).thenReturn(Optional.of(entity));
-        when(objectMapper.readValue(config.getJsonContent(), Object.class))
-                .thenThrow(new RuntimeException("mocked error"));
+        UUID id = UUID.randomUUID();
 
-        Optional<Object> result = service.getSearchConfiguration("id4");
+        when(repository.findById(id)).thenReturn(Optional.of(entity));
+
+        Optional<JsonNode> result = service.getSearchConfiguration(id);
+
+        assertTrue(result.isPresent());
+        assertSame(searchConfig, result.get());
+    }
+
+    @Test
+    void testGetSearchConfiguration_NotFound() {
+        UUID id = UUID.randomUUID();
+        when(repository.findById(id)).thenReturn(Optional.empty());
+
+        Optional<JsonNode> result = service.getSearchConfiguration(id);
 
         assertTrue(result.isEmpty());
     }
