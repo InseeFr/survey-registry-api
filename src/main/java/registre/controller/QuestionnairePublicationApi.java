@@ -5,9 +5,10 @@
  */
 package registre.controller;
 
-import registre.dto.ErrorResponse;
+import org.springframework.web.bind.annotation.*;
+import registre.dto.ErrorResponseDto;
 import registre.dto.QuestionnaireDto;
-import registre.dto.QuestionnaireVariables;
+import registre.dto.QuestionnaireVariablesDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -18,14 +19,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.NativeWebRequest;
-
-import javax.annotation.Generated;
-import javax.validation.Valid;
+import jakarta.annotation.Generated;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,8 +48,7 @@ public interface QuestionnairePublicationApi {
             @ApiResponse(responseCode = "201", description = "Questionnaire initialized")
         }
     )
-    @RequestMapping(
-        method = RequestMethod.POST,
+    @PostMapping(
         value = "/questionnaires",
         consumes = { "application/json" }
     )
@@ -82,12 +77,11 @@ public interface QuestionnairePublicationApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "Capi Questionnaire initialized"),
             @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.PUT,
+    @PutMapping(
         value = "/questionnaires/{questionnaireId}/capi-model",
         produces = { "application/json" },
         consumes = { "application/json" }
@@ -118,12 +112,11 @@ public interface QuestionnairePublicationApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "Questionnaire initialized"),
             @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.PUT,
+    @PutMapping(
         value = "/questionnaires/{questionnaireId}/cawi-model",
         produces = { "application/json" },
         consumes = { "application/json" }
@@ -154,12 +147,11 @@ public interface QuestionnairePublicationApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "Questionnaire initialized"),
             @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.PUT,
+    @PutMapping(
         value = "/questionnaires/{questionnaireId}/conceptual-model",
         produces = { "application/json" },
         consumes = { "application/json" }
@@ -190,12 +182,11 @@ public interface QuestionnairePublicationApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "Papi Questionnaire initialized"),
             @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.PUT,
+    @PutMapping(
         value = "/questionnaires/{questionnaireId}/papi-model",
         produces = { "application/json" },
         consumes = { "application/xml" }
@@ -226,19 +217,18 @@ public interface QuestionnairePublicationApi {
         responses = {
             @ApiResponse(responseCode = "201", description = "Variables of questionnaire initialized"),
             @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
             })
         }
     )
-    @RequestMapping(
-        method = RequestMethod.PUT,
+    @PutMapping(
         value = "/questionnaires/{questionnaireId}/variables",
         produces = { "application/json" },
         consumes = { "application/json" }
     )
     default ResponseEntity<Void> putVariablesQuestionnaireById(
         @Parameter(name = "questionnaireId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("questionnaireId") String questionnaireId,
-        @Parameter(name = "QuestionnaireVariables", description = "") @Valid @RequestBody(required = false) List<QuestionnaireVariables> questionnaireVariables
+        @Parameter(name = "QuestionnaireVariables", description = "") @Valid @RequestBody(required = false) List<QuestionnaireVariablesDto> questionnaireVariables
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
