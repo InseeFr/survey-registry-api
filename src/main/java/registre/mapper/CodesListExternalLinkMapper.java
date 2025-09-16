@@ -12,7 +12,6 @@ public class CodesListExternalLinkMapper {
 
         CodesListExternalLinkEntity entity = new CodesListExternalLinkEntity();
         entity.setId(dto.id());
-        entity.setVersion(dto.version());
         return entity;
     }
 
@@ -20,8 +19,7 @@ public class CodesListExternalLinkMapper {
         if (entity == null) return null;
 
         return new CodesListExternalLinkDto(
-                entity.getId(),
-                entity.getVersion()
+                entity.getId()
         );
     }
 }

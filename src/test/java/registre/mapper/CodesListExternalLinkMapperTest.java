@@ -18,13 +18,12 @@ class CodesListExternalLinkMapperTest {
 
     @Test
     void testToEntity() {
-        CodesListExternalLinkDto dto = new CodesListExternalLinkDto("ExternalLink1", "v1");
+        CodesListExternalLinkDto dto = new CodesListExternalLinkDto("ExternalLink1");
 
         CodesListExternalLinkEntity entity = mapper.toEntity(dto);
 
         assertNotNull(entity);
         assertEquals("ExternalLink1", entity.getId());
-        assertEquals("v1", entity.getVersion());
     }
 
     @Test
@@ -43,7 +42,6 @@ class CodesListExternalLinkMapperTest {
 
         assertNotNull(dto);
         assertEquals("ExternalLink2", dto.id());
-        assertEquals("v2", dto.version());
     }
 
     @Test

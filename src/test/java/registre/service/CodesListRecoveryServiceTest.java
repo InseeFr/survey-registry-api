@@ -69,7 +69,7 @@ class CodesListRecoveryServiceTest {
         when(projection.getVersion()).thenReturn("v2");
         when(projection.getCodesListExternalLink()).thenReturn(linkEntity);
 
-        registre.dto.CodesListExternalLinkDto externalLinkDto = new registre.dto.CodesListExternalLinkDto("ExternalLink1","v1");
+        registre.dto.CodesListExternalLinkDto externalLinkDto = new registre.dto.CodesListExternalLinkDto("ExternalLink1");
 
         MetadataDto mappedDto = new MetadataDto(id2, "Label2", "v2", externalLinkDto);
 

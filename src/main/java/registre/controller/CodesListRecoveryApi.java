@@ -97,7 +97,7 @@ public interface CodesListRecoveryApi {
             }
     )
     @GetMapping(
-            value = "/codes-lists/{codesListId}",
+            value = "/codes-lists/{codesListId}/content",
             produces = { "application/json" }
     )
     ResponseEntity<JsonNode> getCodesListById(

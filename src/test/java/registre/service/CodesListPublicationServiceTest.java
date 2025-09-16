@@ -109,7 +109,7 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsExternalLink(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
-        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1", "v1");
+        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1");
 
         CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
         externalLinkEntity.setVersion("v1");
@@ -117,7 +117,6 @@ class CodesListPublicationServiceTest {
 
         service.createExternalLink(id, externalLinkDto);
 
-        assertEquals("v1", entity.getCodesListExternalLink().getVersion());
         verify(codesListRepository).save(entity);
     }
 
@@ -126,7 +125,7 @@ class CodesListPublicationServiceTest {
     void testCreateExternalLink_WhenCodesListDoesNotExist() {
         UUID id = UUID.randomUUID();
         when(codesListRepository.findById(id)).thenReturn(Optional.empty());
-        Executable executable = () -> service.createExternalLink(id, new CodesListExternalLinkDto("ExternalLink1", "v1"));
+        Executable executable = () -> service.createExternalLink(id, new CodesListExternalLinkDto("ExternalLink1"));
         assertThrows(IllegalArgumentException.class, executable);
     }
 
@@ -137,7 +136,7 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsById(id)).thenReturn(true);
         when(codesListRepository.existsExternalLink(id)).thenReturn(true);
 
-        CodesListExternalLinkDto dto = new CodesListExternalLinkDto("ExternalLink1", "v1");
+        CodesListExternalLinkDto dto = new CodesListExternalLinkDto("ExternalLink1");
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                 () -> service.createExternalLink(id, dto));
