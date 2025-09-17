@@ -66,7 +66,7 @@ public interface CodesListPublicationApi {
         consumes = { "application/json" }
     )
     default ResponseEntity<Void> createCodesListMetadataOnly(
-        @Parameter(name = "MetadataDto", description = "") @Valid @RequestBody(required = false) MetadataDto metadataDto
+        @Parameter(name = "Metadata", description = "") @Valid @RequestBody(required = false) MetadataDto metadataDto
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
@@ -94,7 +94,7 @@ public interface CodesListPublicationApi {
         consumes = { "application/json" }
     )
     default ResponseEntity<Void> createFullCodesList(
-        @Parameter(name = "CodesListDto", description = "") @Valid @RequestBody(required = false) CodesListDto codesListDto
+        @Parameter(name = "CodesList", description = "") @Valid @RequestBody(required = false) CodesListDto codesListDto
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
