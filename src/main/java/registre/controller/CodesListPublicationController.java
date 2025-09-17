@@ -13,7 +13,6 @@ import registre.dto.MetadataDto;
 import registre.service.CodesListPublicationService;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -25,24 +24,7 @@ public class CodesListPublicationController implements CodesListPublicationApi {
 
     @Override
     public ResponseEntity<Void> createCodesListMetadataOnly(@Valid MetadataDto metadataDto) {
-        CodesListDto dto = new CodesListDto(
-                null,
-                new MetadataDto(
-                        null,
-                        metadataDto.label(),
-                        metadataDto.version(),
-                        metadataDto.externalLink()
-                ),
-                null,
-                null
-        );
-
-        UUID id = codesListPublicationService.createCodesList(dto);
-
-        if (metadataDto.externalLink() != null) {
-            codesListPublicationService.createExternalLink(id, metadataDto.externalLink());
-        }
-
+        codesListPublicationService.createCodesListMetadataOnly(metadataDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
