@@ -27,6 +27,12 @@ public class CodesListPublicationService {
     private final CodesListRepository codesListRepository;
     private final CodesListMapper codesListMapper;
 
+    /**
+     * POST /codes-lists/metadata-only : Create a codes list using only metadata.
+     * Persists the codes list and adds an external link if provided.
+     *
+     * @param metadataDto the metadata for the codes list
+     */
     @Transactional
     public void createCodesListMetadataOnly(MetadataDto metadataDto) {
         CodesListDto dto = new CodesListDto(
