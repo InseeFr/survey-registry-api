@@ -47,6 +47,39 @@ class CodesListPublicationServiceIntegrationTest {
     }
 
     @Test
+    void testCreateCodesListMetadataOnly_WithExternalLink() {
+        CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
+        externalLinkEntity.setId("ExternalLink1");
+        externalLinkEntity.setVersion("v1");
+        externalLinkRepository.save(externalLinkEntity);
+
+        MetadataDto metadataDto = new MetadataDto(null, "Label1", "v1", new CodesListExternalLinkDto("ExternalLink1"));
+
+        service.createCodesListMetadataOnly(metadataDto);
+
+        CodesListEntity entity = codesListRepository.findAll().stream()
+                .filter(e -> "Label1".equals(e.getLabel()))
+                .findFirst().orElseThrow();
+
+        assertEquals("v1", entity.getVersion());
+        assertNotNull(entity.getCodesListExternalLink());
+        assertEquals("ExternalLink1", entity.getCodesListExternalLink().getId());
+        assertEquals("v1", entity.getCodesListExternalLink().getVersion());
+    }
+
+    @Test
+    void testCreateCodesListMetadataOnly_WithoutExternalLink() {
+        MetadataDto metadataDto = new MetadataDto(null, "Label2", "v2", null);
+
+        service.createCodesListMetadataOnly(metadataDto);
+
+        CodesListEntity entity = codesListRepository.findAll().stream().findFirst().orElseThrow();
+        assertEquals("Label2", entity.getLabel());
+        assertEquals("v2", entity.getVersion());
+        assertNull(entity.getCodesListExternalLink());
+    }
+    
+    @Test
     void testCreateAndFetchCodesList() {
         CodesListDto dto = buildEmptyCodesListDto();
         UUID id = service.createCodesList(dto);

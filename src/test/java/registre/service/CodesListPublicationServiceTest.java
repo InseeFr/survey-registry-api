@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
+import registre.dto.MetadataDto;
 import registre.entity.CodesListEntity;
 import registre.entity.CodesListExternalLinkEntity;
 import registre.mapper.CodesListMapper;
@@ -39,6 +40,44 @@ class CodesListPublicationServiceTest {
         objectMapper = new ObjectMapper();
 
         service = new CodesListPublicationService(externalLinkRepository, codesListRepository, codesListMapper);
+    }
+
+    @Test
+    void testCreateCodesListMetadataOnly_WithExternalLink() {
+        MetadataDto metadataDto = new MetadataDto(
+                null,
+                "Label1",
+                "v1",
+                new CodesListExternalLinkDto("ExternalLink1")
+        );
+
+        CodesListEntity entity = new CodesListEntity();
+        when(codesListMapper.toEntity(any(CodesListDto.class))).thenReturn(entity);
+        when(codesListRepository.save(entity)).thenReturn(entity);
+        when(codesListRepository.existsById(any(UUID.class))).thenReturn(true);
+        when(codesListRepository.findById(any(UUID.class))).thenReturn(Optional.of(entity));
+
+        CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
+        externalLinkEntity.setId("ExternalLink1");
+        externalLinkEntity.setVersion("v1");
+        when(externalLinkRepository.findById("ExternalLink1")).thenReturn(Optional.of(externalLinkEntity));
+
+        service.createCodesListMetadataOnly(metadataDto);
+
+        verify(codesListRepository, times(2)).save(entity);
+    }
+
+    @Test
+    void testCreateCodesListMetadataOnly_WithoutExternalLink() {
+        MetadataDto metadataDto = new MetadataDto(null, "Label1", "v1", null);
+
+        CodesListEntity entity = new CodesListEntity();
+        when(codesListMapper.toEntity(any(CodesListDto.class))).thenReturn(entity);
+        when(codesListRepository.save(entity)).thenReturn(entity);
+
+        service.createCodesListMetadataOnly(metadataDto);
+
+        verify(codesListRepository, times(1)).save(entity);
     }
 
     @Test

@@ -63,7 +63,8 @@ class CodesListPublicationControllerTest {
                         .content(objectMapper.writeValueAsString(metadataDto)))
                 .andExpect(status().isCreated());
 
-        Mockito.verify(codesListPublicationService).createCodesList(any(CodesListDto.class));
+        Mockito.verify(codesListPublicationService)
+                .createCodesListMetadataOnly(metadataDto);
     }
 
     @Test
