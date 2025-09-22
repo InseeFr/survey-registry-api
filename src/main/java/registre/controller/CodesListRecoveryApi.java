@@ -5,7 +5,6 @@
  */
 package registre.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -23,7 +22,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.context.request.NativeWebRequest;
 import registre.dto.MetadataDto;
+
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -100,7 +101,7 @@ public interface CodesListRecoveryApi {
             value = "/codes-lists/{codesListId}/content",
             produces = { "application/json" }
     )
-    ResponseEntity<JsonNode> getCodesListById(
+    ResponseEntity<List<Map<String,Object>>> getCodesListById(
             @Parameter(name = "codesListId", required = true, in = ParameterIn.PATH)
             @PathVariable("codesListId") UUID codesListId
     );
@@ -161,7 +162,7 @@ public interface CodesListRecoveryApi {
         value = "/codes-lists/{codesListId}/search-configuration",
         produces = { "application/json" }
     )
-    default ResponseEntity<JsonNode> getCodesListSearchConfigById(
+    default ResponseEntity<Object> getCodesListSearchConfigById(
         @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);

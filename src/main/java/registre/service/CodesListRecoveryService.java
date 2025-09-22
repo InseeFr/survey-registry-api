@@ -1,6 +1,5 @@
 package registre.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import registre.dto.CodesListDto;
@@ -11,6 +10,7 @@ import registre.mapper.MetadataMapper;
 import registre.repository.CodesListRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,7 +37,7 @@ public class CodesListRecoveryService {
                 .toList();
     }
 
-    public Optional<JsonNode> getCodesListById(UUID id) {
+    public Optional<List<Map<String,Object>>> getCodesListById(UUID id) {
         return codesListRepository.findById(id)
                 .map(CodesListEntity::getContent);
     }
@@ -48,7 +48,7 @@ public class CodesListRecoveryService {
                 .map(CodesListDto::metadata);
     }
 
-    public Optional<JsonNode> getSearchConfiguration(UUID id) {
+    public Optional<Object> getSearchConfiguration(UUID id) {
         return codesListRepository.findById(id)
                 .map(CodesListEntity::getSearchConfiguration);
     }

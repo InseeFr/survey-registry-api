@@ -1,5 +1,6 @@
 package registre.service;
-import com.fasterxml.jackson.databind.JsonNode;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,8 @@ import registre.mapper.CodesListMapper;
 import registre.repository.CodesListExternalLinkRepository;
 import registre.repository.CodesListRepository;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -65,7 +68,7 @@ public class CodesListPublicationService {
         return entity.getId();
     }
 
-    public void createContent(UUID codesListId, JsonNode contentJson) {
+    public void createContent(UUID codesListId, List<Map<String,Object>> content) {
         if (!codesListRepository.existsById(codesListId)) {
             throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
         }
@@ -78,7 +81,7 @@ public class CodesListPublicationService {
         }
 
         codesListRepository.findById(codesListId).ifPresent(entity -> {
-            entity.setContent(contentJson);
+            entity.setContent(content);
             codesListRepository.save(entity);
         });
     }
@@ -107,7 +110,7 @@ public class CodesListPublicationService {
         });
     }
 
-    public void createSearchConfiguration(UUID codesListId, JsonNode configJson) {
+    public void createSearchConfiguration(UUID codesListId, Object configJson) {
         if (!codesListRepository.existsById(codesListId)) {
             throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
         }
@@ -120,8 +123,18 @@ public class CodesListPublicationService {
         }
 
         codesListRepository.findById(codesListId).ifPresent(entity -> {
-            entity.setSearchConfiguration(configJson);
-            codesListRepository.save(entity);
+            try {
+                String json = new ObjectMapper().writeValueAsString(configJson);
+                entity.setSearchConfiguration(json);
+                codesListRepository.save(entity);
+            } catch (Exception e) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Invalid JSON search configuration",
+                        e
+                );
+            }
         });
     }
+
 }

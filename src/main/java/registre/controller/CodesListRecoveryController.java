@@ -1,6 +1,5 @@
 package registre.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,6 +7,7 @@ import registre.dto.MetadataDto;
 import registre.service.CodesListRecoveryService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -23,7 +23,7 @@ public class CodesListRecoveryController implements CodesListRecoveryApi {
     }
 
     @Override
-    public ResponseEntity<JsonNode> getCodesListById(UUID codesListId) {
+    public ResponseEntity<List<Map<String,Object>>> getCodesListById(UUID codesListId) {
         return codesListRecoveryService.getCodesListById(codesListId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -37,7 +37,7 @@ public class CodesListRecoveryController implements CodesListRecoveryApi {
     }
 
     @Override
-    public ResponseEntity<JsonNode> getCodesListSearchConfigById(UUID codesListId) {
+    public ResponseEntity<Object> getCodesListSearchConfigById(UUID codesListId) {
         return codesListRecoveryService.getSearchConfiguration(codesListId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

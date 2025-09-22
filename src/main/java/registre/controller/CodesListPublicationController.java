@@ -1,11 +1,10 @@
 package registre.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import registre.dto.CodesListDto;
 import registre.dto.CodesListExternalLinkDto;
@@ -13,6 +12,7 @@ import registre.dto.MetadataDto;
 import registre.service.CodesListPublicationService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -20,7 +20,6 @@ import java.util.UUID;
 public class CodesListPublicationController implements CodesListPublicationApi {
 
     private final CodesListPublicationService codesListPublicationService;
-    private final ObjectMapper objectMapper;
 
     @Override
     public ResponseEntity<Void> createCodesListMetadataOnly(@Valid MetadataDto metadataDto) {
@@ -40,7 +39,7 @@ public class CodesListPublicationController implements CodesListPublicationApi {
             codesListPublicationService.createExternalLink(id, codesListDto.metadata().externalLink());
         }
 
-        if (codesListDto.searchConfiguration() != null && !codesListDto.searchConfiguration().isEmpty()) {
+        if (codesListDto.searchConfiguration() != null) {
             codesListPublicationService.createSearchConfiguration(id, codesListDto.searchConfiguration());
         }
 
@@ -48,9 +47,8 @@ public class CodesListPublicationController implements CodesListPublicationApi {
     }
 
     @Override
-    public ResponseEntity<Void> putCodesListContentById(UUID codesListId, List<Object> content) {
-        JsonNode jsonNode = objectMapper.valueToTree(content);
-        codesListPublicationService.createContent(codesListId, jsonNode);
+    public ResponseEntity<Void> putCodesListContentById(UUID codesListId, @RequestBody List<Map<String,Object>> content) {
+        codesListPublicationService.createContent(codesListId, content);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -61,9 +59,8 @@ public class CodesListPublicationController implements CodesListPublicationApi {
     }
 
     @Override
-    public ResponseEntity<Void> putCodesListSearchConfigById(UUID codesListId, List<Object> body) {
-        JsonNode jsonNode = objectMapper.valueToTree(body);
-        codesListPublicationService.createSearchConfiguration(codesListId, jsonNode);
+    public ResponseEntity<Void> putCodesListSearchConfigById(UUID codesListId, @RequestBody Object searchConfig) {
+        codesListPublicationService.createSearchConfiguration(codesListId, searchConfig);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

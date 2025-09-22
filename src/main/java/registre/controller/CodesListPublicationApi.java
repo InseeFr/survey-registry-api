@@ -28,6 +28,7 @@ import registre.dto.ErrorResponseDto;
 import registre.dto.MetadataDto;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -127,7 +128,7 @@ public interface CodesListPublicationApi {
     )
     default ResponseEntity<Void> putCodesListContentById(
             @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
-            @Parameter(name = "content", description = "JSON content") @Valid @RequestBody(required = false) List<Object> content
+            @Parameter(name = "content", description = "JSON content") @Valid @RequestBody(required = false) List<Map<String,Object>> content
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
@@ -169,7 +170,7 @@ public interface CodesListPublicationApi {
      * PUT /codes-lists/{codesListId}/search-configuration : Add search configuration to a codes list
      *
      * @param codesListId  (required)
-     * @param body  (optional)
+     * @param searchConfig  (optional)
      * @return Search configuration set successfully (status code 201)
      *         or Structured error (status code 409)
      */
@@ -191,7 +192,7 @@ public interface CodesListPublicationApi {
     )
     default ResponseEntity<Void> putCodesListSearchConfigById(
         @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
-        @Parameter(name = "body", description = "JSON content") @Valid @RequestBody(required = false) List<Object> body
+        @Parameter(name = "searchConfig", description = "JSON content") @Valid @RequestBody(required = false) Object searchConfig
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
