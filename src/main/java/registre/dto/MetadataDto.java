@@ -15,7 +15,7 @@ import java.util.UUID;
         value = "org.openapitools.codegen.languages.SpringCodegen",
         date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]"
 )
-@Schema(description = "Metadata information for a codes list")
+@Schema(description = "Metadata information for a code list")
 public record MetadataDto(
 
         @Schema(
@@ -29,7 +29,7 @@ public record MetadataDto(
         @NotBlank
         @Schema(
                 name = "label",
-                description = "Human-readable label for the codes list",
+                description = "Human-readable label for the code list",
                 example = "Communes",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
@@ -39,7 +39,7 @@ public record MetadataDto(
         @NotBlank
         @Schema(
                 name = "version",
-                description = "Version of the codes list",
+                description = "Version of the code list",
                 example = "2024",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
