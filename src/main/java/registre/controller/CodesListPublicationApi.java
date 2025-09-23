@@ -128,7 +128,7 @@ public interface CodesListPublicationApi {
     )
     default ResponseEntity<Void> putCodesListContentById(
             @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
-            @Parameter(name = "content", description = "JSON content") @Valid @RequestBody(required = false) List<Map<String,Object>> content
+            @Parameter(name = "content", description = "") @Valid @RequestBody(required = false) List<Map<String,Object>> content
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
@@ -192,7 +192,7 @@ public interface CodesListPublicationApi {
     )
     default ResponseEntity<Void> putCodesListSearchConfigById(
         @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
-        @Parameter(name = "searchConfig", description = "JSON content") @Valid @RequestBody(required = false) Map<String,Object> searchConfig
+        @Parameter(name = "searchConfig", description = "") @Valid @RequestBody(required = false) Map<String,Object> searchConfig
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
