@@ -37,7 +37,7 @@ public class CodesListRecoveryController implements CodesListRecoveryApi {
     }
 
     @Override
-    public ResponseEntity<Object> getCodesListSearchConfigById(UUID codesListId) {
+    public ResponseEntity<Map<String,Object>> getCodesListSearchConfigById(UUID codesListId) {
         return codesListRecoveryService.getSearchConfiguration(codesListId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

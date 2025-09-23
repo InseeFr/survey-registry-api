@@ -1,8 +1,5 @@
 package registre.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -17,9 +14,7 @@ import registre.mapper.CodesListMapper;
 import registre.repository.CodesListExternalLinkRepository;
 import registre.repository.CodesListRepository;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -30,14 +25,12 @@ class CodesListPublicationServiceTest {
     private CodesListRepository codesListRepository;
     private CodesListMapper codesListMapper;
     private CodesListPublicationService service;
-    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
         codesListRepository = mock(CodesListRepository.class);
         externalLinkRepository = mock(CodesListExternalLinkRepository.class);
         codesListMapper = mock(CodesListMapper.class);
-        objectMapper = new ObjectMapper();
 
         service = new CodesListPublicationService(externalLinkRepository, codesListRepository, codesListMapper);
     }
@@ -103,21 +96,24 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsContent(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
-        ArrayNode contentJson = objectMapper.createArrayNode();
-        contentJson.add("code1");
-        contentJson.add("code2");
+        List<Map<String,Object>> content = List.of(
+                Map.of("code", "code1"),
+                Map.of("code", "code2")
+        );
 
-        service.createContent(id, contentJson);
+        service.createContent(id, content);
 
-        assertEquals(contentJson, entity.getContent());
+        assertEquals(content, entity.getContent());
         verify(codesListRepository).save(entity);
     }
 
     @Test
     void testCreateContent_WhenCodesListDoesNotExist() {
         UUID id = UUID.randomUUID();
-        when(codesListRepository.findById(id)).thenReturn(Optional.empty());
-        Executable executable = () -> service.createContent(id, objectMapper.createArrayNode());
+        when(codesListRepository.existsById(id)).thenReturn(false);
+        List<Map<String,Object>> content = List.of(Map.of("code", "dummy"));
+        Executable executable = () -> service.createContent(id, content);
+
         assertThrows(IllegalArgumentException.class, executable);
     }
 
@@ -128,11 +124,12 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsById(id)).thenReturn(true);
         when(codesListRepository.existsContent(id)).thenReturn(true);
 
-        ArrayNode contentJson = objectMapper.createArrayNode();
-        contentJson.add("code1");
+        List<Map<String,Object>> content = List.of(
+                Map.of("code", "code1")
+        );
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> service.createContent(id, contentJson));
+                () -> service.createContent(id, content));
 
         assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
         assertTrue(Objects.requireNonNull(ex.getReason()).contains("already exists"));
@@ -194,9 +191,7 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsSearchConfiguration(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
-        ObjectNode searchConfig = objectMapper.createObjectNode();
-        searchConfig.put("type", "advanced");
-
+        Map<String,Object> searchConfig = Map.of("type", "advanced");
         service.createSearchConfiguration(id, searchConfig);
 
         assertNotNull(entity.getSearchConfiguration());
@@ -213,7 +208,8 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsSearchConfiguration(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
-        ObjectNode searchConfig = objectMapper.createObjectNode();
+        Map<String,Object> searchConfig = Map.of();
+
         service.createSearchConfiguration(id, searchConfig);
 
         verify(codesListRepository).save(entity);
@@ -222,8 +218,12 @@ class CodesListPublicationServiceTest {
     @Test
     void testCreateSearchConfiguration_WhenCodesListDoesNotExist() {
         UUID id = UUID.randomUUID();
-        when(codesListRepository.findById(id)).thenReturn(Optional.empty());
-        Executable executable = () -> service.createSearchConfiguration(id, objectMapper.createObjectNode());
+        when(codesListRepository.existsById(id)).thenReturn(false);
+
+        Map<String,Object> searchConfig = Map.of("type", "advanced");
+
+        Executable executable = () -> service.createSearchConfiguration(id, searchConfig);
+
         assertThrows(IllegalArgumentException.class, executable);
     }
 
@@ -234,8 +234,7 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsById(id)).thenReturn(true);
         when(codesListRepository.existsSearchConfiguration(id)).thenReturn(true);
 
-        ObjectNode configJson = objectMapper.createObjectNode();
-        configJson.put("type", "advanced");
+        Map<String,Object> configJson = Map.of("type", "advanced");
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                 () -> service.createSearchConfiguration(id, configJson));

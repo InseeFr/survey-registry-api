@@ -59,7 +59,7 @@ public class CodesListPublicationController implements CodesListPublicationApi {
     }
 
     @Override
-    public ResponseEntity<Void> putCodesListSearchConfigById(UUID codesListId, @RequestBody Object searchConfig) {
+    public ResponseEntity<Void> putCodesListSearchConfigById(UUID codesListId, @RequestBody Map<String,Object> searchConfig) {
         codesListPublicationService.createSearchConfiguration(codesListId, searchConfig);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

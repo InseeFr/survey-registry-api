@@ -1,6 +1,5 @@
 package registre.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import registre.dto.CodesListDto;
@@ -12,6 +11,7 @@ import registre.mapper.MetadataMapper;
 import registre.repository.CodesListRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -106,7 +106,10 @@ class CodesListRecoveryServiceTest {
 
     @Test
     void testGetCodesListById_Found() {
-        JsonNode content = mock(JsonNode.class);
+        List<Map<String, Object>> content = List.of(
+                Map.of("id", "Code1", "label", "Label1")
+        );
+
         CodesListEntity entity = new CodesListEntity();
         entity.setContent(content);
 
@@ -114,15 +117,17 @@ class CodesListRecoveryServiceTest {
 
         when(repository.findById(id)).thenReturn(Optional.of(entity));
 
-        Optional<JsonNode> result = service.getCodesListById(id);
+        Optional<List<Map<String,Object>>> result = service.getCodesListById(id);
 
         assertTrue(result.isPresent());
-        assertSame(content, result.get());
+        assertEquals("Code1", result.get().getFirst().get("id"));
+        assertEquals("Label1", result.get().getFirst().get("label"));
     }
 
     @Test
     void testGetSearchConfiguration_Found() {
-        JsonNode searchConfig = mock(JsonNode.class);
+        Map<String,Object> searchConfig = Map.of("filter", true);
+
         CodesListEntity entity = new CodesListEntity();
         entity.setSearchConfiguration(searchConfig);
 
@@ -130,10 +135,10 @@ class CodesListRecoveryServiceTest {
 
         when(repository.findById(id)).thenReturn(Optional.of(entity));
 
-        Optional<JsonNode> result = service.getSearchConfiguration(id);
+        Optional<Map<String,Object>> result = service.getSearchConfiguration(id);
 
         assertTrue(result.isPresent());
-        assertSame(searchConfig, result.get());
+        assertEquals(true, result.get().get("filter"));
     }
 
     @Test
@@ -141,7 +146,7 @@ class CodesListRecoveryServiceTest {
         UUID id = UUID.randomUUID();
         when(repository.findById(id)).thenReturn(Optional.empty());
 
-        Optional<JsonNode> result = service.getSearchConfiguration(id);
+        Optional<Map<String,Object>> result = service.getSearchConfiguration(id);
 
         assertTrue(result.isEmpty());
     }

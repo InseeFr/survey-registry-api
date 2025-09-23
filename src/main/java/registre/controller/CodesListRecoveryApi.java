@@ -162,7 +162,7 @@ public interface CodesListRecoveryApi {
         value = "/codes-lists/{codesListId}/search-configuration",
         produces = { "application/json" }
     )
-    default ResponseEntity<Object> getCodesListSearchConfigById(
+    default ResponseEntity<Map<String,Object>> getCodesListSearchConfigById(
         @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);

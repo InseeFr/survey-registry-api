@@ -32,7 +32,7 @@ public class CodesListEntity {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "search_config")
-    private String searchConfiguration;
+    private Map<String,Object> searchConfiguration;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "content")

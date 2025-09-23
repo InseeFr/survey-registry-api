@@ -29,16 +29,16 @@ public record CodesListDto(
         @Schema(
                 name = "searchConfiguration",
                 description = "Search configuration JSON object",
-                type = "object",
+                type = "Map<String,Object>",
                 example = "{}"
         )
         @JsonProperty("searchConfiguration")
-        Object searchConfiguration,
+        Map<String,Object> searchConfiguration,
 
         @Schema(
                 name = "content",
                 description = "Codes list content JSON object",
-                type = "object",
+                type = "List<Map<String,Object>>",
                 example = "[{},{}]"
         )
         @JsonProperty("content")

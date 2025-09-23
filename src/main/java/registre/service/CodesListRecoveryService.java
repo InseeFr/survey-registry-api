@@ -48,7 +48,7 @@ public class CodesListRecoveryService {
                 .map(CodesListDto::metadata);
     }
 
-    public Optional<Object> getSearchConfiguration(UUID id) {
+    public Optional<Map<String,Object>> getSearchConfiguration(UUID id) {
         return codesListRepository.findById(id)
                 .map(CodesListEntity::getSearchConfiguration);
     }

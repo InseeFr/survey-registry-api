@@ -1,6 +1,5 @@
 package registre.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -110,7 +109,7 @@ public class CodesListPublicationService {
         });
     }
 
-    public void createSearchConfiguration(UUID codesListId, Object configJson) {
+    public void createSearchConfiguration(UUID codesListId, Map<String,Object> configJson) {
         if (!codesListRepository.existsById(codesListId)) {
             throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
         }
@@ -123,17 +122,8 @@ public class CodesListPublicationService {
         }
 
         codesListRepository.findById(codesListId).ifPresent(entity -> {
-            try {
-                String json = new ObjectMapper().writeValueAsString(configJson);
-                entity.setSearchConfiguration(json);
-                codesListRepository.save(entity);
-            } catch (Exception e) {
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Invalid JSON search configuration",
-                        e
-                );
-            }
+            entity.setSearchConfiguration(configJson);
+            codesListRepository.save(entity);
         });
     }
 

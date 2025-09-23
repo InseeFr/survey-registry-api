@@ -1,8 +1,5 @@
 package registre.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +14,7 @@ import registre.entity.CodesListExternalLinkEntity;
 import registre.repository.CodesListExternalLinkRepository;
 import registre.repository.CodesListRepository;
 
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,9 +30,6 @@ class CodesListPublicationServiceIntegrationTest {
 
     @Autowired
     private CodesListExternalLinkRepository externalLinkRepository;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     private CodesListDto buildEmptyCodesListDto() {
         return new CodesListDto(
@@ -95,18 +89,22 @@ class CodesListPublicationServiceIntegrationTest {
         CodesListDto dto = buildEmptyCodesListDto();
         UUID id = service.createCodesList(dto);
 
-        ObjectNode codeNode = objectMapper.createObjectNode();
-        codeNode.put("id", "code1");
-        codeNode.put("label", "Label1");
+        Map<String, Object> code1 = new HashMap<>();
+        code1.put("id", "code1");
+        code1.put("label", "Label1");
 
-        service.createContent(id, objectMapper.createArrayNode().add(codeNode));
+        List<Map<String, Object>> content = new ArrayList<>();
+        content.add(code1);
 
-        CodesListEntity updated = codesListRepository.findById(id).orElseThrow();
-        JsonNode content = updated.getContent();
-        assertNotNull(content);
-        assertTrue(content.isArray());
-        assertEquals(1, content.size());
-        assertEquals("code1", content.get(0).get("id").asText());
+        service.createContent(id, content);
+
+        CodesListEntity created = codesListRepository.findById(id).orElseThrow();
+        List<Map<String, Object>> createdContent = created.getContent();
+
+        assertNotNull(createdContent);
+        assertEquals(1, createdContent.size());
+        assertEquals("code1", createdContent.getFirst().get("id"));
+        assertEquals("Label1", createdContent.getFirst().get("label"));
     }
 
     @Test
@@ -122,9 +120,9 @@ class CodesListPublicationServiceIntegrationTest {
         CodesListExternalLinkDto link = new CodesListExternalLinkDto("ExternalLink1");
         service.createExternalLink(id, link);
 
-        CodesListEntity updated = codesListRepository.findById(id).orElseThrow();
-        assertNotNull(updated.getCodesListExternalLink());
-        assertEquals("v1", updated.getCodesListExternalLink().getVersion());
+        CodesListEntity created = codesListRepository.findById(id).orElseThrow();
+        assertNotNull(created.getCodesListExternalLink());
+        assertEquals("v1", created.getCodesListExternalLink().getVersion());
     }
 
     @Test
@@ -132,16 +130,16 @@ class CodesListPublicationServiceIntegrationTest {
         CodesListDto dto = buildEmptyCodesListDto();
         UUID id = service.createCodesList(dto);
 
-        ObjectNode configNode = objectMapper.createObjectNode();
-        configNode.put("type", "simple");
+        Map<String, Object> configMap = new HashMap<>();
+        configMap.put("type", "simple");
 
-        service.createSearchConfiguration(id, configNode);
-
+        service.createSearchConfiguration(id, configMap);
         CodesListEntity updated = codesListRepository.findById(id).orElseThrow();
-        JsonNode searchConfig = updated.getSearchConfiguration();
+        Map<String, Object> searchConfig = updated.getSearchConfiguration();
+
         assertNotNull(searchConfig);
-        assertTrue(searchConfig.has("type"));
-        assertEquals("simple", searchConfig.get("type").asText());
+        assertTrue(searchConfig.containsKey("type"));
+        assertEquals("simple", searchConfig.get("type"));
     }
 
     @Test
@@ -149,13 +147,12 @@ class CodesListPublicationServiceIntegrationTest {
         CodesListDto dto = buildEmptyCodesListDto();
         UUID id = service.createCodesList(dto);
 
-        ObjectNode codeNode = objectMapper.createObjectNode();
-        codeNode.put("id", "code1");
-        codeNode.put("label", "Label1");
+        Map<String, Object> code1 = Map.of("id", "code1", "label", "Label1");
+        List<Map<String, Object>> content = List.of(code1);
 
-        service.createContent(id, objectMapper.createArrayNode().add(codeNode));
+        service.createContent(id, content);
 
-        Executable action = () -> service.createContent(id, objectMapper.createArrayNode().add(codeNode));
+        Executable action = () -> service.createContent(id, content);
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, action);
         assertEquals(409, ex.getStatusCode().value());
@@ -185,11 +182,10 @@ class CodesListPublicationServiceIntegrationTest {
         CodesListDto dto = buildEmptyCodesListDto();
         UUID id = service.createCodesList(dto);
 
-        ObjectNode configNode = objectMapper.createObjectNode();
-        configNode.put("type", "simple");
-        service.createSearchConfiguration(id, configNode);
+        Map<String,Object> configMap = Map.of("type", "simple");
+        service.createSearchConfiguration(id, configMap);
 
-        Executable action = () -> service.createSearchConfiguration(id, configNode);
+        Executable action = () -> service.createSearchConfiguration(id, configMap);
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, action);
         assertEquals(409, ex.getStatusCode().value());

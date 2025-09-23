@@ -1,7 +1,5 @@
 package registre.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +9,7 @@ import registre.entity.CodesListEntity;
 import registre.repository.CodesListRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,9 +24,6 @@ class CodesListRecoveryServiceIntegrationTest {
 
     @Autowired
     private CodesListRepository repository;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @BeforeEach
     void cleanDatabase() {
@@ -69,59 +65,53 @@ class CodesListRecoveryServiceIntegrationTest {
     }
 
     @Test
-    void testGetCodesListById() throws Exception {
+    void testGetCodesListById() {
         CodesListEntity codesList = new CodesListEntity();
         UUID id3 = UUID.randomUUID();
         codesList.setId(id3);
         codesList.setLabel("Label3");
         codesList.setVersion("V3");
 
-        JsonNode content = objectMapper.readTree("""
-                    [
-                        {"id": "Code1", "label": "Label1"}
-                    ]
-                """);
+        List<Map<String,Object>> content = List.of(
+                Map.of("id", "Code1", "label", "Label1")
+        );
         codesList.setContent(content);
 
         repository.save(codesList);
 
-        Optional<JsonNode> result = service.getCodesListById(id3);
+        Optional<List<Map<String,Object>>> result = service.getCodesListById(id3);
 
         assertTrue(result.isPresent());
-        assertEquals("Code1", result.get().get(0).get("id").asText());
-        assertEquals("Label1", result.get().get(0).get("label").asText());
+        assertEquals("Code1", result.get().getFirst().get("id"));
+        assertEquals("Label1", result.get().getFirst().get("label"));
+
         System.out.println(result.get().getClass());
         System.out.println(result.get());
     }
 
     @Test
-    void testGetSearchConfiguration() throws Exception {
+    void testGetSearchConfiguration() {
         CodesListEntity codesList = new CodesListEntity();
         UUID id4 = UUID.randomUUID();
         codesList.setId(id4);
         codesList.setLabel("Label4");
         codesList.setVersion("V4");
 
-        JsonNode config = objectMapper.readTree("""
-            {
-                "filter": true
-            }
-        """);
+        Map<String,Object> config = Map.of("filter", true);
         codesList.setSearchConfiguration(config);
 
         repository.save(codesList);
 
-        Optional<JsonNode> result = service.getSearchConfiguration(id4);
+        Optional<Map<String,Object>> result = service.getSearchConfiguration(id4);
 
         assertTrue(result.isPresent());
-        assertTrue(result.get().get("filter").asBoolean());
+        assertEquals(true, result.get().get("filter"));
     }
 
     @Test
     void testGetSearchConfiguration_NotFound() {
         UUID id = UUID.randomUUID();
-        Optional<JsonNode> result = service.getSearchConfiguration(id);
-
+        Optional<Map<String,Object>> result = service.getSearchConfiguration(id);
         assertTrue(result.isEmpty());
     }
 

@@ -192,7 +192,7 @@ public interface CodesListPublicationApi {
     )
     default ResponseEntity<Void> putCodesListSearchConfigById(
         @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
-        @Parameter(name = "searchConfig", description = "JSON content") @Valid @RequestBody(required = false) Object searchConfig
+        @Parameter(name = "searchConfig", description = "JSON content") @Valid @RequestBody(required = false) Map<String,Object> searchConfig
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
