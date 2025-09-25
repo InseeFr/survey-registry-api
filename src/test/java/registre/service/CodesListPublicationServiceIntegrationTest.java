@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLinkDto;
-import registre.dto.MetadataDto;
+import registre.dto.*;
 import registre.entity.CodesListEntity;
 import registre.entity.CodesListExternalLinkEntity;
 import registre.repository.CodesListExternalLinkRepository;
@@ -93,18 +91,18 @@ class CodesListPublicationServiceIntegrationTest {
         code1.put("id", "code1");
         code1.put("label", "Label1");
 
-        List<Map<String, Object>> content = new ArrayList<>();
-        content.add(code1);
+        List<Map<String, Object>> contentList = new ArrayList<>();
+        contentList.add(code1);
 
-        service.createContent(id, content);
+        service.createContent(id, new CodesListContent(contentList));
 
         CodesListEntity created = codesListRepository.findById(id).orElseThrow();
-        List<Map<String, Object>> createdContent = created.getContent();
+        CodesListContent createdContent = created.getContent();
 
         assertNotNull(createdContent);
-        assertEquals(1, createdContent.size());
-        assertEquals("code1", createdContent.getFirst().get("id"));
-        assertEquals("Label1", createdContent.getFirst().get("label"));
+        assertEquals(1, createdContent.items().size());
+        assertEquals("code1", createdContent.items().getFirst().get("id"));
+        assertEquals("Label1", createdContent.items().getFirst().get("label"));
     }
 
     @Test
@@ -133,11 +131,13 @@ class CodesListPublicationServiceIntegrationTest {
         Map<String, Object> configMap = new HashMap<>();
         configMap.put("type", "simple");
 
-        service.createSearchConfiguration(id, configMap);
-        CodesListEntity updated = codesListRepository.findById(id).orElseThrow();
-        Map<String, Object> searchConfig = updated.getSearchConfiguration();
+        service.createSearchConfiguration(id, new SearchConfig(configMap));
 
-        assertNotNull(searchConfig);
+        CodesListEntity updated = codesListRepository.findById(id).orElseThrow();
+        SearchConfig searchConfigWrapper = updated.getSearchConfiguration();
+
+        assertNotNull(searchConfigWrapper);
+        Map<String, Object> searchConfig = searchConfigWrapper.content();
         assertTrue(searchConfig.containsKey("type"));
         assertEquals("simple", searchConfig.get("type"));
     }
@@ -148,11 +148,11 @@ class CodesListPublicationServiceIntegrationTest {
         UUID id = service.createCodesList(dto);
 
         Map<String, Object> code1 = Map.of("id", "code1", "label", "Label1");
-        List<Map<String, Object>> content = List.of(code1);
+        List<Map<String, Object>> contentList = List.of(code1);
 
-        service.createContent(id, content);
+        service.createContent(id, new CodesListContent(contentList));
 
-        Executable action = () -> service.createContent(id, content);
+        Executable action = () -> service.createContent(id, new CodesListContent(contentList));
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, action);
         assertEquals(409, ex.getStatusCode().value());
@@ -182,10 +182,11 @@ class CodesListPublicationServiceIntegrationTest {
         CodesListDto dto = buildEmptyCodesListDto();
         UUID id = service.createCodesList(dto);
 
-        Map<String,Object> configMap = Map.of("type", "simple");
-        service.createSearchConfiguration(id, configMap);
+        Map<String, Object> configMap = Map.of("type", "simple");
 
-        Executable action = () -> service.createSearchConfiguration(id, configMap);
+        service.createSearchConfiguration(id, new SearchConfig(configMap));
+
+        Executable action = () -> service.createSearchConfiguration(id, new SearchConfig(configMap));
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, action);
         assertEquals(409, ex.getStatusCode().value());

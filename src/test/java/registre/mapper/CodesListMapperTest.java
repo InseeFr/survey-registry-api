@@ -2,9 +2,7 @@ package registre.mapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLinkDto;
-import registre.dto.MetadataDto;
+import registre.dto.*;
 import registre.entity.CodesListEntity;
 import registre.entity.CodesListExternalLinkEntity;
 
@@ -35,11 +33,8 @@ class CodesListMapperTest {
         externalLink.setVersion("v1");
         codesListEntity.setCodesListExternalLink(externalLink);
 
-        Map<String,Object> searchConfig = Map.of("enabled", true);
-        List<Map<String,Object>> content = List.of(Map.of("code", "01"));
-
-        codesListEntity.setSearchConfiguration(searchConfig);
-        codesListEntity.setContent(content);
+        codesListEntity.setSearchConfiguration(new SearchConfig(Map.of("enabled", true)));
+        codesListEntity.setContent(new CodesListContent(List.of(Map.of("code","01"))));
 
         // When
         CodesListDto dto = codesListMapper.toDto(codesListEntity);
@@ -55,8 +50,9 @@ class CodesListMapperTest {
         assertEquals("ExternalLink1", dto.metadata().externalLink().id());
 
         assertNotNull(dto.searchConfiguration());
-        assertEquals(true, dto.searchConfiguration().get("enabled"));
-        assertEquals("01", dto.content().getFirst().get("code"));
+        assertEquals(true, dto.searchConfiguration().content().get("enabled"));
+        assertNotNull(dto.content());
+        assertEquals("01", dto.content().items().getFirst().get("code"));
     }
 
     @Test
@@ -69,10 +65,8 @@ class CodesListMapperTest {
 
         MetadataDto metadata = new MetadataDto(testId2, "Label2", "v2", externalLink);
 
-        Map<String,Object> searchConfig = Map.of("enabled", false);
-        List<Map<String,Object>> content = List.of(Map.of("code", "01"));
-
-        CodesListDto dto = new CodesListDto(testId2, metadata, searchConfig, content);
+        CodesListDto dto = new CodesListDto(testId2, metadata, new SearchConfig(Map.of("enabled", false)),
+                new CodesListContent(List.of(Map.of("code", "01"))));
 
         // When
         CodesListEntity entity = codesListMapper.toEntity(dto);

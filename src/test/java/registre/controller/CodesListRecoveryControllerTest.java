@@ -8,7 +8,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.web.servlet.MockMvc;
+import registre.dto.CodesListContent;
 import registre.dto.MetadataDto;
+import registre.dto.SearchConfig;
 import registre.service.CodesListRecoveryService;
 
 import java.util.List;
@@ -66,9 +68,9 @@ class CodesListRecoveryControllerTest {
         );
 
         Mockito.when(codesListRecoveryService.getCodesListById(testId))
-                .thenReturn(Optional.of(content));
+                .thenReturn(Optional.of(new CodesListContent(content)));
 
-        mockMvc.perform(get("/codes-lists/" + testId + "/content"))
+        mockMvc.perform(get("/codes-lists/" + testId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value("Code1"))
@@ -118,7 +120,7 @@ class CodesListRecoveryControllerTest {
         Map<String, Object> searchConfig = Map.of("filter", true);
 
         Mockito.when(codesListRecoveryService.getSearchConfiguration(testId))
-                .thenReturn(Optional.of(searchConfig));
+                .thenReturn(Optional.of(new SearchConfig(searchConfig)));
 
         mockMvc.perform(get("/codes-lists/" + testId + "/search-configuration"))
                 .andExpect(status().isOk())

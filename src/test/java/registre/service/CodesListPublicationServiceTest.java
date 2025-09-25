@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLinkDto;
-import registre.dto.MetadataDto;
+import registre.dto.*;
 import registre.entity.CodesListEntity;
 import registre.entity.CodesListExternalLinkEntity;
 import registre.mapper.CodesListMapper;
@@ -96,14 +94,20 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsContent(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
-        List<Map<String,Object>> content = List.of(
+        List<Map<String, Object>> contentList = List.of(
                 Map.of("code", "code1"),
                 Map.of("code", "code2")
         );
 
-        service.createContent(id, content);
+        service.createContent(id, new CodesListContent(contentList));
 
-        assertEquals(content, entity.getContent());
+        CodesListContent createdContent = entity.getContent();
+
+        assertNotNull(createdContent);
+        assertEquals(2, createdContent.items().size());
+        assertEquals("code1", createdContent.items().get(0).get("code"));
+        assertEquals("code2", createdContent.items().get(1).get("code"));
+
         verify(codesListRepository).save(entity);
     }
 
@@ -111,8 +115,10 @@ class CodesListPublicationServiceTest {
     void testCreateContent_WhenCodesListDoesNotExist() {
         UUID id = UUID.randomUUID();
         when(codesListRepository.existsById(id)).thenReturn(false);
-        List<Map<String,Object>> content = List.of(Map.of("code", "dummy"));
-        Executable executable = () -> service.createContent(id, content);
+
+        List<Map<String, Object>> contentList = List.of(Map.of("code", "dummy"));
+
+        Executable executable = () -> service.createContent(id, new CodesListContent(contentList));
 
         assertThrows(IllegalArgumentException.class, executable);
     }
@@ -124,12 +130,11 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsById(id)).thenReturn(true);
         when(codesListRepository.existsContent(id)).thenReturn(true);
 
-        List<Map<String,Object>> content = List.of(
-                Map.of("code", "code1")
-        );
+        List<Map<String, Object>> contentList = List.of(Map.of("code", "code1"));
+        CodesListContent contentWrapper = new CodesListContent(contentList);
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> service.createContent(id, content));
+                () -> service.createContent(id, contentWrapper));
 
         assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
         assertTrue(Objects.requireNonNull(ex.getReason()).contains("already exists"));
@@ -191,11 +196,13 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsSearchConfiguration(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
-        Map<String,Object> searchConfig = Map.of("type", "advanced");
+        Map<String,Object> searchConfigMap = Map.of("type", "advanced");
+        SearchConfig searchConfig = new SearchConfig(searchConfigMap);
+
         service.createSearchConfiguration(id, searchConfig);
 
         assertNotNull(entity.getSearchConfiguration());
-        assertEquals(searchConfig, entity.getSearchConfiguration());
+        assertEquals(searchConfigMap, entity.getSearchConfiguration().content());
         verify(codesListRepository).save(entity);
     }
 
@@ -208,7 +215,8 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsSearchConfiguration(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
-        Map<String,Object> searchConfig = Map.of();
+        Map<String,Object> searchConfigMap = Map.of();
+        SearchConfig searchConfig = new SearchConfig(searchConfigMap);
 
         service.createSearchConfiguration(id, searchConfig);
 
@@ -220,7 +228,8 @@ class CodesListPublicationServiceTest {
         UUID id = UUID.randomUUID();
         when(codesListRepository.existsById(id)).thenReturn(false);
 
-        Map<String,Object> searchConfig = Map.of("type", "advanced");
+        Map<String,Object> searchConfigMap = Map.of("type", "advanced");
+        SearchConfig searchConfig = new SearchConfig(searchConfigMap);
 
         Executable executable = () -> service.createSearchConfiguration(id, searchConfig);
 
@@ -234,10 +243,11 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsById(id)).thenReturn(true);
         when(codesListRepository.existsSearchConfiguration(id)).thenReturn(true);
 
-        Map<String,Object> configJson = Map.of("type", "advanced");
+        Map<String,Object> configMap = Map.of("type", "advanced");
+        SearchConfig configWrapper = new SearchConfig(configMap);
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> service.createSearchConfiguration(id, configJson));
+                () -> service.createSearchConfiguration(id, configWrapper));
 
         assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
         assertTrue(Objects.requireNonNull(ex.getReason()).contains("already exists"));

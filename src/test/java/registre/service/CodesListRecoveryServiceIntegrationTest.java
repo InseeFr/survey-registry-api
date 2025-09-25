@@ -4,7 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import registre.dto.CodesListContent;
 import registre.dto.MetadataDto;
+import registre.dto.SearchConfig;
 import registre.entity.CodesListEntity;
 import registre.repository.CodesListRepository;
 
@@ -72,21 +74,23 @@ class CodesListRecoveryServiceIntegrationTest {
         codesList.setLabel("Label3");
         codesList.setVersion("V3");
 
-        List<Map<String,Object>> content = List.of(
+        List<Map<String,Object>> contentList = List.of(
                 Map.of("id", "Code1", "label", "Label1")
         );
-        codesList.setContent(content);
+        codesList.setContent(new CodesListContent(contentList));
 
         repository.save(codesList);
 
-        Optional<List<Map<String,Object>>> result = service.getCodesListById(id3);
+        Optional<CodesListContent> result = service.getCodesListById(id3);
 
         assertTrue(result.isPresent());
-        assertEquals("Code1", result.get().getFirst().get("id"));
-        assertEquals("Label1", result.get().getFirst().get("label"));
+        CodesListContent contentWrapper = result.get();
 
-        System.out.println(result.get().getClass());
-        System.out.println(result.get());
+        assertEquals("Code1", contentWrapper.items().getFirst().get("id"));
+        assertEquals("Label1", contentWrapper.items().getFirst().get("label"));
+
+        System.out.println(contentWrapper.getClass());
+        System.out.println(contentWrapper.items());
     }
 
     @Test
@@ -97,22 +101,23 @@ class CodesListRecoveryServiceIntegrationTest {
         codesList.setLabel("Label4");
         codesList.setVersion("V4");
 
-        Map<String,Object> config = Map.of("filter", true);
-        codesList.setSearchConfiguration(config);
+        Map<String,Object> configMap = Map.of("filter", true);
+        codesList.setSearchConfiguration(new SearchConfig(configMap));
 
         repository.save(codesList);
 
-        Optional<Map<String,Object>> result = service.getSearchConfiguration(id4);
+        Optional<SearchConfig> result = service.getSearchConfiguration(id4);
 
         assertTrue(result.isPresent());
-        assertEquals(true, result.get().get("filter"));
+        SearchConfig configWrapper = result.get();
+
+        assertEquals(true, configWrapper.content().get("filter"));
     }
 
     @Test
     void testGetSearchConfiguration_NotFound() {
         UUID id = UUID.randomUUID();
-        Optional<Map<String,Object>> result = service.getSearchConfiguration(id);
+        Optional<SearchConfig> result = service.getSearchConfiguration(id);
         assertTrue(result.isEmpty());
     }
-
 }

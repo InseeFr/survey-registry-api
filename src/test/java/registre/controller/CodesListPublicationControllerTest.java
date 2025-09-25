@@ -11,9 +11,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLinkDto;
-import registre.dto.MetadataDto;
+import registre.dto.*;
 import registre.service.CodesListPublicationService;
 
 import java.util.List;
@@ -113,8 +111,8 @@ class CodesListPublicationControllerTest {
         return new CodesListDto(
                 testId,
                 metadataDto,
-                searchConfigJson,
-                contentJson
+                new SearchConfig(searchConfigJson),
+                new CodesListContent(contentJson)
         );
     }
 
@@ -132,7 +130,7 @@ class CodesListPublicationControllerTest {
                 .andExpect(status().isCreated());
 
         Mockito.verify(codesListPublicationService)
-                .createContent(eq(testId), ArgumentMatchers.any());
+                .createContent(eq(testId), ArgumentMatchers.any(CodesListContent.class));
     }
 
     @Test
@@ -161,8 +159,8 @@ class CodesListPublicationControllerTest {
 
         Mockito.verify(codesListPublicationService)
                 .createSearchConfiguration(
-                        ArgumentMatchers.eq(testId),
-                        ArgumentMatchers.any()
+                        eq(testId),
+                        any(SearchConfig.class)
                 );
     }
 }

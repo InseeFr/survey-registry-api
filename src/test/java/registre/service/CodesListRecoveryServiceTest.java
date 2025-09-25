@@ -2,8 +2,10 @@ package registre.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import registre.dto.CodesListContent;
 import registre.dto.CodesListDto;
 import registre.dto.MetadataDto;
+import registre.dto.SearchConfig;
 import registre.entity.CodesListEntity;
 import registre.entity.CodesListExternalLinkEntity;
 import registre.mapper.CodesListMapper;
@@ -106,39 +108,41 @@ class CodesListRecoveryServiceTest {
 
     @Test
     void testGetCodesListById_Found() {
-        List<Map<String, Object>> content = List.of(
+        List<Map<String, Object>> contentList = List.of(
                 Map.of("id", "Code1", "label", "Label1")
         );
 
         CodesListEntity entity = new CodesListEntity();
-        entity.setContent(content);
+        entity.setContent(new CodesListContent(contentList));
 
         UUID id = UUID.randomUUID();
-
         when(repository.findById(id)).thenReturn(Optional.of(entity));
 
-        Optional<List<Map<String,Object>>> result = service.getCodesListById(id);
+        Optional<CodesListContent> result = service.getCodesListById(id);
 
         assertTrue(result.isPresent());
-        assertEquals("Code1", result.get().getFirst().get("id"));
-        assertEquals("Label1", result.get().getFirst().get("label"));
+        CodesListContent contentWrapper = result.get();
+
+        assertEquals("Code1", contentWrapper.items().getFirst().get("id"));
+        assertEquals("Label1", contentWrapper.items().getFirst().get("label"));
     }
 
     @Test
     void testGetSearchConfiguration_Found() {
-        Map<String,Object> searchConfig = Map.of("filter", true);
+        Map<String,Object> searchConfigMap = Map.of("filter", true);
 
         CodesListEntity entity = new CodesListEntity();
-        entity.setSearchConfiguration(searchConfig);
+        entity.setSearchConfiguration(new SearchConfig(searchConfigMap));
 
         UUID id = UUID.randomUUID();
-
         when(repository.findById(id)).thenReturn(Optional.of(entity));
 
-        Optional<Map<String,Object>> result = service.getSearchConfiguration(id);
+        Optional<SearchConfig> result = service.getSearchConfiguration(id);
 
         assertTrue(result.isPresent());
-        assertEquals(true, result.get().get("filter"));
+        SearchConfig configWrapper = result.get();
+
+        assertEquals(true, configWrapper.content().get("filter"));
     }
 
     @Test
@@ -146,7 +150,7 @@ class CodesListRecoveryServiceTest {
         UUID id = UUID.randomUUID();
         when(repository.findById(id)).thenReturn(Optional.empty());
 
-        Optional<Map<String,Object>> result = service.getSearchConfiguration(id);
+        Optional<SearchConfig> result = service.getSearchConfiguration(id);
 
         assertTrue(result.isEmpty());
     }
