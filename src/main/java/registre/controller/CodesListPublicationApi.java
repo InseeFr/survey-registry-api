@@ -22,13 +22,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.request.NativeWebRequest;
-import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLinkDto;
-import registre.dto.ErrorResponseDto;
-import registre.dto.MetadataDto;
+import registre.dto.*;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -128,7 +123,7 @@ public interface CodesListPublicationApi {
     )
     default ResponseEntity<Void> putCodesListContentById(
             @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
-            @Parameter(name = "content", description = "") @Valid @RequestBody(required = false) List<Map<String,Object>> content
+            @Parameter(name = "content", description = "") @Valid @RequestBody(required = false) CodesListContent content
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
@@ -192,7 +187,7 @@ public interface CodesListPublicationApi {
     )
     default ResponseEntity<Void> putCodesListSearchConfigById(
         @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId,
-        @Parameter(name = "searchConfig", description = "") @Valid @RequestBody(required = false) Map<String,Object> searchConfig
+        @Parameter(name = "searchConfig", description = "") @Valid @RequestBody(required = false) SearchConfig searchConfig
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 

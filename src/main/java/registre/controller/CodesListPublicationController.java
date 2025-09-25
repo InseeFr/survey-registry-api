@@ -6,13 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLinkDto;
-import registre.dto.MetadataDto;
+import registre.dto.*;
 import registre.service.CodesListPublicationService;
 
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -31,7 +27,7 @@ public class CodesListPublicationController implements CodesListPublicationApi {
     public ResponseEntity<Void> createFullCodesList(@Valid CodesListDto codesListDto) {
         UUID id = codesListPublicationService.createCodesList(codesListDto);
 
-        if (codesListDto.content() != null && !codesListDto.content().isEmpty()) {
+        if (codesListDto.content() != null && !codesListDto.content().items().isEmpty()) {
             codesListPublicationService.createContent(id, codesListDto.content());
         }
 
@@ -47,7 +43,7 @@ public class CodesListPublicationController implements CodesListPublicationApi {
     }
 
     @Override
-    public ResponseEntity<Void> putCodesListContentById(UUID codesListId, @RequestBody List<Map<String,Object>> content) {
+    public ResponseEntity<Void> putCodesListContentById(UUID codesListId, @RequestBody CodesListContent content) {
         codesListPublicationService.createContent(codesListId, content);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -59,7 +55,7 @@ public class CodesListPublicationController implements CodesListPublicationApi {
     }
 
     @Override
-    public ResponseEntity<Void> putCodesListSearchConfigById(UUID codesListId, @RequestBody Map<String,Object> searchConfig) {
+    public ResponseEntity<Void> putCodesListSearchConfigById(UUID codesListId, @RequestBody SearchConfig searchConfig) {
         codesListPublicationService.createSearchConfiguration(codesListId, searchConfig);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

@@ -5,9 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import registre.dto.CodesListContent;
+import registre.dto.SearchConfig;
 
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Getter
@@ -32,10 +32,10 @@ public class CodesListEntity {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "search_config")
-    private Map<String,Object> searchConfiguration;
+    private SearchConfig searchConfiguration;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "content")
-    private List<Map<String,Object>> content;
+    private CodesListContent content;
 
 }

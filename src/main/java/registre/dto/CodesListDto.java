@@ -1,11 +1,8 @@
 package registre.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Schema(description = "DTO representing a list of codes")
@@ -33,7 +30,7 @@ public record CodesListDto(
                 example = "{}"
         )
         @JsonProperty("searchConfiguration")
-        Map<String,Object> searchConfiguration,
+        SearchConfig searchConfiguration,
 
         @Schema(
                 name = "content",
@@ -42,6 +39,6 @@ public record CodesListDto(
                 example = "[{},{}]"
         )
         @JsonProperty("content")
-        List<Map<String,Object>> content
+        CodesListContent content
 
 ) { }

@@ -2,15 +2,16 @@ package registre.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import registre.dto.CodesListContent;
 import registre.dto.CodesListDto;
 import registre.dto.MetadataDto;
+import registre.dto.SearchConfig;
 import registre.entity.CodesListEntity;
 import registre.mapper.CodesListMapper;
 import registre.mapper.MetadataMapper;
 import registre.repository.CodesListRepository;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,7 +38,7 @@ public class CodesListRecoveryService {
                 .toList();
     }
 
-    public Optional<List<Map<String,Object>>> getCodesListById(UUID id) {
+    public Optional<CodesListContent> getCodesListById(UUID id) {
         return codesListRepository.findById(id)
                 .map(CodesListEntity::getContent);
     }
@@ -48,7 +49,7 @@ public class CodesListRecoveryService {
                 .map(CodesListDto::metadata);
     }
 
-    public Optional<Map<String,Object>> getSearchConfiguration(UUID id) {
+    public Optional<SearchConfig> getSearchConfiguration(UUID id) {
         return codesListRepository.findById(id)
                 .map(CodesListEntity::getSearchConfiguration);
     }

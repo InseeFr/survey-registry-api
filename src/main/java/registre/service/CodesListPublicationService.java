@@ -5,17 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLinkDto;
-import registre.dto.MetadataDto;
+import registre.dto.*;
 import registre.entity.CodesListEntity;
 import registre.entity.CodesListExternalLinkEntity;
 import registre.mapper.CodesListMapper;
 import registre.repository.CodesListExternalLinkRepository;
 import registre.repository.CodesListRepository;
 
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -67,7 +63,7 @@ public class CodesListPublicationService {
         return entity.getId();
     }
 
-    public void createContent(UUID codesListId, List<Map<String,Object>> content) {
+    public void createContent(UUID codesListId, CodesListContent content) {
         if (!codesListRepository.existsById(codesListId)) {
             throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
         }
@@ -109,7 +105,7 @@ public class CodesListPublicationService {
         });
     }
 
-    public void createSearchConfiguration(UUID codesListId, Map<String,Object> configJson) {
+    public void createSearchConfiguration(UUID codesListId, SearchConfig searchConfig) {
         if (!codesListRepository.existsById(codesListId)) {
             throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
         }
@@ -122,7 +118,7 @@ public class CodesListPublicationService {
         }
 
         codesListRepository.findById(codesListId).ifPresent(entity -> {
-            entity.setSearchConfiguration(configJson);
+            entity.setSearchConfiguration(searchConfig);
             codesListRepository.save(entity);
         });
     }

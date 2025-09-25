@@ -21,10 +21,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.context.request.NativeWebRequest;
+import registre.dto.CodesListContent;
 import registre.dto.MetadataDto;
+import registre.dto.SearchConfig;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -98,10 +99,10 @@ public interface CodesListRecoveryApi {
             }
     )
     @GetMapping(
-            value = "/codes-lists/{codesListId}/content",
+            value = "/codes-lists/{codesListId}",
             produces = { "application/json" }
     )
-    ResponseEntity<List<Map<String,Object>>> getCodesListById(
+    ResponseEntity<CodesListContent> getCodesListById(
             @Parameter(name = "codesListId", required = true, in = ParameterIn.PATH)
             @PathVariable("codesListId") UUID codesListId
     );
@@ -162,7 +163,7 @@ public interface CodesListRecoveryApi {
         value = "/codes-lists/{codesListId}/search-configuration",
         produces = { "application/json" }
     )
-    default ResponseEntity<Map<String,Object>> getCodesListSearchConfigById(
+    default ResponseEntity<SearchConfig> getCodesListSearchConfigById(
         @Parameter(name = "codesListId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("codesListId") UUID codesListId
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
