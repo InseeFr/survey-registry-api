@@ -39,12 +39,45 @@ public record MetadataDto(
         @NotBlank
         @Schema(
                 name = "version",
-                description = "Version of the code list",
-                example = "2024",
+                description = "Version of the code list (auto-incremented)",
+                example = "1",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         @JsonProperty("version")
         String version,
+
+        @Schema(
+                name = "theme",
+                description = "Generic theme for the code list (stable between versions)",
+                example = "COMMUNE",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        @JsonProperty("theme")
+        String theme,
+
+        @Schema(
+                name = "vintage",
+                description = "Reference year (data vintage) of the code list (optional)",
+                example = "2024"
+        )
+        @JsonProperty("vintage")
+        String vintage,
+
+        @Schema(
+                name = "isDeprecated",
+                description = "Indicates if the code list is deprecated (latest version = false)",
+                example = "false"
+        )
+        @JsonProperty("isDeprecated")
+        boolean isDeprecated,
+
+        @Schema(
+                name = "isInvalid",
+                description = "Indicates if the code list is invalid due to business rules",
+                example = "false"
+        )
+        @JsonProperty("isInvalid")
+        boolean isInvalid,
 
         @Valid
         @Schema(
