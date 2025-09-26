@@ -1,10 +1,11 @@
 package registre.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import registre.dto.CodesListContent;
 import registre.dto.MetadataDto;
+import registre.dto.SearchConfig;
 import registre.service.CodesListRecoveryService;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class CodesListRecoveryController implements CodesListRecoveryApi {
     }
 
     @Override
-    public ResponseEntity<JsonNode> getCodesListById(UUID codesListId) {
+    public ResponseEntity<CodesListContent> getCodesListById(UUID codesListId) {
         return codesListRecoveryService.getCodesListById(codesListId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -37,7 +38,7 @@ public class CodesListRecoveryController implements CodesListRecoveryApi {
     }
 
     @Override
-    public ResponseEntity<JsonNode> getCodesListSearchConfigById(UUID codesListId) {
+    public ResponseEntity<SearchConfig> getCodesListSearchConfigById(UUID codesListId) {
         return codesListRecoveryService.getSearchConfiguration(codesListId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

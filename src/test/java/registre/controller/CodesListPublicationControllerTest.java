@@ -1,9 +1,9 @@
 package registre.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -11,11 +11,11 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLinkDto;
-import registre.dto.MetadataDto;
+import registre.dto.*;
 import registre.service.CodesListPublicationService;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -50,53 +50,30 @@ class CodesListPublicationControllerTest {
     }
 
     @Test
-    void testCreateCodesList() throws Exception {
-        UUID testId = UUID.randomUUID();
-
-        CodesListDto dto = new CodesListDto(testId, null, null, null);
+    void testCreateCodesListMetadataOnly() throws Exception {
+        MetadataDto metadataDto = new MetadataDto(
+                null,
+                "CodesList1",
+                "v1",
+                new CodesListExternalLinkDto("ExternalLink1")
+        );
 
         mockMvc.perform(post("/codes-lists")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
+                        .content(objectMapper.writeValueAsString(metadataDto)))
                 .andExpect(status().isCreated());
 
-        Mockito.verify(codesListPublicationService).createCodesList(any(CodesListDto.class));
+        Mockito.verify(codesListPublicationService)
+                .createCodesListMetadataOnly(metadataDto);
     }
 
     @Test
     void testCreateFullCodesList_WithMetadataAndExternalLink() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto(
-                "ExternalLink1",
-                "v1"
-        );
+        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1");
 
-        MetadataDto metadataDto = new MetadataDto(
-                testId,
-                "CodesList1",
-                "v1",
-                externalLinkDto
-        );
-
-        JsonNode contentJson = objectMapper.readTree("""
-        [
-            { "id": "code1", "label": "Label1" }
-        ]
-    """);
-
-        JsonNode searchConfigJson = objectMapper.readTree("""
-        {
-            "filter": true
-        }
-    """);
-
-        CodesListDto codesListDto = new CodesListDto(
-                testId,
-                metadataDto,
-                searchConfigJson,
-                contentJson
-        );
+        CodesListDto codesListDto = getCodesListDto(testId, externalLinkDto);
 
         Mockito.when(codesListPublicationService.createCodesList(any())).thenReturn(testId);
 
@@ -106,19 +83,44 @@ class CodesListPublicationControllerTest {
                 .andExpect(status().isCreated());
 
         Mockito.verify(codesListPublicationService).createCodesList(any());
-        Mockito.verify(codesListPublicationService).createContent(eq(testId), any(JsonNode.class));
-        Mockito.verify(codesListPublicationService).createExternalLink(eq(testId), eq(externalLinkDto));
-        Mockito.verify(codesListPublicationService).createSearchConfiguration(eq(testId), any(JsonNode.class));
+
+        Mockito.verify(codesListPublicationService)
+                .createContent(eq(testId), ArgumentMatchers.any());
+
+        Mockito.verify(codesListPublicationService)
+                .createExternalLink(testId, externalLinkDto);
+
+        Mockito.verify(codesListPublicationService)
+                .createSearchConfiguration(eq(testId), ArgumentMatchers.any());
     }
 
+    private static CodesListDto getCodesListDto(UUID testId, CodesListExternalLinkDto externalLinkDto) {
+        MetadataDto metadataDto = new MetadataDto(
+                testId,
+                "CodesList1",
+                "v1",
+                externalLinkDto
+        );
+
+        List<Map<String, Object>> contentJson = List.of(
+                Map.of("id", "code1", "label", "Label1")
+        );
+
+        Map<String, Object> searchConfigJson = Map.of("filter", true);
+
+        return new CodesListDto(
+                testId,
+                metadataDto,
+                new SearchConfig(searchConfigJson),
+                new CodesListContent(contentJson)
+        );
+    }
 
     @Test
     void testPutCodesListContentById() throws Exception {
-        JsonNode contentJson = objectMapper.readTree("""
-            [
-                { "id": "code1", "label": "Label1" }
-            ]
-        """);
+        List<Map<String, Object>> contentJson = List.of(
+                Map.of("id", "code1", "label", "Label1")
+        );
 
         UUID testId = UUID.randomUUID();
 
@@ -127,12 +129,13 @@ class CodesListPublicationControllerTest {
                         .content(objectMapper.writeValueAsString(contentJson)))
                 .andExpect(status().isCreated());
 
-        Mockito.verify(codesListPublicationService).createContent(eq(testId), any(JsonNode.class));
+        Mockito.verify(codesListPublicationService)
+                .createContent(eq(testId), ArgumentMatchers.any(CodesListContent.class));
     }
 
     @Test
     void testPutCodesListExternalLinkById() throws Exception {
-        CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto("ExternalLink1", "v1");
+        CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto("ExternalLink1");
 
         UUID testId = UUID.randomUUID();
 
@@ -146,12 +149,7 @@ class CodesListPublicationControllerTest {
 
     @Test
     void testPutCodesListSearchConfigById() throws Exception {
-        JsonNode searchConfig = objectMapper.readTree("""
-            {
-                "filter": true
-            }
-        """);
-
+        Map<String, Object> searchConfig = Map.of("filter", true);
         UUID testId = UUID.randomUUID();
 
         mockMvc.perform(put("/codes-lists/" + testId + "/search-configuration")
@@ -159,7 +157,11 @@ class CodesListPublicationControllerTest {
                         .content(objectMapper.writeValueAsString(searchConfig)))
                 .andExpect(status().isCreated());
 
-        Mockito.verify(codesListPublicationService).createSearchConfiguration(eq(testId), any(JsonNode.class));
+        Mockito.verify(codesListPublicationService)
+                .createSearchConfiguration(
+                        eq(testId),
+                        any(SearchConfig.class)
+                );
     }
 }
 

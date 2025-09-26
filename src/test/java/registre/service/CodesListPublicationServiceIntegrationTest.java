@@ -1,23 +1,18 @@
 package registre.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLinkDto;
-import registre.dto.MetadataDto;
+import registre.dto.*;
 import registre.entity.CodesListEntity;
 import registre.entity.CodesListExternalLinkEntity;
 import registre.repository.CodesListExternalLinkRepository;
 import registre.repository.CodesListRepository;
 
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,9 +29,6 @@ class CodesListPublicationServiceIntegrationTest {
     @Autowired
     private CodesListExternalLinkRepository externalLinkRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     private CodesListDto buildEmptyCodesListDto() {
         return new CodesListDto(
                 null,
@@ -46,6 +38,39 @@ class CodesListPublicationServiceIntegrationTest {
         );
     }
 
+    @Test
+    void testCreateCodesListMetadataOnly_WithExternalLink() {
+        CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
+        externalLinkEntity.setId("ExternalLink1");
+        externalLinkEntity.setVersion("v1");
+        externalLinkRepository.save(externalLinkEntity);
+
+        MetadataDto metadataDto = new MetadataDto(null, "Label1", "v1", new CodesListExternalLinkDto("ExternalLink1"));
+
+        service.createCodesListMetadataOnly(metadataDto);
+
+        CodesListEntity entity = codesListRepository.findAll().stream()
+                .filter(e -> "Label1".equals(e.getLabel()))
+                .findFirst().orElseThrow();
+
+        assertEquals("v1", entity.getVersion());
+        assertNotNull(entity.getCodesListExternalLink());
+        assertEquals("ExternalLink1", entity.getCodesListExternalLink().getId());
+        assertEquals("v1", entity.getCodesListExternalLink().getVersion());
+    }
+
+    @Test
+    void testCreateCodesListMetadataOnly_WithoutExternalLink() {
+        MetadataDto metadataDto = new MetadataDto(null, "Label2", "v2", null);
+
+        service.createCodesListMetadataOnly(metadataDto);
+
+        CodesListEntity entity = codesListRepository.findAll().stream().findFirst().orElseThrow();
+        assertEquals("Label2", entity.getLabel());
+        assertEquals("v2", entity.getVersion());
+        assertNull(entity.getCodesListExternalLink());
+    }
+    
     @Test
     void testCreateAndFetchCodesList() {
         CodesListDto dto = buildEmptyCodesListDto();
@@ -62,18 +87,22 @@ class CodesListPublicationServiceIntegrationTest {
         CodesListDto dto = buildEmptyCodesListDto();
         UUID id = service.createCodesList(dto);
 
-        ObjectNode codeNode = objectMapper.createObjectNode();
-        codeNode.put("id", "code1");
-        codeNode.put("label", "Label1");
+        Map<String, Object> code1 = new HashMap<>();
+        code1.put("id", "code1");
+        code1.put("label", "Label1");
 
-        service.createContent(id, objectMapper.createArrayNode().add(codeNode));
+        List<Map<String, Object>> contentList = new ArrayList<>();
+        contentList.add(code1);
 
-        CodesListEntity updated = codesListRepository.findById(id).orElseThrow();
-        JsonNode content = updated.getContent();
-        assertNotNull(content);
-        assertTrue(content.isArray());
-        assertEquals(1, content.size());
-        assertEquals("code1", content.get(0).get("id").asText());
+        service.createContent(id, new CodesListContent(contentList));
+
+        CodesListEntity created = codesListRepository.findById(id).orElseThrow();
+        CodesListContent createdContent = created.getContent();
+
+        assertNotNull(createdContent);
+        assertEquals(1, createdContent.items().size());
+        assertEquals("code1", createdContent.items().getFirst().get("id"));
+        assertEquals("Label1", createdContent.items().getFirst().get("label"));
     }
 
     @Test
@@ -86,12 +115,12 @@ class CodesListPublicationServiceIntegrationTest {
         externalLinkEntity.setVersion("v1");
         externalLinkRepository.save(externalLinkEntity);
 
-        CodesListExternalLinkDto link = new CodesListExternalLinkDto("ExternalLink1", "v1");
+        CodesListExternalLinkDto link = new CodesListExternalLinkDto("ExternalLink1");
         service.createExternalLink(id, link);
 
-        CodesListEntity updated = codesListRepository.findById(id).orElseThrow();
-        assertNotNull(updated.getCodesListExternalLink());
-        assertEquals("v1", updated.getCodesListExternalLink().getVersion());
+        CodesListEntity created = codesListRepository.findById(id).orElseThrow();
+        assertNotNull(created.getCodesListExternalLink());
+        assertEquals("v1", created.getCodesListExternalLink().getVersion());
     }
 
     @Test
@@ -99,16 +128,18 @@ class CodesListPublicationServiceIntegrationTest {
         CodesListDto dto = buildEmptyCodesListDto();
         UUID id = service.createCodesList(dto);
 
-        ObjectNode configNode = objectMapper.createObjectNode();
-        configNode.put("type", "simple");
+        Map<String, Object> configMap = new HashMap<>();
+        configMap.put("type", "simple");
 
-        service.createSearchConfiguration(id, configNode);
+        service.createSearchConfiguration(id, new SearchConfig(configMap));
 
         CodesListEntity updated = codesListRepository.findById(id).orElseThrow();
-        JsonNode searchConfig = updated.getSearchConfiguration();
-        assertNotNull(searchConfig);
-        assertTrue(searchConfig.has("type"));
-        assertEquals("simple", searchConfig.get("type").asText());
+        SearchConfig searchConfigWrapper = updated.getSearchConfiguration();
+
+        assertNotNull(searchConfigWrapper);
+        Map<String, Object> searchConfig = searchConfigWrapper.content();
+        assertTrue(searchConfig.containsKey("type"));
+        assertEquals("simple", searchConfig.get("type"));
     }
 
     @Test
@@ -116,13 +147,12 @@ class CodesListPublicationServiceIntegrationTest {
         CodesListDto dto = buildEmptyCodesListDto();
         UUID id = service.createCodesList(dto);
 
-        ObjectNode codeNode = objectMapper.createObjectNode();
-        codeNode.put("id", "code1");
-        codeNode.put("label", "Label1");
+        Map<String, Object> code1 = Map.of("id", "code1", "label", "Label1");
+        List<Map<String, Object>> contentList = List.of(code1);
 
-        service.createContent(id, objectMapper.createArrayNode().add(codeNode));
+        service.createContent(id, new CodesListContent(contentList));
 
-        Executable action = () -> service.createContent(id, objectMapper.createArrayNode().add(codeNode));
+        Executable action = () -> service.createContent(id, new CodesListContent(contentList));
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, action);
         assertEquals(409, ex.getStatusCode().value());
@@ -138,7 +168,7 @@ class CodesListPublicationServiceIntegrationTest {
         externalLinkEntity.setVersion("v1");
         externalLinkRepository.save(externalLinkEntity);
 
-        CodesListExternalLinkDto link = new CodesListExternalLinkDto("ExternalLink1", "v1");
+        CodesListExternalLinkDto link = new CodesListExternalLinkDto("ExternalLink1");
         service.createExternalLink(id, link);
 
         Executable action = () -> service.createExternalLink(id, link);
@@ -152,11 +182,11 @@ class CodesListPublicationServiceIntegrationTest {
         CodesListDto dto = buildEmptyCodesListDto();
         UUID id = service.createCodesList(dto);
 
-        ObjectNode configNode = objectMapper.createObjectNode();
-        configNode.put("type", "simple");
-        service.createSearchConfiguration(id, configNode);
+        Map<String, Object> configMap = Map.of("type", "simple");
 
-        Executable action = () -> service.createSearchConfiguration(id, configNode);
+        service.createSearchConfiguration(id, new SearchConfig(configMap));
+
+        Executable action = () -> service.createSearchConfiguration(id, new SearchConfig(configMap));
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, action);
         assertEquals(409, ex.getStatusCode().value());

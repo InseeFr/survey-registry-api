@@ -1,10 +1,11 @@
 package registre.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import registre.dto.CodesListContent;
 import registre.dto.CodesListDto;
 import registre.dto.MetadataDto;
+import registre.dto.SearchConfig;
 import registre.entity.CodesListEntity;
 import registre.entity.CodesListExternalLinkEntity;
 import registre.mapper.CodesListMapper;
@@ -12,6 +13,7 @@ import registre.mapper.MetadataMapper;
 import registre.repository.CodesListRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -69,7 +71,7 @@ class CodesListRecoveryServiceTest {
         when(projection.getVersion()).thenReturn("v2");
         when(projection.getCodesListExternalLink()).thenReturn(linkEntity);
 
-        registre.dto.CodesListExternalLinkDto externalLinkDto = new registre.dto.CodesListExternalLinkDto("ExternalLink1","v1");
+        registre.dto.CodesListExternalLinkDto externalLinkDto = new registre.dto.CodesListExternalLinkDto("ExternalLink1");
 
         MetadataDto mappedDto = new MetadataDto(id2, "Label2", "v2", externalLinkDto);
 
@@ -106,34 +108,41 @@ class CodesListRecoveryServiceTest {
 
     @Test
     void testGetCodesListById_Found() {
-        JsonNode content = mock(JsonNode.class);
+        List<Map<String, Object>> contentList = List.of(
+                Map.of("id", "Code1", "label", "Label1")
+        );
+
         CodesListEntity entity = new CodesListEntity();
-        entity.setContent(content);
+        entity.setContent(new CodesListContent(contentList));
 
         UUID id = UUID.randomUUID();
-
         when(repository.findById(id)).thenReturn(Optional.of(entity));
 
-        Optional<JsonNode> result = service.getCodesListById(id);
+        Optional<CodesListContent> result = service.getCodesListById(id);
 
         assertTrue(result.isPresent());
-        assertSame(content, result.get());
+        CodesListContent contentWrapper = result.get();
+
+        assertEquals("Code1", contentWrapper.items().getFirst().get("id"));
+        assertEquals("Label1", contentWrapper.items().getFirst().get("label"));
     }
 
     @Test
     void testGetSearchConfiguration_Found() {
-        JsonNode searchConfig = mock(JsonNode.class);
+        Map<String,Object> searchConfigMap = Map.of("filter", true);
+
         CodesListEntity entity = new CodesListEntity();
-        entity.setSearchConfiguration(searchConfig);
+        entity.setSearchConfiguration(new SearchConfig(searchConfigMap));
 
         UUID id = UUID.randomUUID();
-
         when(repository.findById(id)).thenReturn(Optional.of(entity));
 
-        Optional<JsonNode> result = service.getSearchConfiguration(id);
+        Optional<SearchConfig> result = service.getSearchConfiguration(id);
 
         assertTrue(result.isPresent());
-        assertSame(searchConfig, result.get());
+        SearchConfig configWrapper = result.get();
+
+        assertEquals(true, configWrapper.content().get("filter"));
     }
 
     @Test
@@ -141,7 +150,7 @@ class CodesListRecoveryServiceTest {
         UUID id = UUID.randomUUID();
         when(repository.findById(id)).thenReturn(Optional.empty());
 
-        Optional<JsonNode> result = service.getSearchConfiguration(id);
+        Optional<SearchConfig> result = service.getSearchConfiguration(id);
 
         assertTrue(result.isEmpty());
     }

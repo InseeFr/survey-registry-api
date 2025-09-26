@@ -1,7 +1,5 @@
 package registre.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -10,10 +8,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.web.servlet.MockMvc;
+import registre.dto.CodesListContent;
 import registre.dto.MetadataDto;
+import registre.dto.SearchConfig;
 import registre.service.CodesListRecoveryService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,19 +31,11 @@ class CodesListRecoveryControllerTest {
     @Autowired
     private CodesListRecoveryService codesListRecoveryService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @TestConfiguration
     static class TestConfig {
         @Bean
         public CodesListRecoveryService codesListRecoveryService() {
             return Mockito.mock(CodesListRecoveryService.class);
-        }
-
-        @Bean
-        public ObjectMapper objectMapper() {
-            return new ObjectMapper();
         }
     }
 
@@ -68,20 +61,14 @@ class CodesListRecoveryControllerTest {
 
     @Test
     void testGetCodesListById_found() throws Exception {
-        String json = """
-            [
-              {
-                "id": "Code1",
-                "label": "Label1"
-              }
-            ]
-        """;
-        JsonNode content = objectMapper.readTree(json);
-
         UUID testId = UUID.randomUUID();
 
+        List<Map<String, Object>> content = List.of(
+                Map.of("id", "Code1", "label", "Label1")
+        );
+
         Mockito.when(codesListRecoveryService.getCodesListById(testId))
-                .thenReturn(Optional.of(content));
+                .thenReturn(Optional.of(new CodesListContent(content)));
 
         mockMvc.perform(get("/codes-lists/" + testId))
                 .andExpect(status().isOk())
@@ -128,15 +115,14 @@ class CodesListRecoveryControllerTest {
 
     @Test
     void testGetCodesListSearchConfigById() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode searchConfig = mapper.readTree("{\"filter\": true}");
-
         UUID testId = UUID.randomUUID();
 
-        Mockito.when(codesListRecoveryService.getSearchConfiguration(testId))
-                .thenReturn(Optional.of(searchConfig));
+        Map<String, Object> searchConfig = Map.of("filter", true);
 
-        mockMvc.perform(get("/codes-lists/"+ testId +"/search-configuration"))
+        Mockito.when(codesListRecoveryService.getSearchConfiguration(testId))
+                .thenReturn(Optional.of(new SearchConfig(searchConfig)));
+
+        mockMvc.perform(get("/codes-lists/" + testId + "/search-configuration"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.filter").value(true));
     }

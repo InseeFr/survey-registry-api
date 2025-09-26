@@ -39,19 +39,11 @@ public class CodesListMapper {
 
         CodesListEntity entity = new CodesListEntity();
         entity.setId(dto.id());
-        entity.setSearchConfiguration(dto.searchConfiguration());
-        entity.setContent(dto.content());
 
         MetadataDto metadata = dto.metadata();
         if (metadata != null) {
             entity.setLabel(metadata.label());
             entity.setVersion(metadata.version());
-
-            if (metadata.externalLink() != null) {
-                entity.setCodesListExternalLink(
-                        externalLinkMapper.toEntity(metadata.externalLink())
-                );
-            }
         }
 
         return entity;

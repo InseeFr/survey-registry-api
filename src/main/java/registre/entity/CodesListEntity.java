@@ -1,11 +1,12 @@
 package registre.entity;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import registre.dto.CodesListContent;
+import registre.dto.SearchConfig;
 
 import java.util.UUID;
 
@@ -31,10 +32,10 @@ public class CodesListEntity {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "search_config")
-    private JsonNode searchConfiguration;
+    private SearchConfig searchConfiguration;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "content")
-    private JsonNode content;
+    private CodesListContent content;
 
 }

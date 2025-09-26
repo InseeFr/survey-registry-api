@@ -1,24 +1,18 @@
 package registre.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLinkDto;
+import registre.dto.*;
 import registre.entity.CodesListEntity;
 import registre.entity.CodesListExternalLinkEntity;
 import registre.mapper.CodesListMapper;
 import registre.repository.CodesListExternalLinkRepository;
 import registre.repository.CodesListRepository;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -29,16 +23,52 @@ class CodesListPublicationServiceTest {
     private CodesListRepository codesListRepository;
     private CodesListMapper codesListMapper;
     private CodesListPublicationService service;
-    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
         codesListRepository = mock(CodesListRepository.class);
         externalLinkRepository = mock(CodesListExternalLinkRepository.class);
         codesListMapper = mock(CodesListMapper.class);
-        objectMapper = new ObjectMapper();
 
         service = new CodesListPublicationService(externalLinkRepository, codesListRepository, codesListMapper);
+    }
+
+    @Test
+    void testCreateCodesListMetadataOnly_WithExternalLink() {
+        MetadataDto metadataDto = new MetadataDto(
+                null,
+                "Label1",
+                "v1",
+                new CodesListExternalLinkDto("ExternalLink1")
+        );
+
+        CodesListEntity entity = new CodesListEntity();
+        when(codesListMapper.toEntity(any(CodesListDto.class))).thenReturn(entity);
+        when(codesListRepository.save(entity)).thenReturn(entity);
+        when(codesListRepository.existsById(any(UUID.class))).thenReturn(true);
+        when(codesListRepository.findById(any(UUID.class))).thenReturn(Optional.of(entity));
+
+        CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
+        externalLinkEntity.setId("ExternalLink1");
+        externalLinkEntity.setVersion("v1");
+        when(externalLinkRepository.findById("ExternalLink1")).thenReturn(Optional.of(externalLinkEntity));
+
+        service.createCodesListMetadataOnly(metadataDto);
+
+        verify(codesListRepository, times(2)).save(entity);
+    }
+
+    @Test
+    void testCreateCodesListMetadataOnly_WithoutExternalLink() {
+        MetadataDto metadataDto = new MetadataDto(null, "Label1", "v1", null);
+
+        CodesListEntity entity = new CodesListEntity();
+        when(codesListMapper.toEntity(any(CodesListDto.class))).thenReturn(entity);
+        when(codesListRepository.save(entity)).thenReturn(entity);
+
+        service.createCodesListMetadataOnly(metadataDto);
+
+        verify(codesListRepository, times(1)).save(entity);
     }
 
     @Test
@@ -64,21 +94,32 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsContent(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
-        ArrayNode contentJson = objectMapper.createArrayNode();
-        contentJson.add("code1");
-        contentJson.add("code2");
+        List<Map<String, Object>> contentList = List.of(
+                Map.of("code", "code1"),
+                Map.of("code", "code2")
+        );
 
-        service.createContent(id, contentJson);
+        service.createContent(id, new CodesListContent(contentList));
 
-        assertEquals(contentJson, entity.getContent());
+        CodesListContent createdContent = entity.getContent();
+
+        assertNotNull(createdContent);
+        assertEquals(2, createdContent.items().size());
+        assertEquals("code1", createdContent.items().get(0).get("code"));
+        assertEquals("code2", createdContent.items().get(1).get("code"));
+
         verify(codesListRepository).save(entity);
     }
 
     @Test
     void testCreateContent_WhenCodesListDoesNotExist() {
         UUID id = UUID.randomUUID();
-        when(codesListRepository.findById(id)).thenReturn(Optional.empty());
-        Executable executable = () -> service.createContent(id, objectMapper.createArrayNode());
+        when(codesListRepository.existsById(id)).thenReturn(false);
+
+        List<Map<String, Object>> contentList = List.of(Map.of("code", "dummy"));
+
+        Executable executable = () -> service.createContent(id, new CodesListContent(contentList));
+
         assertThrows(IllegalArgumentException.class, executable);
     }
 
@@ -89,11 +130,11 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsById(id)).thenReturn(true);
         when(codesListRepository.existsContent(id)).thenReturn(true);
 
-        ArrayNode contentJson = objectMapper.createArrayNode();
-        contentJson.add("code1");
+        List<Map<String, Object>> contentList = List.of(Map.of("code", "code1"));
+        CodesListContent contentWrapper = new CodesListContent(contentList);
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> service.createContent(id, contentJson));
+                () -> service.createContent(id, contentWrapper));
 
         assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
         assertTrue(Objects.requireNonNull(ex.getReason()).contains("already exists"));
@@ -109,7 +150,7 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsExternalLink(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
-        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1", "v1");
+        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1");
 
         CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
         externalLinkEntity.setVersion("v1");
@@ -117,7 +158,6 @@ class CodesListPublicationServiceTest {
 
         service.createExternalLink(id, externalLinkDto);
 
-        assertEquals("v1", entity.getCodesListExternalLink().getVersion());
         verify(codesListRepository).save(entity);
     }
 
@@ -126,7 +166,7 @@ class CodesListPublicationServiceTest {
     void testCreateExternalLink_WhenCodesListDoesNotExist() {
         UUID id = UUID.randomUUID();
         when(codesListRepository.findById(id)).thenReturn(Optional.empty());
-        Executable executable = () -> service.createExternalLink(id, new CodesListExternalLinkDto("ExternalLink1", "v1"));
+        Executable executable = () -> service.createExternalLink(id, new CodesListExternalLinkDto("ExternalLink1"));
         assertThrows(IllegalArgumentException.class, executable);
     }
 
@@ -137,7 +177,7 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsById(id)).thenReturn(true);
         when(codesListRepository.existsExternalLink(id)).thenReturn(true);
 
-        CodesListExternalLinkDto dto = new CodesListExternalLinkDto("ExternalLink1", "v1");
+        CodesListExternalLinkDto dto = new CodesListExternalLinkDto("ExternalLink1");
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                 () -> service.createExternalLink(id, dto));
@@ -156,13 +196,13 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsSearchConfiguration(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
-        ObjectNode searchConfig = objectMapper.createObjectNode();
-        searchConfig.put("type", "advanced");
+        Map<String,Object> searchConfigMap = Map.of("type", "advanced");
+        SearchConfig searchConfig = new SearchConfig(searchConfigMap);
 
         service.createSearchConfiguration(id, searchConfig);
 
         assertNotNull(entity.getSearchConfiguration());
-        assertEquals(searchConfig, entity.getSearchConfiguration());
+        assertEquals(searchConfigMap, entity.getSearchConfiguration().content());
         verify(codesListRepository).save(entity);
     }
 
@@ -175,7 +215,9 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsSearchConfiguration(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
-        ObjectNode searchConfig = objectMapper.createObjectNode();
+        Map<String,Object> searchConfigMap = Map.of();
+        SearchConfig searchConfig = new SearchConfig(searchConfigMap);
+
         service.createSearchConfiguration(id, searchConfig);
 
         verify(codesListRepository).save(entity);
@@ -184,8 +226,13 @@ class CodesListPublicationServiceTest {
     @Test
     void testCreateSearchConfiguration_WhenCodesListDoesNotExist() {
         UUID id = UUID.randomUUID();
-        when(codesListRepository.findById(id)).thenReturn(Optional.empty());
-        Executable executable = () -> service.createSearchConfiguration(id, objectMapper.createObjectNode());
+        when(codesListRepository.existsById(id)).thenReturn(false);
+
+        Map<String,Object> searchConfigMap = Map.of("type", "advanced");
+        SearchConfig searchConfig = new SearchConfig(searchConfigMap);
+
+        Executable executable = () -> service.createSearchConfiguration(id, searchConfig);
+
         assertThrows(IllegalArgumentException.class, executable);
     }
 
@@ -196,11 +243,11 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsById(id)).thenReturn(true);
         when(codesListRepository.existsSearchConfiguration(id)).thenReturn(true);
 
-        ObjectNode configJson = objectMapper.createObjectNode();
-        configJson.put("type", "advanced");
+        Map<String,Object> configMap = Map.of("type", "advanced");
+        SearchConfig configWrapper = new SearchConfig(configMap);
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> service.createSearchConfiguration(id, configJson));
+                () -> service.createSearchConfiguration(id, configWrapper));
 
         assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
         assertTrue(Objects.requireNonNull(ex.getReason()).contains("already exists"));

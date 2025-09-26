@@ -1,13 +1,11 @@
 package registre.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import registre.dto.CodesListDto;
-import registre.dto.CodesListExternalLinkDto;
+import registre.dto.*;
 import registre.entity.CodesListEntity;
 import registre.entity.CodesListExternalLinkEntity;
 import registre.mapper.CodesListMapper;
@@ -27,7 +25,33 @@ public class CodesListPublicationService {
     private final CodesListRepository codesListRepository;
     private final CodesListMapper codesListMapper;
 
+    /**
+     * POST /codes-lists/metadata-only : Create a codes list using only metadata.
+     * Persists the codes list and adds an external link if provided.
+     *
+     * @param metadataDto the metadata for the codes list
+     */
     @Transactional
+    public void createCodesListMetadataOnly(MetadataDto metadataDto) {
+        CodesListDto dto = new CodesListDto(
+                null,
+                new MetadataDto(
+                        null,
+                        metadataDto.label(),
+                        metadataDto.version(),
+                        metadataDto.externalLink()
+                ),
+                null,
+                null
+        );
+
+        UUID id = createCodesList(dto);
+
+        if (metadataDto.externalLink() != null) {
+            createExternalLink(id, metadataDto.externalLink());
+        }
+    }
+
     public UUID createCodesList(CodesListDto dto) {
         CodesListEntity entity = codesListMapper.toEntity(dto);
 
@@ -39,8 +63,7 @@ public class CodesListPublicationService {
         return entity.getId();
     }
 
-    @Transactional
-    public void createContent(UUID codesListId, JsonNode contentJson) {
+    public void createContent(UUID codesListId, CodesListContent content) {
         if (!codesListRepository.existsById(codesListId)) {
             throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
         }
@@ -53,12 +76,11 @@ public class CodesListPublicationService {
         }
 
         codesListRepository.findById(codesListId).ifPresent(entity -> {
-            entity.setContent(contentJson);
+            entity.setContent(content);
             codesListRepository.save(entity);
         });
     }
 
-    @Transactional
     public void createExternalLink(UUID codesListId, CodesListExternalLinkDto externalLinkDto) {
         if (!codesListRepository.existsById(codesListId)) {
             throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
@@ -83,8 +105,7 @@ public class CodesListPublicationService {
         });
     }
 
-    @Transactional
-    public void createSearchConfiguration(UUID codesListId, JsonNode configJson) {
+    public void createSearchConfiguration(UUID codesListId, SearchConfig searchConfig) {
         if (!codesListRepository.existsById(codesListId)) {
             throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
         }
@@ -97,8 +118,9 @@ public class CodesListPublicationService {
         }
 
         codesListRepository.findById(codesListId).ifPresent(entity -> {
-            entity.setSearchConfiguration(configJson);
+            entity.setSearchConfiguration(searchConfig);
             codesListRepository.save(entity);
         });
     }
+
 }
