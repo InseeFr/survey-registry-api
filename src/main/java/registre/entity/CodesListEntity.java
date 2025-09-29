@@ -29,15 +29,6 @@ public class CodesListEntity {
     @Column(name = "theme")
     private String theme;
 
-    @Column(name = "vintage")
-    private String vintage;
-
-    @Column(name = "is_deprecated", nullable = false)
-    private boolean isDeprecated = false;
-
-    @Column(name = "is_invalid", nullable = false)
-    private boolean isInvalid = false;
-
     @ManyToOne
     @JoinColumn(name = "external_link_id")
     private CodesListExternalLinkEntity codesListExternalLink;
