@@ -1,5 +1,32 @@
 databaseChangeLog:
   - changeSet:
+      id: 4
+      author: bcbab8
+      changes:
+        - modifyDataType:
+            tableName: codes_list
+            columnName: version
+            newDataType: integer
+
+  - changeSet:
+      id: 3
+      author: bcbab8
+      changes:
+        - addColumn:
+            tableName: codes_list
+            columns:
+              - column:
+                  name: theme
+                  type: varchar(49)
+                  constraints:
+                    nullable: false
+              - column:
+                name: vintage
+                type: varchar(4)
+                constraints:
+                  nullable: true
+
+  - changeSet:
       id: 2
       author: bcbab8
       changes:
@@ -58,3 +85,12 @@ databaseChangeLog:
             referencedTableName: external_link
             referencedColumnNames: id
             constraintName: fk_codes_list_external_link
+
+  - changeSet:
+      id: 5
+      author: bcbab8
+      changes:
+        - addUniqueConstraint:
+            tableName: codes_list
+            columnNames: theme, vintage, version
+            constraintName: uq_codeslist_theme_vintage_version
