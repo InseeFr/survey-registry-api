@@ -13,21 +13,32 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "codes_list")
+@Table(
+        name = "codes_list",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uq_codeslist_theme_referenceYear_version",
+                        columnNames = {"theme", "referenceYear", "version"}
+                )
+        }
+)
 public class CodesListEntity {
 
     @Id
     @Column(name = "id", columnDefinition = "uuid")
     private UUID id;
 
-    @Column(name = "label")
+    @Column(name = "label", nullable = false)
     private String label;
 
-    @Column(name = "version")
-    private String version;
+    @Column(name = "version", nullable = false)
+    private Integer version;
 
-    @Column(name = "theme")
+    @Column(name = "theme", length = 49, nullable = false)
     private String theme;
+
+    @Column(name = "referenceYear", length = 4)
+    private String referenceYear;
 
     @ManyToOne
     @JoinColumn(name = "external_link_id")

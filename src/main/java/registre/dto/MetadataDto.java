@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
@@ -36,15 +37,14 @@ public record MetadataDto(
         @JsonProperty("label")
         String label,
 
-        @NotBlank
         @Schema(
                 name = "version",
                 description = "Version of the code list (auto-incremented)",
                 example = "1",
-                requiredMode = Schema.RequiredMode.REQUIRED
+                accessMode = Schema.AccessMode.READ_ONLY
         )
         @JsonProperty("version")
-        String version,
+        Integer version,
 
         @NotBlank
         @Schema(
@@ -55,6 +55,16 @@ public record MetadataDto(
         )
         @JsonProperty("theme")
         String theme,
+
+        @Size(max = 4)
+        @Schema(
+                name = "referenceYear",
+                description = "Reference year (4 digits, optional)",
+                example = "2025",
+                requiredMode = Schema.RequiredMode.NOT_REQUIRED
+        )
+        @JsonProperty("referenceYear")
+        String referenceYear,
 
         @Valid
         @Schema(
