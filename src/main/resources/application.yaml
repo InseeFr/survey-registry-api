@@ -3,9 +3,9 @@ spring:
     name: Registre
 
   datasource:
-    url: jdbc://postgresql://localhost:5432/postgres
-    username: username
-    password: password
+    url:
+    username:
+    password:
     driver-class-name: org.postgresql.Driver
 
   jpa:
