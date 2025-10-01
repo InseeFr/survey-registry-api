@@ -1,30 +1,4 @@
 databaseChangeLog:
-  - changeSet:
-      id: 4
-      author: bcbab8
-      changes:
-        - modifyDataType:
-            tableName: codes_list
-            columnName: version
-            newDataType: integer
-
-  - changeSet:
-      id: 3
-      author: bcbab8
-      changes:
-        - addColumn:
-            tableName: codes_list
-            columns:
-              - column:
-                  name: theme
-                  type: varchar(49)
-                  constraints:
-                    nullable: false
-              - column:
-                name: reference_year
-                type: varchar(4)
-                constraints:
-                  nullable: true
 
   - changeSet:
       id: 2
@@ -85,6 +59,40 @@ databaseChangeLog:
             referencedTableName: external_link
             referencedColumnNames: id
             constraintName: fk_codes_list_external_link
+
+  - changeSet:
+      id: 4
+      author: bcbab8
+      changes:
+        - dropColumn:
+            tableName: codes_list
+            columnName: version
+        - addColumn:
+            tableName: codes_list
+            columns:
+              - column:
+                  name: version
+                  type: integer
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 3
+      author: bcbab8
+      changes:
+        - addColumn:
+            tableName: codes_list
+            columns:
+              - column:
+                  name: theme
+                  type: varchar(49)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reference_year
+                  type: varchar(4)
+                  constraints:
+                    nullable: true
 
   - changeSet:
       id: 5

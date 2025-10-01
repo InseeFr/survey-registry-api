@@ -17,8 +17,8 @@ import java.util.UUID;
         name = "codes_list",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uq_codeslist_theme_referenceYear_version",
-                        columnNames = {"theme", "referenceYear", "version"}
+                        name = "uq_codeslist_theme_referenceyear_version",
+                        columnNames = {"theme", "reference_year", "version"}
                 )
         }
 )

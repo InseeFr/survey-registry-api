@@ -40,6 +40,7 @@ public class CodesListPublicationService {
                         metadataDto.label(),
                         metadataDto.version(),
                         metadataDto.theme(),
+                        metadataDto.referenceYear(),
                         metadataDto.externalLink()
                 ),
                 null,

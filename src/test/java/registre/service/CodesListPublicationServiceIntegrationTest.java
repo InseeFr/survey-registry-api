@@ -32,7 +32,7 @@ class CodesListPublicationServiceIntegrationTest {
     private CodesListDto buildEmptyCodesListDto() {
         return new CodesListDto(
                 null,
-                new MetadataDto(null, "Label1", "v1", null),
+                new MetadataDto(null, "Label1", 1, "COMMUNES", null, null),
                 null,
                 null
         );
@@ -45,7 +45,8 @@ class CodesListPublicationServiceIntegrationTest {
         externalLinkEntity.setVersion("v1");
         externalLinkRepository.save(externalLinkEntity);
 
-        MetadataDto metadataDto = new MetadataDto(null, "Label1", "v1", new CodesListExternalLinkDto("ExternalLink1"));
+        MetadataDto metadataDto = new MetadataDto(null, "Label1", 1, "COMMUNES", "2024",
+                new CodesListExternalLinkDto("ExternalLink1"));
 
         service.createCodesListMetadataOnly(metadataDto);
 
@@ -53,7 +54,9 @@ class CodesListPublicationServiceIntegrationTest {
                 .filter(e -> "Label1".equals(e.getLabel()))
                 .findFirst().orElseThrow();
 
-        assertEquals("v1", entity.getVersion());
+        assertEquals(1, entity.getVersion());
+        assertEquals("COMMUNES", entity.getTheme());
+        assertEquals("2024", entity.getReferenceYear());
         assertNotNull(entity.getCodesListExternalLink());
         assertEquals("ExternalLink1", entity.getCodesListExternalLink().getId());
         assertEquals("v1", entity.getCodesListExternalLink().getVersion());
@@ -61,13 +64,15 @@ class CodesListPublicationServiceIntegrationTest {
 
     @Test
     void testCreateCodesListMetadataOnly_WithoutExternalLink() {
-        MetadataDto metadataDto = new MetadataDto(null, "Label2", "v2", null);
+        MetadataDto metadataDto = new MetadataDto(null, "Label2", 2, "COMMUNES", "2024", null);
 
         service.createCodesListMetadataOnly(metadataDto);
 
         CodesListEntity entity = codesListRepository.findAll().stream().findFirst().orElseThrow();
         assertEquals("Label2", entity.getLabel());
-        assertEquals("v2", entity.getVersion());
+        assertEquals(2, entity.getVersion());
+        assertEquals("COMMUNES", entity.getTheme());
+        assertEquals("2024",entity.getReferenceYear());
         assertNull(entity.getCodesListExternalLink());
     }
     
@@ -79,7 +84,7 @@ class CodesListPublicationServiceIntegrationTest {
         CodesListEntity entity = codesListRepository.findById(id).orElseThrow();
         assertEquals(id, entity.getId());
         assertEquals("Label1", entity.getLabel());
-        assertEquals("v1", entity.getVersion());
+        assertEquals(1, entity.getVersion());
     }
 
     @Test
