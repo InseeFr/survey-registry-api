@@ -33,4 +33,11 @@ public interface CodesListRepository extends JpaRepository<CodesListEntity, UUID
     // Check if the search configuration already exists
     @Query("SELECT CASE WHEN c.searchConfiguration IS NOT NULL THEN true ELSE false END FROM CodesListEntity c WHERE c.id = :id")
     boolean existsSearchConfiguration(@Param("id") UUID id);
+
+    // Check uniqueness of theme / referenceYear / version
+    boolean existsByThemeAndReferenceYearAndVersion(String theme, String referenceYear, Integer version);
+
+    // Get the maximum version for a given theme and referenceYear
+    @Query("SELECT MAX(c.version) FROM CodesListEntity c WHERE c.theme = :theme AND c.referenceYear = :referenceYear")
+    Integer findMaxVersionByThemeAndReferenceYear(@Param("theme") String theme, @Param("referenceYear") String referenceYear);
 }

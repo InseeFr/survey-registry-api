@@ -26,19 +26,21 @@ public class CodesListPublicationService {
     private final CodesListMapper codesListMapper;
 
     /**
-     * POST /codes-lists/metadata-only : Create a codes list using only metadata.
-     * Persists the codes list and adds an external link if provided.
+     * Creates a codes list with only metadata.
+     * The version is automatically incremented based on existing entries with the same theme and referenceYear.
      *
      * @param metadataDto the metadata for the codes list
      */
     @Transactional
     public void createCodesListMetadataOnly(MetadataDto metadataDto) {
+        Integer nextVersion = getNextVersion(metadataDto.theme(), metadataDto.referenceYear());
+
         CodesListDto dto = new CodesListDto(
                 null,
                 new MetadataDto(
                         null,
                         metadataDto.label(),
-                        metadataDto.version(),
+                        nextVersion,
                         metadataDto.theme(),
                         metadataDto.referenceYear(),
                         metadataDto.externalLink()
@@ -54,6 +56,12 @@ public class CodesListPublicationService {
         }
     }
 
+    /**
+     * Persists a CodesListEntity in the database.
+     *
+     * @param dto the DTO representing the codes list
+     * @return the generated UUID
+     */
     public UUID createCodesList(CodesListDto dto) {
         CodesListEntity entity = codesListMapper.toEntity(dto);
 
@@ -61,10 +69,38 @@ public class CodesListPublicationService {
             entity.setId(UUID.randomUUID());
         }
 
+        if (codesListRepository.existsByThemeAndReferenceYearAndVersion(
+                entity.getTheme(), entity.getReferenceYear(), entity.getVersion())) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Codes list with theme=" + entity.getTheme() +
+                            ", referenceYear=" + entity.getReferenceYear() +
+                            ", version=" + entity.getVersion() + ALREADY_EXISTS
+            );
+        }
+
         codesListRepository.save(entity);
         return entity.getId();
     }
 
+    /**
+     * Returns the next version for a given (theme, referenceYear) pair.
+     *
+     * @param theme the generic theme
+     * @param referenceYear the reference year (nullable)
+     * @return next version as Integer
+     */
+    private Integer getNextVersion(String theme, String referenceYear) {
+        Integer maxVersion = codesListRepository.findMaxVersionByThemeAndReferenceYear(theme, referenceYear);
+        return (maxVersion != null) ? maxVersion + 1 : 1;
+    }
+
+    /**
+     * Adds content to an existing codes list.
+     *
+     * @param codesListId the UUID of the codes list
+     * @param content the content object
+     */
     public void createContent(UUID codesListId, CodesListContent content) {
         if (!codesListRepository.existsById(codesListId)) {
             throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
@@ -83,6 +119,12 @@ public class CodesListPublicationService {
         });
     }
 
+    /**
+     * Adds an external link to an existing codes list.
+     *
+     * @param codesListId the UUID of the codes list
+     * @param externalLinkDto the external link DTO
+     */
     public void createExternalLink(UUID codesListId, CodesListExternalLinkDto externalLinkDto) {
         if (!codesListRepository.existsById(codesListId)) {
             throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
@@ -107,6 +149,12 @@ public class CodesListPublicationService {
         });
     }
 
+    /**
+     * Adds a search configuration to an existing codes list.
+     *
+     * @param codesListId the UUID of the codes list
+     * @param searchConfig the search configuration object
+     */
     public void createSearchConfiguration(UUID codesListId, SearchConfig searchConfig) {
         if (!codesListRepository.existsById(codesListId)) {
             throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
