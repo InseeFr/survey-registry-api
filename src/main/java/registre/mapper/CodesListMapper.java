@@ -22,6 +22,7 @@ public class CodesListMapper {
                 entity.getLabel(),
                 entity.getVersion(),
                 entity.getTheme(),
+                entity.getReferenceYear(),
                 entity.getCodesListExternalLink() != null
                         ? externalLinkMapper.toDto(entity.getCodesListExternalLink())
                         : null
@@ -46,6 +47,7 @@ public class CodesListMapper {
             entity.setLabel(metadata.label());
             entity.setVersion(metadata.version());
             entity.setTheme(metadata.theme());
+            entity.setReferenceYear(metadata.referenceYear());
         }
 
         return entity;

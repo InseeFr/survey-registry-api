@@ -23,6 +23,7 @@ public class MetadataMapper {
                 projection.getLabel(),
                 projection.getVersion(),
                 projection.getTheme(),
+                projection.getReferenceYear(),
                 projection.getCodesListExternalLink() != null
                         ? externalLinkMapper.toDto(projection.getCodesListExternalLink())
                         : null

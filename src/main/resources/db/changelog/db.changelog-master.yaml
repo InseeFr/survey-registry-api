@@ -21,7 +21,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                name: vintage
+                name: reference_year
                 type: varchar(4)
                 constraints:
                   nullable: true
@@ -92,5 +92,5 @@ databaseChangeLog:
       changes:
         - addUniqueConstraint:
             tableName: codes_list
-            columnNames: theme, vintage, version
-            constraintName: uq_codeslist_theme_vintage_version
+            columnNames: theme, reference_year, version
+            constraintName: uq_codeslist_theme_referenceyear_version

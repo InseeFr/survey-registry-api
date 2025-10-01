@@ -37,7 +37,7 @@ public class CodesListEntity {
     @Column(name = "theme", length = 49, nullable = false)
     private String theme;
 
-    @Column(name = "referenceYear", length = 4)
+    @Column(name = "reference_year", length = 4)
     private String referenceYear;
 
     @ManyToOne

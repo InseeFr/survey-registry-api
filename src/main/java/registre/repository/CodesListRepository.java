@@ -14,8 +14,9 @@ public interface CodesListRepository extends JpaRepository<CodesListEntity, UUID
     interface MetadataProjection {
         UUID getId();
         String getLabel();
-        String getVersion();
+        Integer getVersion();
         String getTheme();
+        String getReferenceYear();
         CodesListExternalLinkEntity getCodesListExternalLink();
     }
 
