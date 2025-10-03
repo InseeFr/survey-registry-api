@@ -69,6 +69,10 @@ public class CodesListPublicationService {
             entity.setId(UUID.randomUUID());
         }
 
+        if (entity.getVersion() == null) {
+            entity.setVersion(getNextVersion(entity.getTheme(), entity.getReferenceYear()));
+        }
+
         if (codesListRepository.existsByThemeAndReferenceYearAndVersion(
                 entity.getTheme(), entity.getReferenceYear(), entity.getVersion())) {
             throw new ResponseStatusException(
