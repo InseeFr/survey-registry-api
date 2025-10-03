@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
@@ -30,21 +31,40 @@ public record MetadataDto(
         @Schema(
                 name = "label",
                 description = "Human-readable label for the code list",
-                example = "Communes",
+                example = "Communes_Nord",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         @JsonProperty("label")
         String label,
 
-        @NotBlank
         @Schema(
                 name = "version",
-                description = "Version of the code list",
-                example = "2024",
-                requiredMode = Schema.RequiredMode.REQUIRED
+                description = "Version of the code list (auto-incremented)",
+                example = "1",
+                accessMode = Schema.AccessMode.READ_ONLY
         )
         @JsonProperty("version")
-        String version,
+        Integer version,
+
+        @NotBlank
+        @Schema(
+                name = "theme",
+                description = "Generic theme for the code list (stable between versions)",
+                example = "COMMUNES",
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        @JsonProperty("theme")
+        String theme,
+
+        @Size(max = 4)
+        @Schema(
+                name = "referenceYear",
+                description = "Reference year (4 digits, optional)",
+                example = "2025",
+                requiredMode = Schema.RequiredMode.NOT_REQUIRED
+        )
+        @JsonProperty("referenceYear")
+        String referenceYear,
 
         @Valid
         @Schema(

@@ -38,7 +38,9 @@ class CodesListPublicationServiceTest {
         MetadataDto metadataDto = new MetadataDto(
                 null,
                 "Label1",
-                "v1",
+                1,
+                "COMMUNES",
+                "2024",
                 new CodesListExternalLinkDto("ExternalLink1")
         );
 
@@ -60,7 +62,7 @@ class CodesListPublicationServiceTest {
 
     @Test
     void testCreateCodesListMetadataOnly_WithoutExternalLink() {
-        MetadataDto metadataDto = new MetadataDto(null, "Label1", "v1", null);
+        MetadataDto metadataDto = new MetadataDto(null, "Label1", 1, "COMMUNES", "2024", null);
 
         CodesListEntity entity = new CodesListEntity();
         when(codesListMapper.toEntity(any(CodesListDto.class))).thenReturn(entity);
