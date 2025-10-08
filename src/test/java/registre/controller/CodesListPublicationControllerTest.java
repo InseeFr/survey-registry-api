@@ -54,7 +54,9 @@ class CodesListPublicationControllerTest {
         MetadataDto metadataDto = new MetadataDto(
                 null,
                 "CodesList1",
-                "v1",
+                1,
+                "COMMUNES",
+                "2024",
                 new CodesListExternalLinkDto("ExternalLink1")
         );
 
@@ -98,7 +100,9 @@ class CodesListPublicationControllerTest {
         MetadataDto metadataDto = new MetadataDto(
                 testId,
                 "CodesList1",
-                "v1",
+                1,
+                "COMMUNES",
+                "2024",
                 externalLinkDto
         );
 
