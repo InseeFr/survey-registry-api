@@ -26,7 +26,8 @@ public class MetadataMapper {
                 projection.getReferenceYear(),
                 projection.getCodesListExternalLink() != null
                         ? externalLinkMapper.toDto(projection.getCodesListExternalLink())
-                        : null
+                        : null,
+                projection.isDeprecated()
         );
     }
 }

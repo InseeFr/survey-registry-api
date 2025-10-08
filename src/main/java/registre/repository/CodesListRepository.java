@@ -18,6 +18,7 @@ public interface CodesListRepository extends JpaRepository<CodesListEntity, UUID
         String getTheme();
         String getReferenceYear();
         CodesListExternalLinkEntity getCodesListExternalLink();
+        boolean isDeprecated();
     }
 
     List<MetadataProjection> findAllBy();
