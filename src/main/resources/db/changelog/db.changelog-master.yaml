@@ -2,7 +2,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 2
-      author: bcbab8
+      author: rverriez
       changes:
         - createTable:
             tableName: external_link
@@ -21,7 +21,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 1
-      author: bcbab8
+      author: rverriez
       changes:
         - createTable:
             tableName: codes_list
@@ -62,7 +62,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 4
-      author: bcbab8
+      author: rverriez
       changes:
         - dropColumn:
             tableName: codes_list
@@ -78,7 +78,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 3
-      author: bcbab8
+      author: rverriez
       changes:
         - addColumn:
             tableName: codes_list
@@ -96,7 +96,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 5
-      author: bcbab8
+      author: rverriez
       changes:
         - addUniqueConstraint:
             tableName: codes_list
