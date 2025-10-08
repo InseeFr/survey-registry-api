@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 
 import java.util.UUID;
 
@@ -31,7 +31,7 @@ public record MetadataDto(
         @Schema(
                 name = "label",
                 description = "Human-readable label for the code list",
-                example = "Communes_Nord",
+                example = "Communes du Nord",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         @JsonProperty("label")
@@ -56,7 +56,7 @@ public record MetadataDto(
         @JsonProperty("theme")
         String theme,
 
-        @Size(max = 4)
+        @Pattern(regexp = "\\d{4}", message = "Reference year must contain exactly 4 digits")
         @Schema(
                 name = "referenceYear",
                 description = "Reference year (4 digits, optional)",
@@ -66,7 +66,7 @@ public record MetadataDto(
         @JsonProperty("referenceYear")
         String referenceYear,
 
-        @Valid
+                @Valid
         @Schema(
                 name = "externalLink",
                 description = "Optional external link. Must refer to an existing external resource if provided.",
