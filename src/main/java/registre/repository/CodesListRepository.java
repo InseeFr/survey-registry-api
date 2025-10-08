@@ -23,16 +23,13 @@ public interface CodesListRepository extends JpaRepository<CodesListEntity, UUID
     List<MetadataProjection> findAllBy();
 
     // Check if the content already exists
-    @Query("SELECT CASE WHEN c.content IS NOT NULL THEN true ELSE false END FROM CodesListEntity c WHERE c.id = :id")
-    boolean existsContent(@Param("id") UUID id);
+    boolean existsByIdAndContentIsNotNull(UUID id);
 
     // Check if an external link is already defined
-    @Query("SELECT CASE WHEN c.codesListExternalLink IS NOT NULL THEN true ELSE false END FROM CodesListEntity c WHERE c.id = :id")
-    boolean existsExternalLink(@Param("id") UUID id);
+    boolean existsByIdAndCodesListExternalLinkIsNotNull(UUID id);
 
     // Check if the search configuration already exists
-    @Query("SELECT CASE WHEN c.searchConfiguration IS NOT NULL THEN true ELSE false END FROM CodesListEntity c WHERE c.id = :id")
-    boolean existsSearchConfiguration(@Param("id") UUID id);
+    boolean existsByIdAndSearchConfigurationIsNotNull(UUID id);
 
     // Check uniqueness of theme / referenceYear / version
     boolean existsByThemeAndReferenceYearAndVersion(String theme, String referenceYear, Integer version);

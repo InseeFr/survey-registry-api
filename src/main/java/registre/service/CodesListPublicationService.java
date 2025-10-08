@@ -110,7 +110,7 @@ public class CodesListPublicationService {
             throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
         }
 
-        if (codesListRepository.existsContent(codesListId)) {
+        if (codesListRepository.existsByIdAndContentIsNotNull(codesListId)) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Content of " + codesListId + ALREADY_EXISTS
@@ -134,7 +134,7 @@ public class CodesListPublicationService {
             throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
         }
 
-        if (codesListRepository.existsExternalLink(codesListId)) {
+        if (codesListRepository.existsByIdAndCodesListExternalLinkIsNotNull(codesListId)) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "External link of " + codesListId + ALREADY_EXISTS
@@ -164,7 +164,7 @@ public class CodesListPublicationService {
             throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
         }
 
-        if (codesListRepository.existsSearchConfiguration(codesListId)) {
+        if (codesListRepository.existsByIdAndSearchConfigurationIsNotNull(codesListId)) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Search configuration of " + codesListId + ALREADY_EXISTS
