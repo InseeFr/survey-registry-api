@@ -33,7 +33,7 @@ public class CodesListPublicationService {
      */
     @Transactional
     public void createCodesListMetadataOnly(MetadataDto metadataDto) {
-        Integer nextVersion = getNextVersion(metadataDto.theme(), metadataDto.referenceYear());
+        Integer nextVersion = computeNextVersion(metadataDto.theme(), metadataDto.referenceYear());
 
         CodesListDto dto = new CodesListDto(
                 null,
@@ -70,7 +70,7 @@ public class CodesListPublicationService {
         }
 
         if (entity.getVersion() == null) {
-            entity.setVersion(getNextVersion(entity.getTheme(), entity.getReferenceYear()));
+            entity.setVersion(computeNextVersion(entity.getTheme(), entity.getReferenceYear()));
         }
 
         if (codesListRepository.existsByThemeAndReferenceYearAndVersion(
@@ -88,13 +88,13 @@ public class CodesListPublicationService {
     }
 
     /**
-     * Returns the next version for a given (theme, referenceYear) pair.
+     * Computes the next version for a given (theme, referenceYear) pair.
      *
      * @param theme the generic theme
      * @param referenceYear the reference year (nullable)
      * @return next version as Integer
      */
-    private Integer getNextVersion(String theme, String referenceYear) {
+    private Integer computeNextVersion(String theme, String referenceYear) {
         Integer maxVersion = codesListRepository.findMaxVersionByThemeAndReferenceYear(theme, referenceYear);
         return (maxVersion != null) ? maxVersion + 1 : 1;
     }
