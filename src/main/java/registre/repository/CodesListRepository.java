@@ -42,7 +42,7 @@ public interface CodesListRepository extends JpaRepository<CodesListEntity, UUID
 
     // Deprecates all older versions of a codes list with the same theme and referenceYear, except for the current one.
     @Modifying
-    @Query("UPDATE CodesListEntity c SET c.isDeprecated = true WHERE c.theme = :theme  AND c.referenceYear = :referenceYear AND c.id <> :currentId")
+    @Query("UPDATE CodesListEntity c SET c.deprecated = true WHERE c.theme = :theme  AND c.referenceYear = :referenceYear AND c.id <> :currentId")
     void deprecateOlderVersions(@Param("theme") String theme, @Param("referenceYear") String referenceYear, @Param("currentId") UUID currentId);
 
 }

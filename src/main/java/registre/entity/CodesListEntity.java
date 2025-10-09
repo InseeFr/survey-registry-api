@@ -41,7 +41,7 @@ public class CodesListEntity {
     private String referenceYear;
 
     @Column(name = "is_deprecated", nullable = false)
-    private boolean isDeprecated = false;
+    private boolean deprecated = false;
 
     @ManyToOne
     @JoinColumn(name = "external_link_id")
