@@ -102,3 +102,17 @@ databaseChangeLog:
             tableName: codes_list
             columnNames: theme, reference_year, version
             constraintName: uq_codeslist_theme_referenceyear_version
+
+  - changeSet:
+      id: 6
+      author: rverriez
+      changes:
+        - addColumn:
+            tableName: codes_list
+            columns:
+              - column:
+                  name: is_deprecated
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
