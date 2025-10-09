@@ -59,4 +59,11 @@ public class CodesListPublicationController implements CodesListPublicationApi {
         codesListPublicationService.createSearchConfiguration(codesListId, searchConfig);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @Override
+    public ResponseEntity<Void> markCodesListAsDeprecated(UUID codesListId) {
+        codesListPublicationService.markAsDeprecated(codesListId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

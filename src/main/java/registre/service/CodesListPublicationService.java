@@ -186,4 +186,31 @@ public class CodesListPublicationService {
         });
     }
 
+    /**
+     * Marks a codes list as deprecated (sets {@code isDeprecated = true}).
+     * This operation can only be performed once: a codes list already marked
+     * as deprecated cannot become valid again.
+     *
+     * @param codesListId the unique identifier of the codes list to deprecate
+     * @throws IllegalArgumentException if the codes list does not exist
+     * @throws ResponseStatusException  if the codes list is already deprecated
+     */
+    public void markAsDeprecated(UUID codesListId) {
+        if (!codesListRepository.existsById(codesListId)) {
+            throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
+        }
+
+        codesListRepository.findById(codesListId).ifPresent(entity -> {
+            if (entity.isDeprecated()) {
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Codes list " + codesListId + " is already deprecated"
+                );
+            }
+
+            entity.setDeprecated(true);
+            codesListRepository.save(entity);
+        });
+    }
+
 }
