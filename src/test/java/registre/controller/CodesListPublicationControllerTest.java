@@ -57,7 +57,8 @@ class CodesListPublicationControllerTest {
                 1,
                 "COMMUNES",
                 "2024",
-                new CodesListExternalLinkDto("ExternalLink1")
+                new CodesListExternalLinkDto("ExternalLink1"),
+                false
         );
 
         mockMvc.perform(post("/codes-lists")
@@ -103,7 +104,8 @@ class CodesListPublicationControllerTest {
                 1,
                 "COMMUNES",
                 "2024",
-                externalLinkDto
+                externalLinkDto,
+                false
         );
 
         List<Map<String, Object>> contentJson = List.of(
@@ -166,6 +168,17 @@ class CodesListPublicationControllerTest {
                         eq(testId),
                         any(SearchConfig.class)
                 );
+    }
+
+    @Test
+    void testMarkCodesListAsDeprecated() throws Exception {
+        UUID testId = UUID.randomUUID();
+
+        mockMvc.perform(put("/codes-lists/" + testId + "/deprecated"))
+                .andExpect(status().isNoContent());
+
+        Mockito.verify(codesListPublicationService)
+                .markAsDeprecated(testId);
     }
 }
 

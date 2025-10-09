@@ -41,6 +41,7 @@ class MetadataMapperTest {
         when(projection.getTheme()).thenReturn("COMMUNES");
         when(projection.getReferenceYear()).thenReturn("2024");
         when(projection.getCodesListExternalLink()).thenReturn(externalLinkEntity);
+        when(projection.isDeprecated()).thenReturn(false);
 
         CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1");
         when(externalLinkMapper.toDto(externalLinkEntity)).thenReturn(externalLinkDto);
@@ -54,6 +55,7 @@ class MetadataMapperTest {
         assertEquals("COMMUNES", dto.theme());
         assertEquals("2024", dto.referenceYear());
         assertEquals(externalLinkDto, dto.externalLink());
+        assertFalse(dto.isDeprecated());
 
         verify(externalLinkMapper, times(1)).toDto(externalLinkEntity);
     }
@@ -69,6 +71,7 @@ class MetadataMapperTest {
         when(projection.getTheme()).thenReturn("COMMUNES");
         when(projection.getReferenceYear()).thenReturn("2024");
         when(projection.getCodesListExternalLink()).thenReturn(null);
+        when(projection.isDeprecated()).thenReturn(false);
 
         MetadataDto dto = metadataMapper.toDto(projection);
 
@@ -79,6 +82,7 @@ class MetadataMapperTest {
         assertEquals("COMMUNES", dto.theme());
         assertEquals("2024", dto.referenceYear());
         assertNull(dto.externalLink());
+        assertFalse(dto.isDeprecated());
 
         verify(externalLinkMapper, never()).toDto(any());
     }

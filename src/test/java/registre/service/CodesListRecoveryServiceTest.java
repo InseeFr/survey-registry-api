@@ -47,7 +47,7 @@ class CodesListRecoveryServiceTest {
 
         when(repository.findAllBy()).thenReturn(List.of(projection));
 
-        MetadataDto dtoMock = new MetadataDto(id1, "Label1", 1, "COMMUNES", "2024", null);
+        MetadataDto dtoMock = new MetadataDto(id1, "Label1", 1, "COMMUNES", "2024", null, false);
         when(metadataMapper.toDto(projection)).thenReturn(dtoMock);
 
         List<MetadataDto> result = service.getAllMetadata();
@@ -60,6 +60,7 @@ class CodesListRecoveryServiceTest {
         assertEquals("COMMUNES", dto.theme());
         assertEquals("2024", dto.referenceYear());
         assertNull(dto.externalLink());
+        assertFalse(dto.isDeprecated());
     }
 
     @Test
@@ -77,7 +78,7 @@ class CodesListRecoveryServiceTest {
 
         registre.dto.CodesListExternalLinkDto externalLinkDto = new registre.dto.CodesListExternalLinkDto("ExternalLink1");
 
-        MetadataDto mappedDto = new MetadataDto(id2, "Label2", 2, "COMMUNES","2024", externalLinkDto);
+        MetadataDto mappedDto = new MetadataDto(id2, "Label2", 2, "COMMUNES","2024", externalLinkDto, false);
 
         when(repository.findAllBy()).thenReturn(List.of(projection));
 
@@ -93,12 +94,13 @@ class CodesListRecoveryServiceTest {
         assertEquals("COMMUNES", dto.theme());
         assertEquals("2024", dto.referenceYear());
         assertNotNull(dto.externalLink());
+        assertFalse(dto.isDeprecated());
     }
 
     @Test
     void testGetMetadataById_Found() {
         CodesListEntity entity = new CodesListEntity();
-        MetadataDto metadata = new MetadataDto(null,null,null, null, null,null);
+        MetadataDto metadata = new MetadataDto(null,null,null, null, null,null, false);
         CodesListDto dto = new CodesListDto(null, metadata,null,null);
 
         UUID id = UUID.randomUUID();
