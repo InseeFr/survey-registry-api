@@ -43,7 +43,8 @@ public class CodesListPublicationService {
                         nextVersion,
                         metadataDto.theme(),
                         metadataDto.referenceYear(),
-                        metadataDto.externalLink()
+                        metadataDto.externalLink(),
+                        metadataDto.isDeprecated()
                 ),
                 null,
                 null
@@ -82,6 +83,14 @@ public class CodesListPublicationService {
                             ", version=" + entity.getVersion() + ALREADY_EXISTS
             );
         }
+
+        codesListRepository.deprecateOlderVersions(
+                entity.getTheme(),
+                entity.getReferenceYear(),
+                entity.getId()
+        );
+
+        entity.setDeprecated(false);
 
         codesListRepository.save(entity);
         return entity.getId();
