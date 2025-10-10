@@ -42,7 +42,7 @@ public class CodesListPublicationController implements CodesListPublicationApi {
             codesListPublicationService.createSearchConfiguration(id, codesListDto.searchConfiguration());
         }
 
-        if (codesListDto.metadata() != null){
+        if (codesListDto.metadata() != null) {
             codesListPublicationService.deprecateOlderVersions(codesListDto.metadata().theme(),
                     codesListDto.metadata().referenceYear(), id);
         }
