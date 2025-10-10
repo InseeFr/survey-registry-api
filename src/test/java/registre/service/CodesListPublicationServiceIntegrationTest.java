@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import registre.dto.*;
@@ -91,6 +92,34 @@ class CodesListPublicationServiceIntegrationTest {
 
         assertEquals(1, entity1.getVersion());
         assertEquals(2, entity2.getVersion());
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void testDeprecateOlderVersions() {
+        CodesListDto dto1 = buildEmptyCodesListDto("Label1", "COMMUNES", "2025");
+        CodesListDto dto2 = buildEmptyCodesListDto("Label2", "COMMUNES", "2025");
+        CodesListDto dto3 = buildEmptyCodesListDto("Label3", "COMMUNES", "2025");
+
+        UUID id1 = service.createCodesList(dto1);
+        UUID id2 = service.createCodesList(dto2);
+        UUID id3 = service.createCodesList(dto3);
+
+        assertFalse(codesListRepository.findById(id1).orElseThrow().isDeprecated());
+        assertFalse(codesListRepository.findById(id2).orElseThrow().isDeprecated());
+        assertFalse(codesListRepository.findById(id3).orElseThrow().isDeprecated());
+
+        service.deprecateOlderVersions("COMMUNES", "2025", id3);
+
+        codesListRepository.flush();
+
+        CodesListEntity entity1 = codesListRepository.findById(id1).orElseThrow();
+        CodesListEntity entity2 = codesListRepository.findById(id2).orElseThrow();
+        CodesListEntity entity3 = codesListRepository.findById(id3).orElseThrow();
+
+        assertTrue(entity1.isDeprecated(), "Entity 1 should be deprecated");
+        assertTrue(entity2.isDeprecated(), "Entity 2 should be deprecated");
+        assertFalse(entity3.isDeprecated(), "Entity 3 should NOT be deprecated");
     }
 
     @Test

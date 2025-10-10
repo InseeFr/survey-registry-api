@@ -89,6 +89,18 @@ class CodesListPublicationServiceTest {
     }
 
     @Test
+    void testDeprecateOlderVersions_CallsRepositoryCorrectly() {
+        String theme = "COMMUNES";
+        String referenceYear = "2025";
+        UUID currentId = UUID.randomUUID();
+
+        service.deprecateOlderVersions(theme, referenceYear, currentId);
+
+        verify(codesListRepository, times(1))
+                .deprecateOlderVersions(theme, referenceYear, currentId);
+    }
+
+    @Test
     void testCreateContent_WhenCodesListExists() {
         UUID id = UUID.randomUUID();
         CodesListEntity entity = new CodesListEntity();
