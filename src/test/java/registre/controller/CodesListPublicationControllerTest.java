@@ -51,6 +51,8 @@ class CodesListPublicationControllerTest {
 
     @Test
     void testCreateCodesListMetadataOnly() throws Exception {
+        UUID testId = UUID.randomUUID();
+
         MetadataDto metadataDto = new MetadataDto(
                 null,
                 "CodesList1",
@@ -61,13 +63,16 @@ class CodesListPublicationControllerTest {
                 false
         );
 
+        Mockito.when(codesListPublicationService.createCodesListMetadataOnly(metadataDto)).thenReturn(testId);
+
         mockMvc.perform(post("/codes-lists")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(metadataDto)))
                 .andExpect(status().isCreated());
 
+        Mockito.verify(codesListPublicationService).createCodesListMetadataOnly(metadataDto);
         Mockito.verify(codesListPublicationService)
-                .createCodesListMetadataOnly(metadataDto);
+                .deprecateOlderVersions(metadataDto.theme(), metadataDto.referenceYear(), testId);
     }
 
     @Test
@@ -86,15 +91,17 @@ class CodesListPublicationControllerTest {
                 .andExpect(status().isCreated());
 
         Mockito.verify(codesListPublicationService).createCodesList(any());
-
         Mockito.verify(codesListPublicationService)
                 .createContent(eq(testId), ArgumentMatchers.any());
-
-        Mockito.verify(codesListPublicationService)
-                .createExternalLink(testId, externalLinkDto);
-
+        Mockito.verify(codesListPublicationService).createExternalLink(testId, externalLinkDto);
         Mockito.verify(codesListPublicationService)
                 .createSearchConfiguration(eq(testId), ArgumentMatchers.any());
+        Mockito.verify(codesListPublicationService)
+                .deprecateOlderVersions(
+                        codesListDto.metadata().theme(),
+                        codesListDto.metadata().referenceYear(),
+                        testId
+                );
     }
 
     private static CodesListDto getCodesListDto(UUID testId, CodesListExternalLinkDto externalLinkDto) {
