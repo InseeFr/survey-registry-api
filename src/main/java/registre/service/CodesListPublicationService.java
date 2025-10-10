@@ -92,6 +92,7 @@ public class CodesListPublicationService {
         );
 
         entity.setDeprecated(false);
+        entity.setValid(true);
 
         codesListRepository.save(entity);
         return entity.getId();
