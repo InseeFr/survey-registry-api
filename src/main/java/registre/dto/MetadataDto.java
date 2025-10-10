@@ -82,6 +82,14 @@ public record MetadataDto(
                 accessMode = Schema.AccessMode.READ_ONLY
         )
         @JsonProperty("isDeprecated")
-        boolean isDeprecated
+        boolean isDeprecated,
 
+        @Schema(
+                name = "isValid",
+                description = "Business validity indicator of the code list (true = valid, false = contains business errors)",
+                example = "true",
+                accessMode = Schema.AccessMode.READ_ONLY
+        )
+        @JsonProperty("isValid")
+        boolean isValid
 ) { }
