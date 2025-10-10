@@ -60,7 +60,8 @@ class CodesListPublicationControllerTest {
                 "COMMUNES",
                 "2024",
                 new CodesListExternalLinkDto("ExternalLink1"),
-                false
+                false,
+                true
         );
 
         Mockito.when(codesListPublicationService.createCodesListMetadataOnly(metadataDto)).thenReturn(testId);
@@ -112,7 +113,8 @@ class CodesListPublicationControllerTest {
                 "COMMUNES",
                 "2024",
                 externalLinkDto,
-                false
+                false,
+                true
         );
 
         List<Map<String, Object>> contentJson = List.of(
@@ -186,6 +188,17 @@ class CodesListPublicationControllerTest {
 
         Mockito.verify(codesListPublicationService)
                 .markAsDeprecated(testId);
+    }
+
+    @Test
+    void testMarkCodesListAsInvalid() throws Exception {
+        UUID testId = UUID.randomUUID();
+
+        mockMvc.perform(put("/codes-lists/" + testId + "/valid"))
+                .andExpect(status().isNoContent());
+
+        Mockito.verify(codesListPublicationService)
+                .markAsInvalid(testId);
     }
 }
 

@@ -33,7 +33,7 @@ class CodesListPublicationServiceIntegrationTest {
     private CodesListDto buildEmptyCodesListDto(String label, String theme, String referenceYear) {
         return new CodesListDto(
                 null,
-                new MetadataDto(null, label, null, theme, referenceYear, null, false),
+                new MetadataDto(null, label, null, theme, referenceYear, null, false, true),
                 null,
                 null
         );
@@ -47,7 +47,7 @@ class CodesListPublicationServiceIntegrationTest {
         externalLinkRepository.save(externalLinkEntity);
 
         MetadataDto metadataDto = new MetadataDto(null, "Label1", null, "COMMUNES", "2024",
-                new CodesListExternalLinkDto("ExternalLink1"), false);
+                new CodesListExternalLinkDto("ExternalLink1"), false, true);
 
         service.createCodesListMetadataOnly(metadataDto);
 
@@ -62,11 +62,12 @@ class CodesListPublicationServiceIntegrationTest {
         assertEquals("ExternalLink1", entity.getCodesListExternalLink().getId());
         assertEquals("v1", entity.getCodesListExternalLink().getVersion());
         assertFalse(entity.isDeprecated());
+        assertTrue(entity.isValid());
     }
 
     @Test
     void testCreateCodesListMetadataOnly_WithoutExternalLink() {
-        MetadataDto metadataDto = new MetadataDto(null, "Label2", null, "COMMUNES", "2024", null, false);
+        MetadataDto metadataDto = new MetadataDto(null, "Label2", null, "COMMUNES", "2024", null, false, true);
 
         service.createCodesListMetadataOnly(metadataDto);
 
@@ -77,6 +78,7 @@ class CodesListPublicationServiceIntegrationTest {
         assertEquals("2024", entity.getReferenceYear());
         assertNull(entity.getCodesListExternalLink());
         assertFalse(entity.isDeprecated());
+        assertTrue(entity.isValid());
     }
 
     @Test
@@ -256,6 +258,23 @@ class CodesListPublicationServiceIntegrationTest {
         assertTrue(entityDeprecated.isDeprecated());
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> service.markAsDeprecated(id));
+        assertEquals(409, ex.getStatusCode().value());
+    }
+
+    @Test
+    void testMarkAsInvalid() {
+        CodesListDto dto = buildEmptyCodesListDto("LabelX", "COMMUNES", "2025");
+        UUID id = service.createCodesList(dto);
+
+        CodesListEntity entityValid = codesListRepository.findById(id).orElseThrow();
+        assertTrue(entityValid.isValid());
+
+        service.markAsInvalid(id);
+
+        CodesListEntity entityInvalid = codesListRepository.findById(id).orElseThrow();
+        assertFalse(entityInvalid.isValid());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> service.markAsInvalid(id));
         assertEquals(409, ex.getStatusCode().value());
     }
 

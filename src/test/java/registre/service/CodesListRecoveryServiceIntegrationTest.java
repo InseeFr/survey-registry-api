@@ -41,6 +41,7 @@ class CodesListRecoveryServiceIntegrationTest {
         codesList.setTheme("COMMUNES");
         codesList.setReferenceYear("2024");
         codesList.setDeprecated(false);
+        codesList.setValid(true);
 
         repository.save(codesList);
 
@@ -52,6 +53,7 @@ class CodesListRecoveryServiceIntegrationTest {
         assertEquals("COMMUNES", result.getFirst().theme());
         assertEquals("2024", result.getFirst().referenceYear());
         assertFalse(result.getFirst().isDeprecated());
+        assertTrue(result.getFirst().isValid());
     }
 
     @Test
@@ -64,6 +66,7 @@ class CodesListRecoveryServiceIntegrationTest {
         codesList.setTheme("COMMUNES");
         codesList.setReferenceYear("2024");
         codesList.setDeprecated(false);
+        codesList.setValid(true);
 
         repository.save(codesList);
 
@@ -75,6 +78,7 @@ class CodesListRecoveryServiceIntegrationTest {
         assertEquals("COMMUNES", result.get().theme());
         assertEquals("2024", result.get().referenceYear());
         assertFalse(result.get().isDeprecated());
+        assertTrue(result.get().isValid());
     }
 
     @Test
@@ -87,6 +91,7 @@ class CodesListRecoveryServiceIntegrationTest {
         codesList.setTheme("COMMUNES");
         codesList.setReferenceYear("2024");
         codesList.setDeprecated(false);
+        codesList.setValid(true);
 
         List<Map<String,Object>> contentList = List.of(
                 Map.of("id", "Code1", "label", "Label1")
@@ -117,6 +122,7 @@ class CodesListRecoveryServiceIntegrationTest {
         codesList.setTheme("COMMUNES");
         codesList.setReferenceYear("2024");
         codesList.setDeprecated(false);
+        codesList.setValid(true);
 
         Map<String,Object> configMap = Map.of("filter", true);
         codesList.setSearchConfiguration(new SearchConfig(configMap));
