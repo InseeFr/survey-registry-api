@@ -3,6 +3,7 @@ package registre.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import registre.dto.*;
@@ -32,7 +33,7 @@ public class CodesListPublicationService {
      * @param metadataDto the metadata for the codes list
      */
     @Transactional
-    public void createCodesListMetadataOnly(MetadataDto metadataDto) {
+    public UUID createCodesListMetadataOnly(MetadataDto metadataDto) {
         Integer nextVersion = computeNextVersion(metadataDto.theme(), metadataDto.referenceYear());
 
         CodesListDto dto = new CodesListDto(
@@ -55,6 +56,8 @@ public class CodesListPublicationService {
         if (metadataDto.externalLink() != null) {
             createExternalLink(id, metadataDto.externalLink());
         }
+
+        return id;
     }
 
     /**
@@ -84,14 +87,6 @@ public class CodesListPublicationService {
             );
         }
 
-        codesListRepository.deprecateOlderVersions(
-                entity.getTheme(),
-                entity.getReferenceYear(),
-                entity.getId()
-        );
-
-        entity.setDeprecated(false);
-
         codesListRepository.save(entity);
         return entity.getId();
     }
@@ -106,6 +101,19 @@ public class CodesListPublicationService {
     private Integer computeNextVersion(String theme, String referenceYear) {
         Integer maxVersion = codesListRepository.findMaxVersionByThemeAndReferenceYear(theme, referenceYear);
         return (maxVersion != null) ? maxVersion + 1 : 1;
+    }
+
+    /**
+     * Deprecates older versions of a codes list (same theme and reference year)
+     * except the current one, in a new independent transaction.
+     *
+     * @param theme the theme of the codes list
+     * @param referenceYear the reference year of the codes list
+     * @param currentId the ID of the current codes list (not to deprecate)
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void deprecateOlderVersions(String theme, String referenceYear, UUID currentId) {
+        codesListRepository.deprecateOlderVersions(theme, referenceYear, currentId);
     }
 
     /**

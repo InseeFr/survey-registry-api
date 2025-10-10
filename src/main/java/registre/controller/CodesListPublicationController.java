@@ -19,7 +19,10 @@ public class CodesListPublicationController implements CodesListPublicationApi {
 
     @Override
     public ResponseEntity<Void> createCodesListMetadataOnly(@Valid MetadataDto metadataDto) {
-        codesListPublicationService.createCodesListMetadataOnly(metadataDto);
+        UUID id = codesListPublicationService.createCodesListMetadataOnly(metadataDto);
+
+        codesListPublicationService.deprecateOlderVersions(metadataDto.theme(), metadataDto.referenceYear(), id);
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -37,6 +40,11 @@ public class CodesListPublicationController implements CodesListPublicationApi {
 
         if (codesListDto.searchConfiguration() != null) {
             codesListPublicationService.createSearchConfiguration(id, codesListDto.searchConfiguration());
+        }
+
+        if (codesListDto.metadata() != null){
+            codesListPublicationService.deprecateOlderVersions(codesListDto.metadata().theme(),
+                    codesListDto.metadata().referenceYear(), id);
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
