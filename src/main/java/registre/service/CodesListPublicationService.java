@@ -88,6 +88,8 @@ public class CodesListPublicationService {
             );
         }
 
+        entity.setValid(true);
+
         codesListRepository.save(entity);
         return entity.getId();
     }
