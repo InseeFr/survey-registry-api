@@ -66,4 +66,9 @@ public class CodesListPublicationController implements CodesListPublicationApi {
         return ResponseEntity.noContent().build();
     }
 
+    @Override
+    public ResponseEntity<Void> markCodesListAsInvalid(UUID codesListId) {
+        codesListPublicationService.markAsInvalid(codesListId);
+        return ResponseEntity.noContent().build();
+    }
 }
