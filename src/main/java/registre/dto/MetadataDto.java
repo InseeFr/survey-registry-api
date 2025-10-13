@@ -59,7 +59,7 @@ public record MetadataDto(
         @Pattern(regexp = "\\d{4}", message = "Reference year must contain exactly 4 digits")
         @Schema(
                 name = "referenceYear",
-                description = "Reference year (4 digits, optional)",
+                description = "Reference year (4 digits)",
                 example = "2025",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
