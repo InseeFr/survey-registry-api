@@ -61,7 +61,7 @@ public record MetadataDto(
                 name = "referenceYear",
                 description = "Reference year (4 digits, optional)",
                 example = "2025",
-                requiredMode = Schema.RequiredMode.NOT_REQUIRED
+                requiredMode = Schema.RequiredMode.REQUIRED
         )
         @JsonProperty("referenceYear")
         String referenceYear,
