@@ -102,3 +102,16 @@ databaseChangeLog:
             tableName: codes_list
             columnNames: theme, reference_year, version
             constraintName: uq_codeslist_theme_referenceyear_version
+
+  - - changeSet:
+        id: 6
+        author: rverriez
+        changes:
+          - modifyDataType:
+              tableName: codes_list
+              columnName: reference_year
+              newDataType: varchar(4)
+          - addNotNullConstraint:
+              tableName: codes_list
+              columnName: reference_year
+              columnDataType: varchar(4)
