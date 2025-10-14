@@ -131,7 +131,7 @@ databaseChangeLog:
                     nullable: false
 
   - changeSet:
-      id: 7
+      id: 8
       author: rverriez
       changes:
         - addColumn:
