@@ -38,7 +38,9 @@ class CodesListRecoveryServiceIntegrationTest {
         UUID id1 = UUID.randomUUID();
         codesList.setId(id1);
         codesList.setLabel("Label1");
-        codesList.setVersion("v1");
+        codesList.setVersion(1);
+        codesList.setTheme("COMMUNES");
+        codesList.setReferenceYear("2024");
 
         repository.save(codesList);
 
@@ -46,7 +48,9 @@ class CodesListRecoveryServiceIntegrationTest {
 
         assertEquals(1, result.size());
         assertEquals("Label1", result.getFirst().label());
-        assertEquals("v1", result.getFirst().version());
+        assertEquals(1, result.getFirst().version());
+        assertEquals("COMMUNES", result.getFirst().theme());
+        assertEquals("2024", result.getFirst().referenceYear());
     }
 
     @Test
@@ -55,7 +59,9 @@ class CodesListRecoveryServiceIntegrationTest {
         UUID id2 = UUID.randomUUID();
         codesList.setId(id2);
         codesList.setLabel("Label2");
-        codesList.setVersion("V2");
+        codesList.setVersion(2);
+        codesList.setTheme("COMMUNES");
+        codesList.setReferenceYear("2024");
 
         repository.save(codesList);
 
@@ -63,7 +69,9 @@ class CodesListRecoveryServiceIntegrationTest {
 
         assertTrue(result.isPresent());
         assertEquals("Label2", result.get().label());
-        assertEquals("V2", result.get().version());
+        assertEquals(2, result.get().version());
+        assertEquals("COMMUNES", result.get().theme());
+        assertEquals("2024", result.get().referenceYear());
     }
 
     @Test
@@ -72,7 +80,9 @@ class CodesListRecoveryServiceIntegrationTest {
         UUID id3 = UUID.randomUUID();
         codesList.setId(id3);
         codesList.setLabel("Label3");
-        codesList.setVersion("V3");
+        codesList.setVersion(3);
+        codesList.setTheme("COMMUNES");
+        codesList.setReferenceYear("2024");
 
         List<Map<String,Object>> contentList = List.of(
                 Map.of("id", "Code1", "label", "Label1")
@@ -99,7 +109,9 @@ class CodesListRecoveryServiceIntegrationTest {
         UUID id4 = UUID.randomUUID();
         codesList.setId(id4);
         codesList.setLabel("Label4");
-        codesList.setVersion("V4");
+        codesList.setVersion(4);
+        codesList.setTheme("COMMUNES");
+        codesList.setReferenceYear("2024");
 
         Map<String,Object> configMap = Map.of("filter", true);
         codesList.setSearchConfiguration(new SearchConfig(configMap));
