@@ -107,6 +107,19 @@ databaseChangeLog:
       id: 6
       author: rverriez
       changes:
+        - modifyDataType:
+             tableName: codes_list
+             columnName: reference_year
+             newDataType: varchar(4)
+        - addNotNullConstraint:
+             tableName: codes_list
+             columnName: reference_year
+             columnDataType: varchar(4)
+
+  - changeSet:
+      id: 7
+      author: rverriez
+      changes:
         - addColumn:
             tableName: codes_list
             columns:

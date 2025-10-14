@@ -37,7 +37,7 @@ public class CodesListEntity {
     @Column(name = "theme", length = 49, nullable = false)
     private String theme;
 
-    @Column(name = "reference_year", length = 4)
+    @Column(name = "reference_year", length = 4, nullable = false)
     private String referenceYear;
 
     @Column(name = "is_deprecated", nullable = false)
