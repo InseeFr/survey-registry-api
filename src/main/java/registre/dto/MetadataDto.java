@@ -56,6 +56,7 @@ public record MetadataDto(
         @JsonProperty("theme")
         String theme,
 
+        @NotBlank
         @Pattern(regexp = "\\d{4}", message = "Reference year must contain exactly 4 digits")
         @Schema(
                 name = "referenceYear",
