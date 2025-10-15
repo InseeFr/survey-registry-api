@@ -198,7 +198,9 @@ class CodesListPublicationControllerTest {
         UUID testId = UUID.randomUUID();
 
         mockMvc.perform(put("/codes-lists/" + testId + "/valid"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Codes list has been marked as invalid"))
+                .andExpect(jsonPath("$.id").value(testId.toString()));
 
         Mockito.verify(codesListPublicationService)
                 .markAsInvalid(testId);
