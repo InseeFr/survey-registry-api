@@ -42,7 +42,8 @@ class CodesListPublicationServiceTest {
                 "COMMUNES",
                 "2024",
                 new CodesListExternalLinkDto("ExternalLink1"),
-                false
+                false,
+                true
         );
 
         CodesListEntity entity = new CodesListEntity();
@@ -63,7 +64,7 @@ class CodesListPublicationServiceTest {
 
     @Test
     void testCreateCodesListMetadataOnly_WithoutExternalLink() {
-        MetadataDto metadataDto = new MetadataDto(null, "Label1", 1, "COMMUNES", "2024", null, false);
+        MetadataDto metadataDto = new MetadataDto(null, "Label1", 1, "COMMUNES", "2024", null, false, true);
 
         CodesListEntity entity = new CodesListEntity();
         when(codesListMapper.toEntity(any(CodesListDto.class))).thenReturn(entity);
@@ -272,7 +273,7 @@ class CodesListPublicationServiceTest {
     @Test
     void testMarkAsDeprecated() {
         UUID id = UUID.randomUUID();
-        MetadataDto metadataDto = new MetadataDto(null, "LabelX", 1, "COMMUNES", "2025", null, false);
+        MetadataDto metadataDto = new MetadataDto(null, "LabelX", 1, "COMMUNES", "2025", null, false, true);
         CodesListDto dto = new CodesListDto(null, metadataDto, null, null);
 
         CodesListEntity entity = new CodesListEntity();
@@ -291,6 +292,31 @@ class CodesListPublicationServiceTest {
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                 () -> service.markAsDeprecated(id));
+        assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
+    }
+
+    @Test
+    void testMarkAsInvalid() {
+        UUID id = UUID.randomUUID();
+        MetadataDto metadataDto = new MetadataDto(null, "LabelX", 1, "COMMUNES", "2025", null, false, true);
+        CodesListDto dto = new CodesListDto(null, metadataDto, null, null);
+
+        CodesListEntity entity = new CodesListEntity();
+        entity.setId(id);
+
+        when(codesListMapper.toEntity(dto)).thenReturn(entity);
+        when(codesListRepository.save(entity)).thenReturn(entity);
+        when(codesListRepository.existsById(id)).thenReturn(true);
+        when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
+
+        service.createCodesList(dto);
+        assertTrue(entity.isValid());
+
+        service.markAsInvalid(id);
+        assertFalse(entity.isValid());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> service.markAsInvalid(id));
         assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
     }
 }

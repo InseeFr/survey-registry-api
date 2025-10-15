@@ -129,3 +129,17 @@ databaseChangeLog:
                   defaultValueBoolean: false
                   constraints:
                     nullable: false
+
+  - changeSet:
+      id: 8
+      author: rverriez
+      changes:
+        - addColumn:
+            tableName: codes_list
+            columns:
+              - column:
+                  name: is_valid
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false

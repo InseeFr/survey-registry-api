@@ -81,4 +81,15 @@ public class CodesListPublicationController implements CodesListPublicationApi {
         return ResponseEntity.ok(response);
     }
 
+    @Override
+    public ResponseEntity<SuccessResponseDto> markCodesListAsInvalid(UUID codesListId) {
+        codesListPublicationService.markAsInvalid(codesListId);
+
+        SuccessResponseDto response = new SuccessResponseDto(
+                "Codes list has been marked as invalid",
+                codesListId.toString()
+        );
+
+        return ResponseEntity.ok(response);
+    }
 }

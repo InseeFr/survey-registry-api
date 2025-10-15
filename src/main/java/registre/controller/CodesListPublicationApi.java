@@ -228,4 +228,39 @@ public interface CodesListPublicationApi {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
+
+    /**
+     * PUT /codes-lists/{codesListId}/valid : Mark a codes list as invalid
+     *
+     * @param codesListId the UUID of the codes list to invalidate
+     * @return No content (status code 204)
+     *         or Not found (status code 404)
+     *         or Conflict (status code 409)
+     */
+    @Operation(
+            operationId = "markCodesListAsInvalid",
+            summary = "Mark a codes list as invalid",
+            description = "Sets the `isValid` flag to false. A codes list already marked as invalid cannot be reactivated.",
+            tags = { "Codes List Publication" },
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Marked as invalid successfully"),
+                    @ApiResponse(responseCode = "404", description = "Codes list not found", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
+                    }),
+                    @ApiResponse(responseCode = "409", description = "Codes list already marked as invalid", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
+                    })
+            }
+    )
+    @PutMapping(
+            value = "/codes-lists/{codesListId}/valid",
+            produces = { "application/json" }
+    )
+    default ResponseEntity<SuccessResponseDto> markCodesListAsInvalid(
+            @Parameter(name = "codesListId", description = "ID of the codes list to invalidate", required = true, in = ParameterIn.PATH)
+            @PathVariable("codesListId") UUID codesListId
+    ) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
 }

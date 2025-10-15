@@ -45,7 +45,8 @@ public class CodesListPublicationService {
                         metadataDto.theme(),
                         metadataDto.referenceYear(),
                         metadataDto.externalLink(),
-                        metadataDto.isDeprecated()
+                        metadataDto.isDeprecated(),
+                        metadataDto.isValid()
                 ),
                 null,
                 null
@@ -86,6 +87,8 @@ public class CodesListPublicationService {
                             ", version=" + entity.getVersion() + ALREADY_EXISTS
             );
         }
+
+        entity.setValid(true);
 
         codesListRepository.save(entity);
         return entity.getId();
@@ -221,4 +224,30 @@ public class CodesListPublicationService {
         });
     }
 
+    /**
+     * Marks a codes list as invalid (sets {@code isValid = false}).
+     * This operation can only be performed once: a codes list already marked
+     * as invalid cannot become valid again.
+     *
+     * @param codesListId the unique identifier of the codes list to invalidate
+     * @throws IllegalArgumentException if the codes list does not exist
+     * @throws ResponseStatusException  if the codes list is already invalid
+     */
+    public void markAsInvalid(UUID codesListId) {
+        if (!codesListRepository.existsById(codesListId)) {
+            throw new IllegalArgumentException("Codes list not found: " + codesListId);
+        }
+
+        codesListRepository.findById(codesListId).ifPresent(entity -> {
+            if (Boolean.FALSE.equals(entity.isValid())) {
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Codes list " + codesListId + " is already marked as invalid"
+                );
+            }
+
+            entity.setValid(false);
+            codesListRepository.save(entity);
+        });
+    }
 }

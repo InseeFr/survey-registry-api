@@ -43,6 +43,9 @@ public class CodesListEntity {
     @Column(name = "is_deprecated", nullable = false)
     private boolean deprecated = false;
 
+    @Column(name = "is_valid", nullable = false)
+    private boolean valid = true;
+
     @ManyToOne
     @JoinColumn(name = "external_link_id")
     private CodesListExternalLinkEntity codesListExternalLink;
