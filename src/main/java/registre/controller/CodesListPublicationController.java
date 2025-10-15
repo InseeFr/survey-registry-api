@@ -34,7 +34,7 @@ public class CodesListPublicationController implements CodesListPublicationApi {
             codesListPublicationService.createContent(id, codesListDto.content());
         }
 
-        if (codesListDto.metadata() != null && codesListDto.metadata().externalLink() != null) {
+        if (codesListDto.metadata().externalLink() != null) {
             codesListPublicationService.createExternalLink(id, codesListDto.metadata().externalLink());
         }
 
@@ -42,10 +42,11 @@ public class CodesListPublicationController implements CodesListPublicationApi {
             codesListPublicationService.createSearchConfiguration(id, codesListDto.searchConfiguration());
         }
 
-        if (codesListDto.metadata() != null) {
-            codesListPublicationService.deprecateOlderVersions(codesListDto.metadata().theme(),
-                    codesListDto.metadata().referenceYear(), id);
-        }
+        codesListPublicationService.deprecateOlderVersions(
+                codesListDto.metadata().theme(),
+                codesListDto.metadata().referenceYear(),
+                id
+        );
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
