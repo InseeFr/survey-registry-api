@@ -256,7 +256,7 @@ public interface CodesListPublicationApi {
             value = "/codes-lists/{codesListId}/valid",
             produces = { "application/json" }
     )
-    default ResponseEntity<Void> markCodesListAsInvalid(
+    default ResponseEntity<SuccessResponseDto> markCodesListAsInvalid(
             @Parameter(name = "codesListId", description = "ID of the codes list to invalidate", required = true, in = ParameterIn.PATH)
             @PathVariable("codesListId") UUID codesListId
     ) {
