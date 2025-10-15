@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CodesListPublicationController.class)
@@ -51,22 +52,28 @@ class CodesListPublicationControllerTest {
 
     @Test
     void testCreateCodesListMetadataOnly() throws Exception {
+        UUID testId = UUID.randomUUID();
+
         MetadataDto metadataDto = new MetadataDto(
                 null,
                 "CodesList1",
                 1,
                 "COMMUNES",
                 "2024",
-                new CodesListExternalLinkDto("ExternalLink1")
+                new CodesListExternalLinkDto("ExternalLink1"),
+                false
         );
+
+        Mockito.when(codesListPublicationService.createCodesListMetadataOnly(metadataDto)).thenReturn(testId);
 
         mockMvc.perform(post("/codes-lists")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(metadataDto)))
                 .andExpect(status().isCreated());
 
+        Mockito.verify(codesListPublicationService).createCodesListMetadataOnly(metadataDto);
         Mockito.verify(codesListPublicationService)
-                .createCodesListMetadataOnly(metadataDto);
+                .deprecateOlderVersions(metadataDto.theme(), metadataDto.referenceYear(), testId);
     }
 
     @Test
@@ -85,15 +92,17 @@ class CodesListPublicationControllerTest {
                 .andExpect(status().isCreated());
 
         Mockito.verify(codesListPublicationService).createCodesList(any());
-
         Mockito.verify(codesListPublicationService)
                 .createContent(eq(testId), ArgumentMatchers.any());
-
-        Mockito.verify(codesListPublicationService)
-                .createExternalLink(testId, externalLinkDto);
-
+        Mockito.verify(codesListPublicationService).createExternalLink(testId, externalLinkDto);
         Mockito.verify(codesListPublicationService)
                 .createSearchConfiguration(eq(testId), ArgumentMatchers.any());
+        Mockito.verify(codesListPublicationService)
+                .deprecateOlderVersions(
+                        codesListDto.metadata().theme(),
+                        codesListDto.metadata().referenceYear(),
+                        testId
+                );
     }
 
     private static CodesListDto getCodesListDto(UUID testId, CodesListExternalLinkDto externalLinkDto) {
@@ -103,7 +112,8 @@ class CodesListPublicationControllerTest {
                 1,
                 "COMMUNES",
                 "2024",
-                externalLinkDto
+                externalLinkDto,
+                false
         );
 
         List<Map<String, Object>> contentJson = List.of(
@@ -166,6 +176,19 @@ class CodesListPublicationControllerTest {
                         eq(testId),
                         any(SearchConfig.class)
                 );
+    }
+
+    @Test
+    void testMarkCodesListAsDeprecated() throws Exception {
+        UUID testId = UUID.randomUUID();
+
+        mockMvc.perform(put("/codes-lists/" + testId + "/deprecated"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Codes list has been marked as deprecated"))
+                .andExpect(jsonPath("$.id").value(testId.toString()));
+
+        Mockito.verify(codesListPublicationService)
+                .markAsDeprecated(testId);
     }
 }
 

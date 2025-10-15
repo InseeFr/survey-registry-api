@@ -29,6 +29,7 @@ class CodesListMapperTest {
         codesListEntity.setVersion(1);
         codesListEntity.setTheme("COMMUNES");
         codesListEntity.setReferenceYear("2024");
+        codesListEntity.setDeprecated(false);
 
         CodesListExternalLinkEntity externalLink = new CodesListExternalLinkEntity();
         externalLink.setId("ExternalLink1");
@@ -52,6 +53,7 @@ class CodesListMapperTest {
         assertEquals("2024", dto.metadata().referenceYear());
         assertNotNull(dto.metadata().externalLink());
         assertEquals("ExternalLink1", dto.metadata().externalLink().id());
+        assertFalse(dto.metadata().isDeprecated());
 
         assertNotNull(dto.searchConfiguration());
         assertEquals(true, dto.searchConfiguration().content().get("enabled"));
@@ -67,7 +69,7 @@ class CodesListMapperTest {
 
         CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto(testId1);
 
-        MetadataDto metadata = new MetadataDto(testId2, "Label2", 2, "COMMUNES", "2024", externalLink);
+        MetadataDto metadata = new MetadataDto(testId2, "Label2", 2, "COMMUNES", "2024", externalLink, false);
 
         CodesListDto dto = new CodesListDto(testId2, metadata, new SearchConfig(Map.of("enabled", false)),
                 new CodesListContent(List.of(Map.of("code", "01"))));
@@ -82,6 +84,7 @@ class CodesListMapperTest {
         assertEquals(2, entity.getVersion().intValue());
         assertEquals("COMMUNES", entity.getTheme());
         assertEquals("2024", entity.getReferenceYear());
+        assertFalse(entity.isDeprecated());
         // searchConfiguration and content are not set in toEntity()
         assertNull(entity.getSearchConfiguration());
         assertNull(entity.getContent());

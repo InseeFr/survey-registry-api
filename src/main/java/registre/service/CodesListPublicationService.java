@@ -3,6 +3,7 @@ package registre.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import registre.dto.*;
@@ -32,7 +33,7 @@ public class CodesListPublicationService {
      * @param metadataDto the metadata for the codes list
      */
     @Transactional
-    public void createCodesListMetadataOnly(MetadataDto metadataDto) {
+    public UUID createCodesListMetadataOnly(MetadataDto metadataDto) {
         Integer nextVersion = computeNextVersion(metadataDto.theme(), metadataDto.referenceYear());
 
         CodesListDto dto = new CodesListDto(
@@ -43,7 +44,8 @@ public class CodesListPublicationService {
                         nextVersion,
                         metadataDto.theme(),
                         metadataDto.referenceYear(),
-                        metadataDto.externalLink()
+                        metadataDto.externalLink(),
+                        metadataDto.isDeprecated()
                 ),
                 null,
                 null
@@ -54,6 +56,8 @@ public class CodesListPublicationService {
         if (metadataDto.externalLink() != null) {
             createExternalLink(id, metadataDto.externalLink());
         }
+
+        return id;
     }
 
     /**
@@ -97,6 +101,19 @@ public class CodesListPublicationService {
     private Integer computeNextVersion(String theme, String referenceYear) {
         Integer maxVersion = codesListRepository.findMaxVersionByThemeAndReferenceYear(theme, referenceYear);
         return (maxVersion != null) ? maxVersion + 1 : 1;
+    }
+
+    /**
+     * Deprecates older versions of a codes list (same theme and reference year)
+     * except the current one, in a new independent transaction.
+     *
+     * @param theme the theme of the codes list
+     * @param referenceYear the reference year of the codes list
+     * @param currentId the ID of the current codes list (not to deprecate)
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void deprecateOlderVersions(String theme, String referenceYear, UUID currentId) {
+        codesListRepository.deprecateOlderVersions(theme, referenceYear, currentId);
     }
 
     /**
@@ -173,6 +190,33 @@ public class CodesListPublicationService {
 
         codesListRepository.findById(codesListId).ifPresent(entity -> {
             entity.setSearchConfiguration(searchConfig);
+            codesListRepository.save(entity);
+        });
+    }
+
+    /**
+     * Marks a codes list as deprecated (sets {@code isDeprecated = true}).
+     * This operation can only be performed once: a codes list already marked
+     * as deprecated cannot become valid again.
+     *
+     * @param codesListId the unique identifier of the codes list to deprecate
+     * @throws IllegalArgumentException if the codes list does not exist
+     * @throws ResponseStatusException  if the codes list is already deprecated
+     */
+    public void markAsDeprecated(UUID codesListId) {
+        if (!codesListRepository.existsById(codesListId)) {
+            throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
+        }
+
+        codesListRepository.findById(codesListId).ifPresent(entity -> {
+            if (entity.isDeprecated()) {
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Codes list " + codesListId + " is already deprecated"
+                );
+            }
+
+            entity.setDeprecated(true);
             codesListRepository.save(entity);
         });
     }

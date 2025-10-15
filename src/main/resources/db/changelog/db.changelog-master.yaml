@@ -115,3 +115,17 @@ databaseChangeLog:
              tableName: codes_list
              columnName: reference_year
              columnDataType: varchar(4)
+
+  - changeSet:
+      id: 7
+      author: rverriez
+      changes:
+        - addColumn:
+            tableName: codes_list
+            columns:
+              - column:
+                  name: is_deprecated
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

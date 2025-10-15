@@ -25,7 +25,8 @@ public class CodesListMapper {
                 entity.getReferenceYear(),
                 entity.getCodesListExternalLink() != null
                         ? externalLinkMapper.toDto(entity.getCodesListExternalLink())
-                        : null
+                        : null,
+                entity.isDeprecated()
         );
 
         return new CodesListDto(
@@ -48,6 +49,7 @@ public class CodesListMapper {
             entity.setVersion(metadata.version());
             entity.setTheme(metadata.theme());
             entity.setReferenceYear(metadata.referenceYear());
+            entity.setDeprecated(metadata.isDeprecated());
         }
 
         return entity;

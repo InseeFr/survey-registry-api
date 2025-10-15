@@ -15,8 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class CodesListRecoveryServiceIntegrationTest {
@@ -41,6 +40,7 @@ class CodesListRecoveryServiceIntegrationTest {
         codesList.setVersion(1);
         codesList.setTheme("COMMUNES");
         codesList.setReferenceYear("2024");
+        codesList.setDeprecated(false);
 
         repository.save(codesList);
 
@@ -51,6 +51,7 @@ class CodesListRecoveryServiceIntegrationTest {
         assertEquals(1, result.getFirst().version());
         assertEquals("COMMUNES", result.getFirst().theme());
         assertEquals("2024", result.getFirst().referenceYear());
+        assertFalse(result.getFirst().isDeprecated());
     }
 
     @Test
@@ -62,6 +63,7 @@ class CodesListRecoveryServiceIntegrationTest {
         codesList.setVersion(2);
         codesList.setTheme("COMMUNES");
         codesList.setReferenceYear("2024");
+        codesList.setDeprecated(false);
 
         repository.save(codesList);
 
@@ -72,6 +74,7 @@ class CodesListRecoveryServiceIntegrationTest {
         assertEquals(2, result.get().version());
         assertEquals("COMMUNES", result.get().theme());
         assertEquals("2024", result.get().referenceYear());
+        assertFalse(result.get().isDeprecated());
     }
 
     @Test
@@ -83,6 +86,7 @@ class CodesListRecoveryServiceIntegrationTest {
         codesList.setVersion(3);
         codesList.setTheme("COMMUNES");
         codesList.setReferenceYear("2024");
+        codesList.setDeprecated(false);
 
         List<Map<String,Object>> contentList = List.of(
                 Map.of("id", "Code1", "label", "Label1")
@@ -112,6 +116,7 @@ class CodesListRecoveryServiceIntegrationTest {
         codesList.setVersion(4);
         codesList.setTheme("COMMUNES");
         codesList.setReferenceYear("2024");
+        codesList.setDeprecated(false);
 
         Map<String,Object> configMap = Map.of("filter", true);
         codesList.setSearchConfiguration(new SearchConfig(configMap));

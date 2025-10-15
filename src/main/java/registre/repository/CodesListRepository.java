@@ -1,6 +1,7 @@
 package registre.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import registre.entity.CodesListEntity;
@@ -18,6 +19,7 @@ public interface CodesListRepository extends JpaRepository<CodesListEntity, UUID
         String getTheme();
         String getReferenceYear();
         CodesListExternalLinkEntity getCodesListExternalLink();
+        boolean isDeprecated();
     }
 
     List<MetadataProjection> findAllBy();
@@ -37,4 +39,10 @@ public interface CodesListRepository extends JpaRepository<CodesListEntity, UUID
     // Get the maximum version for a given theme and referenceYear
     @Query("SELECT MAX(c.version) FROM CodesListEntity c WHERE c.theme = :theme AND c.referenceYear = :referenceYear")
     Integer findMaxVersionByThemeAndReferenceYear(@Param("theme") String theme, @Param("referenceYear") String referenceYear);
+
+    // Deprecates all older versions of a codes list with the same theme and referenceYear, except for the current one.
+    @Modifying
+    @Query("UPDATE CodesListEntity c SET c.deprecated = true WHERE c.theme = :theme  AND c.referenceYear = :referenceYear AND c.id <> :currentId")
+    void deprecateOlderVersions(@Param("theme") String theme, @Param("referenceYear") String referenceYear, @Param("currentId") UUID currentId);
+
 }

@@ -193,4 +193,39 @@ public interface CodesListPublicationApi {
 
     }
 
+
+    /**
+     * PUT /codes-lists/{codesListId}/deprecated : Mark a codes list as deprecated
+     *
+     * @param codesListId the UUID of the codes list to deprecate
+     * @return No content (status code 204)
+     *         or Not found (status code 404)
+     *         or Conflict (status code 409)
+     */
+    @Operation(
+            operationId = "markCodesListAsDeprecated",
+            summary = "Mark a codes list as deprecated",
+            description = "Sets the `isDeprecated` flag to true. A codes list already deprecated cannot be reactivated.",
+            tags = { "Codes List Publication" },
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Marked as deprecated successfully"),
+                    @ApiResponse(responseCode = "404", description = "Codes list not found", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
+                    }),
+                    @ApiResponse(responseCode = "409", description = "Codes list already deprecated", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
+                    })
+            }
+    )
+    @PutMapping(
+            value = "/codes-lists/{codesListId}/deprecated",
+            produces = { "application/json" }
+    )
+    default ResponseEntity<SuccessResponseDto> markCodesListAsDeprecated(
+            @Parameter(name = "codesListId", description = "ID of the codes list to deprecate", required = true, in = ParameterIn.PATH)
+            @PathVariable("codesListId") UUID codesListId
+    ) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
 }

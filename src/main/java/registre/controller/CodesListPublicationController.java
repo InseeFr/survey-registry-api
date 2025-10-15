@@ -19,7 +19,10 @@ public class CodesListPublicationController implements CodesListPublicationApi {
 
     @Override
     public ResponseEntity<Void> createCodesListMetadataOnly(@Valid MetadataDto metadataDto) {
-        codesListPublicationService.createCodesListMetadataOnly(metadataDto);
+        UUID id = codesListPublicationService.createCodesListMetadataOnly(metadataDto);
+
+        codesListPublicationService.deprecateOlderVersions(metadataDto.theme(), metadataDto.referenceYear(), id);
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -31,13 +34,19 @@ public class CodesListPublicationController implements CodesListPublicationApi {
             codesListPublicationService.createContent(id, codesListDto.content());
         }
 
-        if (codesListDto.metadata() != null && codesListDto.metadata().externalLink() != null) {
+        if (codesListDto.metadata().externalLink() != null) {
             codesListPublicationService.createExternalLink(id, codesListDto.metadata().externalLink());
         }
 
         if (codesListDto.searchConfiguration() != null) {
             codesListPublicationService.createSearchConfiguration(id, codesListDto.searchConfiguration());
         }
+
+        codesListPublicationService.deprecateOlderVersions(
+                codesListDto.metadata().theme(),
+                codesListDto.metadata().referenceYear(),
+                id
+        );
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -59,4 +68,17 @@ public class CodesListPublicationController implements CodesListPublicationApi {
         codesListPublicationService.createSearchConfiguration(codesListId, searchConfig);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @Override
+    public ResponseEntity<SuccessResponseDto> markCodesListAsDeprecated(UUID codesListId) {
+        codesListPublicationService.markAsDeprecated(codesListId);
+
+        SuccessResponseDto response = new SuccessResponseDto(
+                "Codes list has been marked as deprecated",
+                codesListId.toString()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
 }

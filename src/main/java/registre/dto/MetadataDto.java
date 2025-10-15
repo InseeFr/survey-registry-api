@@ -74,6 +74,15 @@ public record MetadataDto(
                 requiredMode = Schema.RequiredMode.NOT_REQUIRED
         )
         @JsonProperty("externalLink")
-        CodesListExternalLinkDto externalLink
+        CodesListExternalLinkDto externalLink,
+
+        @Schema(
+                name = "isDeprecated",
+                description = "Indicates if this code list version is deprecated (true = old version)",
+                example = "false",
+                accessMode = Schema.AccessMode.READ_ONLY
+        )
+        @JsonProperty("isDeprecated")
+        boolean isDeprecated
 
 ) { }
