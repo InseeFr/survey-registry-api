@@ -70,9 +70,15 @@ public class CodesListPublicationController implements CodesListPublicationApi {
     }
 
     @Override
-    public ResponseEntity<Void> markCodesListAsDeprecated(UUID codesListId) {
+    public ResponseEntity<SuccessResponseDto> markCodesListAsDeprecated(UUID codesListId) {
         codesListPublicationService.markAsDeprecated(codesListId);
-        return ResponseEntity.noContent().build();
+
+        SuccessResponseDto response = new SuccessResponseDto(
+                "Codes list has been marked as deprecated",
+                codesListId.toString()
+        );
+
+        return ResponseEntity.ok(response);
     }
 
     @Override

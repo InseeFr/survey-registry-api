@@ -221,7 +221,7 @@ public interface CodesListPublicationApi {
             value = "/codes-lists/{codesListId}/deprecated",
             produces = { "application/json" }
     )
-    default ResponseEntity<Void> markCodesListAsDeprecated(
+    default ResponseEntity<SuccessResponseDto> markCodesListAsDeprecated(
             @Parameter(name = "codesListId", description = "ID of the codes list to deprecate", required = true, in = ParameterIn.PATH)
             @PathVariable("codesListId") UUID codesListId
     ) {
