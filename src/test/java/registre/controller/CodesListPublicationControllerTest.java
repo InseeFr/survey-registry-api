@@ -20,8 +20,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -184,7 +183,7 @@ class CodesListPublicationControllerTest {
     void testMarkCodesListAsDeprecated() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        mockMvc.perform(put("/codes-lists/" + testId + "/deprecated"))
+        mockMvc.perform(patch("/codes-lists/" + testId + "/deprecated"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Codes list has been marked as deprecated"))
                 .andExpect(jsonPath("$.id").value(testId.toString()));
@@ -197,7 +196,7 @@ class CodesListPublicationControllerTest {
     void testMarkCodesListAsInvalid() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        mockMvc.perform(put("/codes-lists/" + testId + "/valid"))
+        mockMvc.perform(patch("/codes-lists/" + testId + "/valid"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Codes list has been marked as invalid"))
                 .andExpect(jsonPath("$.id").value(testId.toString()));
