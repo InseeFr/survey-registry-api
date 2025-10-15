@@ -48,7 +48,7 @@ class CodesListRecoveryControllerTest {
     void testGetAllCodesLists() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        MetadataDto metadata = new MetadataDto(testId, "CodesList1","v1", null);
+        MetadataDto metadata = new MetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", null);
 
         List<MetadataDto> metadataList = List.of(metadata);
         Mockito.when(codesListRecoveryService.getAllMetadata()).thenReturn(metadataList);
@@ -92,14 +92,16 @@ class CodesListRecoveryControllerTest {
     void testGetCodesListMetadataById_found() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        MetadataDto metadata = new MetadataDto(testId, "CodesList1","v1", null);
+        MetadataDto metadata = new MetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", null);
 
         Mockito.when(codesListRecoveryService.getMetadataById(testId)).thenReturn(Optional.of(metadata));
 
         mockMvc.perform(get("/codes-lists/"+ testId +"/metadata"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.label").value("CodesList1"))
-                .andExpect(jsonPath("$.version").value("v1"));
+                .andExpect(jsonPath("$.version").value(1))
+                .andExpect(jsonPath("$.theme").value("COMMUNES"))
+                .andExpect(jsonPath("$.referenceYear").value("2024"));
     }
 
     @Test

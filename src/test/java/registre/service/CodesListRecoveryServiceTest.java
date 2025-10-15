@@ -42,12 +42,12 @@ class CodesListRecoveryServiceTest {
         CodesListRepository.MetadataProjection projection = mock(CodesListRepository.MetadataProjection.class);
         when(projection.getId()).thenReturn(id1);
         when(projection.getLabel()).thenReturn("Label1");
-        when(projection.getVersion()).thenReturn("v1");
+        when(projection.getVersion()).thenReturn(1);
         when(projection.getCodesListExternalLink()).thenReturn(null);
 
         when(repository.findAllBy()).thenReturn(List.of(projection));
 
-        MetadataDto dtoMock = new MetadataDto(id1, "Label1", "v1", null);
+        MetadataDto dtoMock = new MetadataDto(id1, "Label1", 1, "COMMUNES", "2024", null);
         when(metadataMapper.toDto(projection)).thenReturn(dtoMock);
 
         List<MetadataDto> result = service.getAllMetadata();
@@ -56,7 +56,9 @@ class CodesListRecoveryServiceTest {
         MetadataDto dto = result.getFirst();
         assertEquals(id1, dto.id());
         assertEquals("Label1", dto.label());
-        assertEquals("v1", dto.version());
+        assertEquals(1, dto.version());
+        assertEquals("COMMUNES", dto.theme());
+        assertEquals("2024", dto.referenceYear());
         assertNull(dto.externalLink());
     }
 
@@ -68,12 +70,14 @@ class CodesListRecoveryServiceTest {
 
         when(projection.getId()).thenReturn(id2);
         when(projection.getLabel()).thenReturn("Label2");
-        when(projection.getVersion()).thenReturn("v2");
+        when(projection.getVersion()).thenReturn(2);
+        when(projection.getTheme()).thenReturn("COMMUNES");
+        when(projection.getReferenceYear()).thenReturn("2024");
         when(projection.getCodesListExternalLink()).thenReturn(linkEntity);
 
         registre.dto.CodesListExternalLinkDto externalLinkDto = new registre.dto.CodesListExternalLinkDto("ExternalLink1");
 
-        MetadataDto mappedDto = new MetadataDto(id2, "Label2", "v2", externalLinkDto);
+        MetadataDto mappedDto = new MetadataDto(id2, "Label2", 2, "COMMUNES","2024", externalLinkDto);
 
         when(repository.findAllBy()).thenReturn(List.of(projection));
 
@@ -85,14 +89,16 @@ class CodesListRecoveryServiceTest {
         MetadataDto dto = result.getFirst();
         assertEquals(id2, dto.id());
         assertEquals("Label2", dto.label());
-        assertEquals("v2", dto.version());
+        assertEquals(2, dto.version());
+        assertEquals("COMMUNES", dto.theme());
+        assertEquals("2024", dto.referenceYear());
         assertNotNull(dto.externalLink());
     }
 
     @Test
     void testGetMetadataById_Found() {
         CodesListEntity entity = new CodesListEntity();
-        MetadataDto metadata = new MetadataDto(null,null,null,null);
+        MetadataDto metadata = new MetadataDto(null,null,null, null, null,null);
         CodesListDto dto = new CodesListDto(null, metadata,null,null);
 
         UUID id = UUID.randomUUID();

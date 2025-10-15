@@ -38,7 +38,9 @@ class CodesListPublicationServiceTest {
         MetadataDto metadataDto = new MetadataDto(
                 null,
                 "Label1",
-                "v1",
+                1,
+                "COMMUNES",
+                "2024",
                 new CodesListExternalLinkDto("ExternalLink1")
         );
 
@@ -60,7 +62,7 @@ class CodesListPublicationServiceTest {
 
     @Test
     void testCreateCodesListMetadataOnly_WithoutExternalLink() {
-        MetadataDto metadataDto = new MetadataDto(null, "Label1", "v1", null);
+        MetadataDto metadataDto = new MetadataDto(null, "Label1", 1, "COMMUNES", "2024", null);
 
         CodesListEntity entity = new CodesListEntity();
         when(codesListMapper.toEntity(any(CodesListDto.class))).thenReturn(entity);
@@ -91,7 +93,7 @@ class CodesListPublicationServiceTest {
         CodesListEntity entity = new CodesListEntity();
 
         when(codesListRepository.existsById(id)).thenReturn(true);
-        when(codesListRepository.existsContent(id)).thenReturn(false);
+        when(codesListRepository.existsByIdAndContentIsNotNull(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
         List<Map<String, Object>> contentList = List.of(
@@ -128,7 +130,7 @@ class CodesListPublicationServiceTest {
         UUID id = UUID.randomUUID();
 
         when(codesListRepository.existsById(id)).thenReturn(true);
-        when(codesListRepository.existsContent(id)).thenReturn(true);
+        when(codesListRepository.existsByIdAndContentIsNotNull(id)).thenReturn(true);
 
         List<Map<String, Object>> contentList = List.of(Map.of("code", "code1"));
         CodesListContent contentWrapper = new CodesListContent(contentList);
@@ -147,7 +149,7 @@ class CodesListPublicationServiceTest {
         CodesListEntity entity = new CodesListEntity();
 
         when(codesListRepository.existsById(id)).thenReturn(true);
-        when(codesListRepository.existsExternalLink(id)).thenReturn(false);
+        when(codesListRepository.existsByIdAndCodesListExternalLinkIsNotNull(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
         CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1");
@@ -175,7 +177,7 @@ class CodesListPublicationServiceTest {
         UUID id = UUID.randomUUID();
 
         when(codesListRepository.existsById(id)).thenReturn(true);
-        when(codesListRepository.existsExternalLink(id)).thenReturn(true);
+        when(codesListRepository.existsByIdAndCodesListExternalLinkIsNotNull(id)).thenReturn(true);
 
         CodesListExternalLinkDto dto = new CodesListExternalLinkDto("ExternalLink1");
 
@@ -193,7 +195,7 @@ class CodesListPublicationServiceTest {
         CodesListEntity entity = new CodesListEntity();
 
         when(codesListRepository.existsById(id)).thenReturn(true);
-        when(codesListRepository.existsSearchConfiguration(id)).thenReturn(false);
+        when(codesListRepository.existsByIdAndSearchConfigurationIsNotNull(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
         Map<String,Object> searchConfigMap = Map.of("type", "advanced");
@@ -212,7 +214,7 @@ class CodesListPublicationServiceTest {
         CodesListEntity entity = new CodesListEntity();
 
         when(codesListRepository.existsById(id)).thenReturn(true);
-        when(codesListRepository.existsSearchConfiguration(id)).thenReturn(false);
+        when(codesListRepository.existsByIdAndSearchConfigurationIsNotNull(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
         Map<String,Object> searchConfigMap = Map.of();
@@ -241,7 +243,7 @@ class CodesListPublicationServiceTest {
         UUID id = UUID.randomUUID();
 
         when(codesListRepository.existsById(id)).thenReturn(true);
-        when(codesListRepository.existsSearchConfiguration(id)).thenReturn(true);
+        when(codesListRepository.existsByIdAndSearchConfigurationIsNotNull(id)).thenReturn(true);
 
         Map<String,Object> configMap = Map.of("type", "advanced");
         SearchConfig configWrapper = new SearchConfig(configMap);

@@ -26,7 +26,9 @@ class CodesListMapperTest {
         UUID testId = UUID.randomUUID();
         codesListEntity.setId(testId);
         codesListEntity.setLabel("Label1");
-        codesListEntity.setVersion("v1");
+        codesListEntity.setVersion(1);
+        codesListEntity.setTheme("COMMUNES");
+        codesListEntity.setReferenceYear("2024");
 
         CodesListExternalLinkEntity externalLink = new CodesListExternalLinkEntity();
         externalLink.setId("ExternalLink1");
@@ -45,7 +47,9 @@ class CodesListMapperTest {
         assertNotNull(dto.metadata());
         assertEquals(testId, dto.metadata().id());
         assertEquals("Label1", dto.metadata().label());
-        assertEquals("v1", dto.metadata().version());
+        assertEquals(1, dto.metadata().version().intValue());
+        assertEquals("COMMUNES", dto.metadata().theme());
+        assertEquals("2024", dto.metadata().referenceYear());
         assertNotNull(dto.metadata().externalLink());
         assertEquals("ExternalLink1", dto.metadata().externalLink().id());
 
@@ -63,7 +67,7 @@ class CodesListMapperTest {
 
         CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto(testId1);
 
-        MetadataDto metadata = new MetadataDto(testId2, "Label2", "v2", externalLink);
+        MetadataDto metadata = new MetadataDto(testId2, "Label2", 2, "COMMUNES", "2024", externalLink);
 
         CodesListDto dto = new CodesListDto(testId2, metadata, new SearchConfig(Map.of("enabled", false)),
                 new CodesListContent(List.of(Map.of("code", "01"))));
@@ -75,7 +79,9 @@ class CodesListMapperTest {
         assertNotNull(entity);
         assertEquals(testId2, entity.getId());
         assertEquals("Label2", entity.getLabel());
-        assertEquals("v2", entity.getVersion());
+        assertEquals(2, entity.getVersion().intValue());
+        assertEquals("COMMUNES", entity.getTheme());
+        assertEquals("2024", entity.getReferenceYear());
         // searchConfiguration and content are not set in toEntity()
         assertNull(entity.getSearchConfiguration());
         assertNull(entity.getContent());

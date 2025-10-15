@@ -1,7 +1,8 @@
 databaseChangeLog:
+
   - changeSet:
       id: 2
-      author: bcbab8
+      author: rverriez
       changes:
         - createTable:
             tableName: external_link
@@ -20,7 +21,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 1
-      author: bcbab8
+      author: rverriez
       changes:
         - createTable:
             tableName: codes_list
@@ -58,3 +59,59 @@ databaseChangeLog:
             referencedTableName: external_link
             referencedColumnNames: id
             constraintName: fk_codes_list_external_link
+
+  - changeSet:
+      id: 4
+      author: rverriez
+      changes:
+        - dropColumn:
+            tableName: codes_list
+            columnName: version
+        - addColumn:
+            tableName: codes_list
+            columns:
+              - column:
+                  name: version
+                  type: integer
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 3
+      author: rverriez
+      changes:
+        - addColumn:
+            tableName: codes_list
+            columns:
+              - column:
+                  name: theme
+                  type: varchar(49)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reference_year
+                  type: varchar(4)
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: 5
+      author: rverriez
+      changes:
+        - addUniqueConstraint:
+            tableName: codes_list
+            columnNames: theme, reference_year, version
+            constraintName: uq_codeslist_theme_referenceyear_version
+
+  - changeSet:
+      id: 6
+      author: rverriez
+      changes:
+        - modifyDataType:
+             tableName: codes_list
+             columnName: reference_year
+             newDataType: varchar(4)
+        - addNotNullConstraint:
+             tableName: codes_list
+             columnName: reference_year
+             columnDataType: varchar(4)
