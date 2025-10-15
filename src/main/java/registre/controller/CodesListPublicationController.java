@@ -196,12 +196,10 @@ public class CodesListPublicationController {
 
 
     /**
-     * PUT /codes-lists/{codesListId}/deprecated : Mark a codes list as deprecated
+     * PATCH /codes-lists/{codesListId}/deprecated : Mark a codes list as deprecated
      *
      * @param codesListId the UUID of the codes list to deprecate
-     * @return No content (status code 204)
-     *         or Not found (status code 404)
-     *         or Conflict (status code 409)
+     * @return 200 OK with confirmation message, or 404/409 error
      */
     @Operation(
             operationId = "markCodesListAsDeprecated",
@@ -209,32 +207,35 @@ public class CodesListPublicationController {
             description = "Sets the `isDeprecated` flag to true. A codes list already deprecated cannot be reactivated.",
             tags = { "Codes List Publication" },
             responses = {
-                    @ApiResponse(responseCode = "204", description = "Marked as deprecated successfully"),
-                    @ApiResponse(responseCode = "404", description = "Codes list not found", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
-                    }),
-                    @ApiResponse(responseCode = "409", description = "Codes list already deprecated", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
-                    })
+                    @ApiResponse(responseCode = "200", description = "Marked as deprecated successfully",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))),
+                    @ApiResponse(responseCode = "404", description = "Codes list not found",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))),
+                    @ApiResponse(responseCode = "409", description = "Codes list already deprecated",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
             }
     )
-    @PutMapping(value = "/{codesListId}/deprecated", produces = "application/json")
-    public ResponseEntity<Void> markCodesListAsDeprecated(
+    @PatchMapping(value = "/{codesListId}/deprecated", produces = "application/json")
+    public ResponseEntity<SuccessResponseDto> markCodesListAsDeprecated(
             @Parameter(name = "codesListId", description = "ID of the codes list to deprecate", required = true, in = ParameterIn.PATH)
             @PathVariable UUID codesListId) {
 
         codesListPublicationService.markAsDeprecated(codesListId);
-        return ResponseEntity.noContent().build();
+
+        SuccessResponseDto response = new SuccessResponseDto(
+                "Codes list has been marked as deprecated",
+                codesListId.toString()
+        );
+
+        return ResponseEntity.ok(response);
     }
 
 
     /**
-     * PUT /codes-lists/{codesListId}/valid : Mark a codes list as invalid
+     * PATCH /codes-lists/{codesListId}/valid : Mark a codes list as invalid
      *
      * @param codesListId the UUID of the codes list to invalidate
-     * @return No content (status code 204)
-     *         or Not found (status code 404)
-     *         or Conflict (status code 409)
+     * @return 200 OK with confirmation message, or 404/409 error
      */
     @Operation(
             operationId = "markCodesListAsInvalid",
@@ -242,21 +243,26 @@ public class CodesListPublicationController {
             description = "Sets the `isValid` flag to false. A codes list already marked as invalid cannot be reactivated.",
             tags = { "Codes List Publication" },
             responses = {
-                    @ApiResponse(responseCode = "204", description = "Marked as invalid successfully"),
-                    @ApiResponse(responseCode = "404", description = "Codes list not found", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
-                    }),
-                    @ApiResponse(responseCode = "409", description = "Codes list already marked as invalid", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
-                    })
+                    @ApiResponse(responseCode = "200", description = "Marked as invalid successfully",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))),
+                    @ApiResponse(responseCode = "404", description = "Codes list not found",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))),
+                    @ApiResponse(responseCode = "409", description = "Codes list already marked as invalid",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
             }
     )
-    @PutMapping(value = "/{codesListId}/valid", produces = "application/json")
-    public ResponseEntity<Void> markCodesListAsInvalid(
+    @PatchMapping(value = "/{codesListId}/valid", produces = "application/json")
+    public ResponseEntity<SuccessResponseDto> markCodesListAsInvalid(
             @Parameter(name = "codesListId", description = "ID of the codes list to invalidate", required = true, in = ParameterIn.PATH)
             @PathVariable UUID codesListId) {
 
         codesListPublicationService.markAsInvalid(codesListId);
-        return ResponseEntity.noContent().build();
+
+        SuccessResponseDto response = new SuccessResponseDto(
+                "Codes list has been marked as invalid",
+                codesListId.toString()
+        );
+
+        return ResponseEntity.ok(response);
     }
 }
