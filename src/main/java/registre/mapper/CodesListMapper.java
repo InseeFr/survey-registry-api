@@ -45,14 +45,12 @@ public class CodesListMapper {
         entity.setId(dto.id());
 
         MetadataDto metadata = dto.metadata();
-        if (metadata != null) {
-            entity.setLabel(metadata.label());
-            entity.setVersion(metadata.version());
-            entity.setTheme(metadata.theme());
-            entity.setReferenceYear(metadata.referenceYear());
-            entity.setDeprecated(metadata.isDeprecated());
-            entity.setValid(metadata.isValid());
-        }
+        entity.setLabel(metadata.label());
+        entity.setVersion(metadata.version());
+        entity.setTheme(metadata.theme());
+        entity.setReferenceYear(metadata.referenceYear());
+        entity.setDeprecated(metadata.isDeprecated());
+        entity.setValid(metadata.isValid());
 
         return entity;
     }
