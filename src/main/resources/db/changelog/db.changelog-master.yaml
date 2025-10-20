@@ -143,3 +143,32 @@ databaseChangeLog:
                   defaultValueBoolean: true
                   constraints:
                     nullable: false
+
+  - changeSet:
+      id: 9
+      author: rverriez
+      changes:
+        - createIndex:
+            indexName: idx_codes_list_theme_referenceyear
+            tableName: codes_list
+            columns:
+              - column:
+                  name: theme
+              - column:
+                  name: reference_year
+
+        - createIndex:
+            indexName: idx_codes_list_id_where_content_not_null
+            tableName: codes_list
+            columns:
+              - column:
+                  name: id
+            where: "content IS NOT NULL"
+
+        - createIndex:
+            indexName: idx_codes_list_id_where_search_config_not_null
+            tableName: codes_list
+            columns:
+              - column:
+                  name: id
+            where: "search_config IS NOT NULL"
