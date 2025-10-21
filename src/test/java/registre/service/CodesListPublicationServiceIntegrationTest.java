@@ -1,5 +1,6 @@
 package registre.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,12 @@ class CodesListPublicationServiceIntegrationTest {
     @Autowired
     private CodesListExternalLinkRepository externalLinkRepository;
 
+    @BeforeEach
+    void cleanDatabase() {
+        externalLinkRepository.deleteAll();
+        codesListRepository.deleteAll();
+    }
+
     private CodesListDto buildEmptyCodesListDto(String label, String theme, String referenceYear) {
         return new CodesListDto(
                 null,
@@ -45,7 +52,6 @@ class CodesListPublicationServiceIntegrationTest {
         externalLinkEntity.setId("ExternalLink1");
         externalLinkEntity.setVersion("v1");
         externalLinkRepository.save(externalLinkEntity);
-        externalLinkRepository.flush();
 
         MetadataDto metadataDto = new MetadataDto(null, "Label1", null, "COMMUNES", "2024",
                 new CodesListExternalLinkDto("ExternalLink1"), false, true);
