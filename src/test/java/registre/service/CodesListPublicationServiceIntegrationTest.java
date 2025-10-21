@@ -60,7 +60,8 @@ class CodesListPublicationServiceIntegrationTest {
 
         CodesListEntity entity = codesListRepository.findAll().stream()
                 .filter(e -> "Label1".equals(e.getLabel()))
-                .findFirst().orElseThrow();
+                .findFirst()
+                .orElseThrow();
 
         assertEquals(1, entity.getVersion());
         assertEquals("COMMUNES", entity.getTheme());
