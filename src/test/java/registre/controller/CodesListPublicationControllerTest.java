@@ -13,9 +13,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import registre.dto.*;
 import registre.service.CodesListPublicationService;
+import registre.service.CodesListRecoveryService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -36,17 +38,25 @@ class CodesListPublicationControllerTest {
     @Autowired
     private CodesListPublicationService codesListPublicationService;
 
+    @Autowired
+    private CodesListRecoveryService codesListRecoveryService;
+
     @TestConfiguration
     static class TestConfig {
         @Bean
         public CodesListPublicationService codesListPublicationService() {
             return Mockito.mock(CodesListPublicationService.class);
         }
+
+        @Bean
+        public CodesListRecoveryService codesListRecoveryService() {
+            return Mockito.mock(CodesListRecoveryService.class);
+        }
     }
 
     @BeforeEach
     void setup() {
-        Mockito.reset(codesListPublicationService);
+        Mockito.reset(codesListPublicationService, codesListRecoveryService);
     }
 
     @Test
@@ -64,12 +74,27 @@ class CodesListPublicationControllerTest {
                 true
         );
 
+        MetadataDto returnedMetadata = new MetadataDto(
+                testId,
+                "CodesList1",
+                1,
+                "COMMUNES",
+                "2024",
+                new CodesListExternalLinkDto("ExternalLink1"),
+                false,
+                true
+        );
+
         Mockito.when(codesListPublicationService.createCodesListMetadataOnly(metadataDto)).thenReturn(testId);
+        Mockito.when(codesListRecoveryService.getMetadataById(testId))
+                .thenReturn(Optional.of(returnedMetadata));
 
         mockMvc.perform(post("/codes-lists")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(metadataDto)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(testId.toString()))
+                .andExpect(jsonPath("$.label").value("CodesList1"));
 
         Mockito.verify(codesListPublicationService).createCodesListMetadataOnly(metadataDto);
         Mockito.verify(codesListPublicationService)
@@ -84,12 +109,18 @@ class CodesListPublicationControllerTest {
 
         CodesListDto codesListDto = getCodesListDto(testId, externalLinkDto);
 
+        MetadataDto returnedMetadata = codesListDto.metadata();
+
         Mockito.when(codesListPublicationService.createCodesList(any())).thenReturn(testId);
+        Mockito.when(codesListRecoveryService.getMetadataById(testId))
+                .thenReturn(Optional.of(returnedMetadata));
 
         mockMvc.perform(post("/codes-lists/full")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(codesListDto)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(testId.toString()))
+                .andExpect(jsonPath("$.label").value("CodesList1"));
 
         Mockito.verify(codesListPublicationService).createCodesList(any());
         Mockito.verify(codesListPublicationService)
@@ -173,10 +204,7 @@ class CodesListPublicationControllerTest {
                 .andExpect(status().isCreated());
 
         Mockito.verify(codesListPublicationService)
-                .createSearchConfiguration(
-                        eq(testId),
-                        any(SearchConfig.class)
-                );
+                .createSearchConfiguration(eq(testId), any(SearchConfig.class));
     }
 
     @Test
