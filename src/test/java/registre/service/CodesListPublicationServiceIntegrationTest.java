@@ -1,5 +1,6 @@
 package registre.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,12 @@ class CodesListPublicationServiceIntegrationTest {
     @Autowired
     private CodesListExternalLinkRepository externalLinkRepository;
 
+    @BeforeEach
+    void cleanDatabase() {
+        externalLinkRepository.deleteAll();
+        codesListRepository.deleteAll();
+    }
+
     private CodesListDto buildEmptyCodesListDto(String label, String theme, String referenceYear) {
         return new CodesListDto(
                 null,
@@ -53,7 +60,8 @@ class CodesListPublicationServiceIntegrationTest {
 
         CodesListEntity entity = codesListRepository.findAll().stream()
                 .filter(e -> "Label1".equals(e.getLabel()))
-                .findFirst().orElseThrow();
+                .findFirst()
+                .orElseThrow();
 
         assertEquals(1, entity.getVersion());
         assertEquals("COMMUNES", entity.getTheme());
@@ -71,7 +79,11 @@ class CodesListPublicationServiceIntegrationTest {
 
         service.createCodesListMetadataOnly(metadataDto);
 
-        CodesListEntity entity = codesListRepository.findAll().stream().findFirst().orElseThrow();
+        CodesListEntity entity = codesListRepository.findAll().stream()
+                .filter(e -> "Label2".equals(e.getLabel()))
+                .findFirst()
+                .orElseThrow();
+
         assertEquals("Label2", entity.getLabel());
         assertEquals(1, entity.getVersion());
         assertEquals("COMMUNES", entity.getTheme());
