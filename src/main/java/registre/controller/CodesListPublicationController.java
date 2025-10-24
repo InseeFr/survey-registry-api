@@ -34,7 +34,7 @@ public class CodesListPublicationController {
      *
      * @param metadataDto (optional)
      * @return Created (status code 201)
-     *         or Conflict — structured error (status code 409)
+     *         or Conflict - structured error (status code 409)
      */
     @Operation(
             operationId = "createCodesListMetadataOnly",
@@ -44,7 +44,7 @@ public class CodesListPublicationController {
             responses = {
                     @ApiResponse(
                             responseCode = "201",
-                            description = "Created — returns the created metadata",
+                            description = "Created - returns the created metadata",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = MetadataDto.class)
@@ -52,7 +52,7 @@ public class CodesListPublicationController {
                     ),
                     @ApiResponse(
                             responseCode = "409",
-                            description = "Conflict — structured error (the codes list already exists or violates business rules)",
+                            description = "Conflict - structured error (the codes list already exists or violates business rules)",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponseDto.class)
@@ -80,7 +80,7 @@ public class CodesListPublicationController {
      *
      * @param codesListDto (optional)
      * @return Created (status code 201)
-     *         or Conflict — structured error (status code 409)
+     *         or Conflict - structured error (status code 409)
      */
     @Operation(
             operationId = "createFullCodesList",
@@ -90,7 +90,7 @@ public class CodesListPublicationController {
             responses = {
                     @ApiResponse(
                             responseCode = "201",
-                            description = "Created — returns the created metadata",
+                            description = "Created - returns the created metadata",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = MetadataDto.class)
@@ -98,7 +98,7 @@ public class CodesListPublicationController {
                     ),
                     @ApiResponse(
                             responseCode = "409",
-                            description = "Conflict — structured error (the codes list already exists or violates business rules)",
+                            description = "Conflict - structured error (the codes list already exists or violates business rules)",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponseDto.class)
