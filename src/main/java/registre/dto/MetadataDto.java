@@ -71,7 +71,8 @@ public record MetadataDto(
         @Schema(
                 name = "externalLink",
                 description = "Optional external link. Must refer to an existing external resource if provided.",
-                requiredMode = Schema.RequiredMode.NOT_REQUIRED
+                requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+                hidden = true
         )
         @JsonProperty("externalLink")
         CodesListExternalLinkDto externalLink,

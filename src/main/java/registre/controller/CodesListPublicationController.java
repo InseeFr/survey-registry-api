@@ -12,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import registre.dto.*;
 import registre.service.CodesListPublicationService;
+import registre.service.CodesListRecoveryService;
 
 import java.util.UUID;
 
@@ -24,7 +26,7 @@ import java.util.UUID;
 public class CodesListPublicationController {
 
     private final CodesListPublicationService codesListPublicationService;
-
+    private final CodesListRecoveryService codesListRecoveryService;
 
     /**
      * POST /codes-lists : Create codes list (metadata only)
@@ -32,29 +34,43 @@ public class CodesListPublicationController {
      *
      * @param metadataDto (optional)
      * @return Created (status code 201)
-     *         or Structured error (status code 409)
+     *         or Conflict - structured error (status code 409)
      */
     @Operation(
             operationId = "createCodesListMetadataOnly",
             summary = "Create codes list (metadata only)",
-            description = "Admin only. Create a code list without content or search config. These must be added later via PUT endpoints. ",
+            description = "Admin only. Create a code list without content or search config. These must be added later via PUT endpoints.",
             tags = { "Codes List Publication" },
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Created"),
-                    @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
-                    })
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Created - returns the created metadata",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = MetadataDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "Conflict - structured error (the codes list already exists or violates business rules)",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                            )
+                    )
             }
     )
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Void> createCodesListMetadataOnly(
+    public ResponseEntity<MetadataDto> createCodesListMetadataOnly(
             @Parameter(name = "Metadata", description = "") @Valid @RequestBody MetadataDto metadataDto) {
 
         UUID id = codesListPublicationService.createCodesListMetadataOnly(metadataDto);
-
         codesListPublicationService.deprecateOlderVersions(metadataDto.theme(), metadataDto.referenceYear(), id);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        MetadataDto createdMetadata = codesListRecoveryService.getMetadataById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Metadata not found after creation"));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdMetadata);
     }
 
 
@@ -62,20 +78,36 @@ public class CodesListPublicationController {
      * POST /codes-lists/full : Create a full codes list (metadata + content + search config)
      * Convenience endpoint for complete creation.
      *
-     * @param codesListDto  (optional)
+     * @param codesListDto (optional)
      * @return Created (status code 201)
+     *         or Conflict - structured error (status code 409)
      */
     @Operation(
             operationId = "createFullCodesList",
             summary = "Create a full codes list (metadata + content + search config)",
-            description = "Convenience endpoint for complete creation.",
+            description = "Convenience endpoint for complete creation. Returns the created metadata.",
             tags = { "Codes List Publication" },
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Created")
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Created - returns the created metadata",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = MetadataDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "Conflict - structured error (the codes list already exists or violates business rules)",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                            )
+                    )
             }
     )
-    @PostMapping(value = "/full", consumes = "application/json")
-    public ResponseEntity<Void> createFullCodesList(
+    @PostMapping(value = "/full", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<MetadataDto> createFullCodesList(
             @Parameter(name = "CodesList", description = "") @Valid @RequestBody CodesListDto codesListDto) {
 
         UUID id = codesListPublicationService.createCodesList(codesListDto);
@@ -98,7 +130,10 @@ public class CodesListPublicationController {
                 id
         );
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        MetadataDto createdMetadata = codesListRecoveryService.getMetadataById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Metadata not found after creation"));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdMetadata);
     }
 
 
