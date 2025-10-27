@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>fr.insee</groupId>
 	<artifactId>survey-registry-api</artifactId>
-	<version>0.4.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>Survey Registry API</name>
 	<description>API for managing surveys and code lists</description>
 	<url/>
