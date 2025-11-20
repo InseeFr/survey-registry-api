@@ -20,7 +20,7 @@ jobs:
           java-version: "21"
 
       - name: Checkout Survey-Registry-API repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Get Version
         id: version-step
@@ -57,7 +57,7 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "21"
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Survey-Registry-API with Maven
         run: mvn package -B -V --file pom.xml --no-transfer-progress
 
@@ -73,7 +73,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.ref }}
           fetch-depth: 0
@@ -121,7 +121,7 @@ jobs:
     needs: [check-version, create-release]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Download jar
         id: download
