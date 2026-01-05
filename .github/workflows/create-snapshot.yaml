@@ -11,7 +11,7 @@ jobs:
     if: ${{ contains(github.event.pull_request.labels.*.name, 'deploy-snapshot') }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions-ecosystem/action-remove-labels@v1
         with:
           labels: 'deploy-snapshot'
@@ -29,7 +29,7 @@ jobs:
           java-version: '21'
 
       - name: Checkout Survey-Registry-API repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Get Version
         id: version-step
@@ -67,7 +67,7 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Survey-Registry-API with Maven
         run: mvn package -B -V --file pom.xml --no-transfer-progress
 
@@ -96,7 +96,7 @@ jobs:
     needs: [ check-version, create-tag ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Download jar
         id: download
