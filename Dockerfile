@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21.0.9_10-jre
+FROM eclipse-temurin:25.0.1_8-jre
 
 ENV PATH_TO_JAR=/opt/registry/registry-api.jar
 WORKDIR /opt/registry
