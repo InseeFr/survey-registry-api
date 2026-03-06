@@ -74,7 +74,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: jar
-          path: target/registry-api.jar
+          path: target/*.jar
 
   create-tag:
     needs: [check-version, build-sources]

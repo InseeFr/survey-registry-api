@@ -64,7 +64,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: jar
-          path: target/registry-api.jar
+          path: target/*.jar
 
   create-release:
     needs: [check-version, build-sources]
@@ -112,7 +112,7 @@ jobs:
           target_commitish: ${{ github.head_ref || github.ref }}
           name: ${{ needs.check-version.outputs.release-version }}
           body: ${{steps.changelog.outputs.changes}}
-          files: ./target/registry-api.jar
+          files: ./target/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
