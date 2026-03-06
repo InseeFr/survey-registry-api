@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>fr.insee</groupId>
 	<artifactId>survey-registry-api</artifactId>
-	<version>1.0.0</version>
+    <version>${revision}</version>
 	<name>Survey Registry API</name>
 	<description>API for managing surveys and code lists</description>
 	<url/>
@@ -27,8 +27,11 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>21</java.version>
+        <revision>1.0.2</revision> <!-- Version is managed by git tags -->
+		<java.version>25</java.version>
 		<final.asset.name>survey-registry-api</final.asset.name>
+		<!-- !!! Version properties overridden from Spring Boot !!! -->
+		<jackson-bom.version>2.21.1</jackson-bom.version> <!-- CVE in Spring Boot 3.5.11 -->
 	</properties>
 
 	<dependencies>
@@ -66,10 +69,10 @@
 
 		<!-- Lombok -->
 		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<scope>provided</scope>
-		</dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
 
 		<!-- In-memory database for tests -->
 		<dependency>
@@ -112,7 +115,19 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.15.0</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 
