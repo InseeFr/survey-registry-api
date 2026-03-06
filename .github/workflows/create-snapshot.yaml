@@ -6,7 +6,6 @@ on:
     types: [labeled]
 
 jobs:
-
   remove-deploy-label:
     if: ${{ contains(github.event.pull_request.labels.*.name, 'deploy-snapshot') }}
     runs-on: ubuntu-latest
@@ -14,7 +13,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions-ecosystem/action-remove-labels@v1
         with:
-          labels: 'deploy-snapshot'
+          labels: "deploy-snapshot"
 
   check-version:
     needs: remove-deploy-label
@@ -25,8 +24,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          distribution: "temurin"
+          java-version: "25"
 
       - name: Checkout Survey-Registry-API repo
         uses: actions/checkout@v6
@@ -64,8 +63,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          distribution: "temurin"
+          java-version: "25"
 
       - uses: actions/checkout@v6
       - name: Build Survey-Registry-API with Maven
@@ -78,7 +77,7 @@ jobs:
           path: target/registry-api.jar
 
   create-tag:
-    needs: [ check-version, build-sources ]
+    needs: [check-version, build-sources]
     runs-on: ubuntu-latest
     steps:
       - name: Create tag
@@ -93,7 +92,7 @@ jobs:
             })
 
   publish-docker:
-    needs: [ check-version, create-tag ]
+    needs: [check-version, create-tag]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -115,7 +114,7 @@ jobs:
           tags: ${{ needs.check-version.outputs.snapshot-version }}
 
   write-comment:
-    needs: [ check-version, publish-docker ]
+    needs: [check-version, publish-docker]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v8

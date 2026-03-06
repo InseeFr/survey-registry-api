@@ -3,8 +3,7 @@ name: Survey-Registry-API tests
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    paths-ignore:
-      ["Dockerfile", "LICENSE", "CHANGELOG.md", "README.md"]
+    paths-ignore: ["Dockerfile", "LICENSE", "CHANGELOG.md", "README.md"]
 
 jobs:
   test:
@@ -17,6 +16,6 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: "temurin"
-          java-version: "21"
+          java-version: "25"
       - name: Run tests with Maven
         run: mvn test --no-transfer-progress
