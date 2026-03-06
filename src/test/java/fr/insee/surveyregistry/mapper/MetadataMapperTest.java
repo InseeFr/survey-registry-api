@@ -1,0 +1,94 @@
+package fr.insee.surveyregistry.mapper;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import fr.insee.surveyregistry.dto.CodesListExternalLinkDto;
+import fr.insee.surveyregistry.dto.MetadataDto;
+import fr.insee.surveyregistry.entity.CodesListExternalLinkEntity;
+import fr.insee.surveyregistry.repository.CodesListRepository.MetadataProjection;
+
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+class MetadataMapperTest {
+
+    private CodesListExternalLinkMapper externalLinkMapper;
+    private MetadataMapper metadataMapper;
+
+    @BeforeEach
+    void setup() {
+        externalLinkMapper = mock(CodesListExternalLinkMapper.class);
+        metadataMapper = new MetadataMapper(externalLinkMapper);
+    }
+
+    @Test
+    void toDto_shouldReturnNull_whenProjectionIsNull() {
+        MetadataDto dto = metadataMapper.toDto(null);
+        assertNull(dto);
+    }
+
+    @Test
+    void toDto_shouldMapFieldsAndExternalLink_whenProjectionHasExternalLink() {
+        MetadataProjection projection = mock(MetadataProjection.class);
+        UUID id = UUID.randomUUID();
+        CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
+
+        when(projection.getId()).thenReturn(id);
+        when(projection.getLabel()).thenReturn("Label1");
+        when(projection.getVersion()).thenReturn(1);
+        when(projection.getTheme()).thenReturn("COMMUNES");
+        when(projection.getReferenceYear()).thenReturn("2024");
+        when(projection.getCodesListExternalLink()).thenReturn(externalLinkEntity);
+        when(projection.isDeprecated()).thenReturn(false);
+        when(projection.isValid()).thenReturn(true);
+
+        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1");
+        when(externalLinkMapper.toDto(externalLinkEntity)).thenReturn(externalLinkDto);
+
+        MetadataDto dto = metadataMapper.toDto(projection);
+
+        assertNotNull(dto);
+        assertEquals(id, dto.id());
+        assertEquals("Label1", dto.label());
+        assertEquals(1, dto.version().intValue());
+        assertEquals("COMMUNES", dto.theme());
+        assertEquals("2024", dto.referenceYear());
+        assertEquals(externalLinkDto, dto.externalLink());
+        assertFalse(dto.isDeprecated());
+        assertTrue(dto.isValid());
+
+        verify(externalLinkMapper, times(1)).toDto(externalLinkEntity);
+    }
+
+    @Test
+    void toDto_shouldMapFieldsAndSetExternalLinkNull_whenProjectionHasNoExternalLink() {
+        MetadataProjection projection = mock(MetadataProjection.class);
+        UUID id = UUID.randomUUID();
+
+        when(projection.getId()).thenReturn(id);
+        when(projection.getLabel()).thenReturn("Label1");
+        when(projection.getVersion()).thenReturn(1);
+        when(projection.getTheme()).thenReturn("COMMUNES");
+        when(projection.getReferenceYear()).thenReturn("2024");
+        when(projection.getCodesListExternalLink()).thenReturn(null);
+        when(projection.isDeprecated()).thenReturn(false);
+        when(projection.isValid()).thenReturn(true);
+
+
+        MetadataDto dto = metadataMapper.toDto(projection);
+
+        assertNotNull(dto);
+        assertEquals(id, dto.id());
+        assertEquals("Label1", dto.label());
+        assertEquals(1, dto.version().intValue());
+        assertEquals("COMMUNES", dto.theme());
+        assertEquals("2024", dto.referenceYear());
+        assertNull(dto.externalLink());
+        assertFalse(dto.isDeprecated());
+        assertTrue(dto.isValid());
+
+        verify(externalLinkMapper, never()).toDto(any());
+    }
+}
