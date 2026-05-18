@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.11</version>
+		<version>4.0.6</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>fr.insee</groupId>
@@ -27,11 +27,19 @@
 		<url/>
 	</scm>
 	<properties>
-        <revision>1.0.2</revision> <!-- Version is managed by git tags -->
+        <revision>1.3.0</revision> <!-- Version is managed by git tags -->
 		<java.version>25</java.version>
 		<final.asset.name>survey-registry-api</final.asset.name>
-		<!-- !!! Version properties overridden from Spring Boot !!! -->
-		<jackson-bom.version>2.21.1</jackson-bom.version> <!-- CVE in Spring Boot 3.5.11 -->
+        <jackson-2-bom.version>2.21.1</jackson-2-bom.version>
+        <jackson-bom.version>3.1.1</jackson-bom.version>
+		<!-- Version properties not managed by Spring Boot -->
+		<jacoco.version>0.8.14</jacoco.version>
+        <tomcat.version>11.0.21</tomcat.version>
+		<!-- Sonar properties -->
+		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<sonar.language>java</sonar.language>
 	</properties>
 
 	<dependencies>
@@ -39,14 +47,14 @@
 		<!-- Web + Jackson included -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
 
 		<!-- OpenAPI documentation -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.8.16</version>
+			<version>3.0.2</version>
 		</dependency>
 
 		<!-- Validation (includes Hibernate Validator) -->
@@ -84,14 +92,36 @@
 		<!-- Test utilities -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
+			<artifactId>spring-boot-starter-webmvc-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- Spring Boot 4: Spring Security auto-config not loaded with @WebMvcTest -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.vaadin.external.google</groupId>
+                    <artifactId>android-json</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
 		<!-- Liquibase for database version control -->
 		<dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-liquibase</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-liquibase-test</artifactId>
 		</dependency>
 
 	</dependencies>
@@ -128,6 +158,30 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<formats>
+								<format>XML</format>
+							</formats>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 

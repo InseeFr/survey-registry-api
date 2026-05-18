@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import fr.insee.surveyregistry.dto.CodesListContent;
-import fr.insee.surveyregistry.dto.MetadataDto;
+import fr.insee.surveyregistry.dto.CodesListMetadataDto;
 import fr.insee.surveyregistry.dto.SearchConfig;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 import fr.insee.surveyregistry.repository.CodesListRepository;
@@ -45,7 +45,7 @@ class CodesListRecoveryServiceIntegrationTest {
 
         repository.save(codesList);
 
-        List<MetadataDto> result = service.getAllMetadata();
+        List<CodesListMetadataDto> result = service.getAllMetadata();
 
         assertEquals(1, result.size());
         assertEquals("Label1", result.getFirst().label());
@@ -70,7 +70,7 @@ class CodesListRecoveryServiceIntegrationTest {
 
         repository.save(codesList);
 
-        Optional<MetadataDto> result = service.getMetadataById(id2);
+        Optional<CodesListMetadataDto> result = service.getMetadataById(id2);
 
         assertTrue(result.isPresent());
         assertEquals("Label2", result.get().label());

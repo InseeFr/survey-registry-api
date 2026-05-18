@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 import fr.insee.surveyregistry.entity.CodesListExternalLinkEntity;
 import fr.insee.surveyregistry.mapper.CodesListMapper;
-import fr.insee.surveyregistry.mapper.MetadataMapper;
+import fr.insee.surveyregistry.mapper.CodesListMetadataMapper;
 import fr.insee.surveyregistry.repository.CodesListRepository;
 
 import java.util.List;
@@ -22,14 +22,14 @@ class CodesListRecoveryServiceTest {
 
     private CodesListRepository repository;
     private CodesListMapper codesListMapper;
-    private MetadataMapper metadataMapper;
+    private CodesListMetadataMapper metadataMapper;
     private CodesListRecoveryService service;
 
     @BeforeEach
     void setUp() {
         repository = mock(CodesListRepository.class);
         codesListMapper = mock(CodesListMapper.class);
-        metadataMapper = mock(MetadataMapper.class);
+        metadataMapper = mock(CodesListMetadataMapper.class);
         service = new CodesListRecoveryService(repository, codesListMapper, metadataMapper);
     }
 
@@ -44,13 +44,13 @@ class CodesListRecoveryServiceTest {
 
         when(repository.findAllBy()).thenReturn(List.of(projection));
 
-        MetadataDto dtoMock = new MetadataDto(id1, "Label1", 1, "COMMUNES", "2024", null, false, true);
+        CodesListMetadataDto dtoMock = new CodesListMetadataDto(id1, "Label1", 1, "COMMUNES", "2024", null, false, true);
         when(metadataMapper.toDto(projection)).thenReturn(dtoMock);
 
-        List<MetadataDto> result = service.getAllMetadata();
+        List<CodesListMetadataDto> result = service.getAllMetadata();
 
         assertEquals(1, result.size());
-        MetadataDto dto = result.getFirst();
+        CodesListMetadataDto dto = result.getFirst();
         assertEquals(id1, dto.id());
         assertEquals("Label1", dto.label());
         assertEquals(1, dto.version());
@@ -76,16 +76,16 @@ class CodesListRecoveryServiceTest {
 
         CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1");
 
-        MetadataDto mappedDto = new MetadataDto(id2, "Label2", 2, "COMMUNES","2024", externalLinkDto, false, true);
+        CodesListMetadataDto mappedDto = new CodesListMetadataDto(id2, "Label2", 2, "COMMUNES","2024", externalLinkDto, false, true);
 
         when(repository.findAllBy()).thenReturn(List.of(projection));
 
         when(metadataMapper.toDto(projection)).thenReturn(mappedDto);
 
-        List<MetadataDto> result = service.getAllMetadata();
+        List<CodesListMetadataDto> result = service.getAllMetadata();
 
         assertEquals(1, result.size());
-        MetadataDto dto = result.getFirst();
+        CodesListMetadataDto dto = result.getFirst();
         assertEquals(id2, dto.id());
         assertEquals("Label2", dto.label());
         assertEquals(2, dto.version());
@@ -99,7 +99,7 @@ class CodesListRecoveryServiceTest {
     @Test
     void testGetMetadataById_Found() {
         CodesListEntity entity = new CodesListEntity();
-        MetadataDto metadata = new MetadataDto(null,null,null, null, null,null, false, true);
+        CodesListMetadataDto metadata = new CodesListMetadataDto(null,null,null, null, null,null, false, true);
         CodesListDto dto = new CodesListDto(null, metadata,null,null);
 
         UUID id = UUID.randomUUID();
@@ -107,7 +107,7 @@ class CodesListRecoveryServiceTest {
         when(repository.findById(id)).thenReturn(Optional.of(entity));
         when(codesListMapper.toDto(entity)).thenReturn(dto);
 
-        Optional<MetadataDto> result = service.getMetadataById(id);
+        Optional<CodesListMetadataDto> result = service.getMetadataById(id);
 
         assertTrue(result.isPresent());
         assertSame(metadata, result.get());

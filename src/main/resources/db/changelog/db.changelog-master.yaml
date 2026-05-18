@@ -172,3 +172,98 @@ databaseChangeLog:
               - column:
                   name: id
             where: "search_config IS NOT NULL"
+
+  - changeSet:
+      id: 10
+      author: rverriez
+      changes:
+
+        - createTable:
+            tableName: conceptual_model
+            columns:
+              - column:
+                  name: pogues_version_id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: label
+                  type: varchar
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: instrument_collection
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: conceptual_model_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: mode
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content
+                  type: text
+                  constraints:
+                    nullable: true
+
+        - addForeignKeyConstraint:
+            baseTableName: instrument_collection
+            baseColumnNames: conceptual_model_id
+            referencedTableName: conceptual_model
+            referencedColumnNames: pogues_version_id
+            constraintName: fk_instrument_collection_conceptual_model
+
+        - sql:
+            sql: >
+              ALTER TABLE instrument_collection
+              ADD CONSTRAINT chk_instrument_mode
+              CHECK (mode IN ('CAWI','CATI','CAPI','PAPI'));
+
+        - createIndex:
+            indexName: idx_instrument_collection_conceptual_model
+            tableName: instrument_collection
+            columns:
+              - column:
+                  name: conceptual_model_id
+
+  - changeSet:
+      id: 11
+      author: rverriez
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE instrument_collection
+              ADD CONSTRAINT chk_instrument_type
+              CHECK (type IN ('JSON','XML','BINARY'));
+
+  - changeSet:
+      id: 12
+      author: rverriez
+      changes:
+
+        - renameTable:
+            oldTableName: instrument_collection
+            newTableName: collection_instrument
+
+        - renameColumn:
+            tableName: collection_instrument
+            oldColumnName: id
+            newColumnName: collection_instrument_id
+            columnDataType: uuid

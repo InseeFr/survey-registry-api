@@ -4,12 +4,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import fr.insee.surveyregistry.dto.CodesListContent;
-import fr.insee.surveyregistry.dto.MetadataDto;
+import fr.insee.surveyregistry.dto.CodesListMetadataDto;
 import fr.insee.surveyregistry.dto.SearchConfig;
 import fr.insee.surveyregistry.service.CodesListRecoveryService;
 
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WithMockUser(username = "testUser", roles = {"ADMIN"})
 @WebMvcTest(CodesListRecoveryController.class)
 class CodesListRecoveryControllerTest {
 
@@ -48,9 +50,9 @@ class CodesListRecoveryControllerTest {
     void testGetAllCodesLists() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        MetadataDto metadata = new MetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", null, false, true);
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", null, false, true);
 
-        List<MetadataDto> metadataList = List.of(metadata);
+        List<CodesListMetadataDto> metadataList = List.of(metadata);
         Mockito.when(codesListRecoveryService.getAllMetadata()).thenReturn(metadataList);
 
         mockMvc.perform(get("/codes-lists"))
@@ -92,7 +94,7 @@ class CodesListRecoveryControllerTest {
     void testGetCodesListMetadataById_found() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        MetadataDto metadata = new MetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", null, false, true);
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", null, false, true);
 
         Mockito.when(codesListRecoveryService.getMetadataById(testId)).thenReturn(Optional.of(metadata));
 

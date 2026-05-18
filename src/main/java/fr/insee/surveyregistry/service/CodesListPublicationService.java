@@ -33,12 +33,12 @@ public class CodesListPublicationService {
      * @param metadataDto the metadata for the codes list
      */
     @Transactional
-    public UUID createCodesListMetadataOnly(MetadataDto metadataDto) {
+    public UUID createCodesListMetadataOnly(CodesListMetadataDto metadataDto) {
         Integer nextVersion = computeNextVersion(metadataDto.theme(), metadataDto.referenceYear());
 
         CodesListDto dto = new CodesListDto(
                 null,
-                new MetadataDto(
+                new CodesListMetadataDto(
                         null,
                         metadataDto.label(),
                         nextVersion,
@@ -239,7 +239,7 @@ public class CodesListPublicationService {
         }
 
         codesListRepository.findById(codesListId).ifPresent(entity -> {
-            if (Boolean.FALSE.equals(entity.isValid())) {
+            if (!entity.isValid()) {
                 throw new ResponseStatusException(
                         HttpStatus.CONFLICT,
                         "Codes list " + codesListId + " is already marked as invalid"

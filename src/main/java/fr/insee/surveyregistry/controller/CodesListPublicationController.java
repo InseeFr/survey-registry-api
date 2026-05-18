@@ -47,7 +47,7 @@ public class CodesListPublicationController {
                             description = "Created - returns the created metadata",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = MetadataDto.class)
+                                    schema = @Schema(implementation = CodesListMetadataDto.class)
                             )
                     ),
                     @ApiResponse(
@@ -61,13 +61,13 @@ public class CodesListPublicationController {
             }
     )
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<MetadataDto> createCodesListMetadataOnly(
-            @Parameter(name = "Metadata", description = "") @Valid @RequestBody MetadataDto metadataDto) {
+    public ResponseEntity<CodesListMetadataDto> createCodesListMetadataOnly(
+            @Parameter(name = "Metadata", description = "") @Valid @RequestBody CodesListMetadataDto metadataDto) {
 
         UUID id = codesListPublicationService.createCodesListMetadataOnly(metadataDto);
         codesListPublicationService.deprecateOlderVersions(metadataDto.theme(), metadataDto.referenceYear(), id);
 
-        MetadataDto createdMetadata = codesListRecoveryService.getMetadataById(id)
+        CodesListMetadataDto createdMetadata = codesListRecoveryService.getMetadataById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Metadata not found after creation"));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdMetadata);
@@ -93,7 +93,7 @@ public class CodesListPublicationController {
                             description = "Created - returns the created metadata",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = MetadataDto.class)
+                                    schema = @Schema(implementation = CodesListMetadataDto.class)
                             )
                     ),
                     @ApiResponse(
@@ -107,7 +107,7 @@ public class CodesListPublicationController {
             }
     )
     @PostMapping(value = "/full", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<MetadataDto> createFullCodesList(
+    public ResponseEntity<CodesListMetadataDto> createFullCodesList(
             @Parameter(name = "CodesList", description = "") @Valid @RequestBody CodesListDto codesListDto) {
 
         UUID id = codesListPublicationService.createCodesList(codesListDto);
@@ -130,7 +130,7 @@ public class CodesListPublicationController {
                 id
         );
 
-        MetadataDto createdMetadata = codesListRecoveryService.getMetadataById(id)
+        CodesListMetadataDto createdMetadata = codesListRecoveryService.getMetadataById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Metadata not found after creation"));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdMetadata);

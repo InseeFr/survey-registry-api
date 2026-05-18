@@ -1,24 +1,24 @@
 package fr.insee.surveyregistry.mapper;
 
 import org.springframework.stereotype.Component;
-import fr.insee.surveyregistry.dto.MetadataDto;
+import fr.insee.surveyregistry.dto.CodesListMetadataDto;
 import fr.insee.surveyregistry.repository.CodesListRepository.MetadataProjection;
 
 @Component
-public class MetadataMapper {
+public class CodesListMetadataMapper {
 
     private final CodesListExternalLinkMapper externalLinkMapper;
 
-    public MetadataMapper(CodesListExternalLinkMapper externalLinkMapper) {
+    public CodesListMetadataMapper(CodesListExternalLinkMapper externalLinkMapper) {
         this.externalLinkMapper = externalLinkMapper;
     }
 
-    public MetadataDto toDto(MetadataProjection projection) {
+    public CodesListMetadataDto toDto(MetadataProjection projection) {
         if (projection == null) {
             return null;
         }
 
-        return new MetadataDto(
+        return new CodesListMetadataDto(
                 projection.getId(),
                 projection.getLabel(),
                 projection.getVersion(),

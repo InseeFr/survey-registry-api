@@ -25,7 +25,7 @@ public record CodesListDto(
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
         @JsonProperty("metadata")
-        MetadataDto metadata,
+        CodesListMetadataDto metadata,
 
         @Schema(
                 name = "searchConfiguration",

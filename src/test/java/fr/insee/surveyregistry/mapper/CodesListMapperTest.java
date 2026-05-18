@@ -71,7 +71,7 @@ class CodesListMapperTest {
 
         CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto(testId1);
 
-        MetadataDto metadata = new MetadataDto(testId2, "Label2", 2, "COMMUNES", "2024", externalLink, false, true);
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId2, "Label2", 2, "COMMUNES", "2024", externalLink, false, true);
 
         CodesListDto dto = new CodesListDto(testId2, metadata, new SearchConfig(Map.of("enabled", false)),
                 new CodesListContent(List.of(Map.of("code", "01"))));
@@ -91,5 +91,32 @@ class CodesListMapperTest {
         // searchConfiguration and content are not set in toEntity()
         assertNull(entity.getSearchConfiguration());
         assertNull(entity.getContent());
+    }
+
+    @Test
+    void testToEntity_WithNullBooleans() {
+        // Given
+        UUID id = UUID.randomUUID();
+
+        CodesListMetadataDto metadata = new CodesListMetadataDto(
+                id,
+                "Label",
+                1,
+                "COMMUNES",
+                "2024",
+                null,
+                null,
+                null
+        );
+
+        CodesListDto dto = new CodesListDto(id, metadata, null, null);
+
+        // When
+        CodesListEntity entity = codesListMapper.toEntity(dto);
+
+        // Then
+        assertNotNull(entity);
+        assertFalse(entity.isDeprecated()); // null → false
+        assertTrue(entity.isValid());       // null → true
     }
 }

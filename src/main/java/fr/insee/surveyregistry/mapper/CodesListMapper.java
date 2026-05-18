@@ -2,7 +2,7 @@ package fr.insee.surveyregistry.mapper;
 
 import org.springframework.stereotype.Component;
 import fr.insee.surveyregistry.dto.CodesListDto;
-import fr.insee.surveyregistry.dto.MetadataDto;
+import fr.insee.surveyregistry.dto.CodesListMetadataDto;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 
 @Component
@@ -17,7 +17,7 @@ public class CodesListMapper {
     public CodesListDto toDto(CodesListEntity entity) {
         if (entity == null) return null;
 
-        MetadataDto metadataDto = new MetadataDto(
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(
                 entity.getId(),
                 entity.getLabel(),
                 entity.getVersion(),
@@ -44,13 +44,13 @@ public class CodesListMapper {
         CodesListEntity entity = new CodesListEntity();
         entity.setId(dto.id());
 
-        MetadataDto metadata = dto.metadata();
+        CodesListMetadataDto metadata = dto.metadata();
         entity.setLabel(metadata.label());
         entity.setVersion(metadata.version());
         entity.setTheme(metadata.theme());
         entity.setReferenceYear(metadata.referenceYear());
-        entity.setDeprecated(metadata.isDeprecated());
-        entity.setValid(metadata.isValid());
+        entity.setDeprecated(Boolean.TRUE.equals(metadata.isDeprecated()));
+        entity.setValid(metadata.isValid() == null || metadata.isValid());
 
         return entity;
     }

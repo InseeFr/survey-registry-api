@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import fr.insee.surveyregistry.dto.CodesListContent;
-import fr.insee.surveyregistry.dto.MetadataDto;
+import fr.insee.surveyregistry.dto.CodesListMetadataDto;
 import fr.insee.surveyregistry.dto.SearchConfig;
 import fr.insee.surveyregistry.service.CodesListRecoveryService;
 
@@ -43,13 +43,13 @@ public class CodesListRecoveryController {
             tags = { "Codes List Recovery" },
             responses = {
                     @ApiResponse(responseCode = "200", description = "List of codes list metadata", content = {
-                            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = MetadataDto.class)))
+                            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CodesListMetadataDto.class)))
                     })
             }
     )
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<MetadataDto>> getAllCodesLists() {
-        List<MetadataDto> metadataList = codesListRecoveryService.getAllMetadata();
+    public ResponseEntity<List<CodesListMetadataDto>> getAllCodesLists() {
+        List<CodesListMetadataDto> metadataList = codesListRecoveryService.getAllMetadata();
         return ResponseEntity.ok(metadataList);
     }
 
@@ -106,14 +106,14 @@ public class CodesListRecoveryController {
                             description = "Metadata of a codes list",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = MetadataDto.class)
+                                    schema = @Schema(implementation = CodesListMetadataDto.class)
                             )
                     ),
                     @ApiResponse(responseCode = "404", description = "Codes list not found")
             }
     )
     @GetMapping(value = "/{codesListId}/metadata", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MetadataDto> getCodesListMetadataById(
+    public ResponseEntity<CodesListMetadataDto> getCodesListMetadataById(
             @Parameter(name = "codesListId", required = true, in = ParameterIn.PATH)
             @PathVariable UUID codesListId) {
 

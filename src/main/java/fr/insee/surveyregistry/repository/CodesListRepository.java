@@ -1,5 +1,7 @@
 package fr.insee.surveyregistry.repository;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +12,7 @@ import fr.insee.surveyregistry.entity.CodesListExternalLinkEntity;
 import java.util.List;
 import java.util.UUID;
 
+@NullMarked
 public interface CodesListRepository extends JpaRepository<CodesListEntity, UUID> {
 
     interface MetadataProjection {
@@ -18,7 +21,7 @@ public interface CodesListRepository extends JpaRepository<CodesListEntity, UUID
         Integer getVersion();
         String getTheme();
         String getReferenceYear();
-        CodesListExternalLinkEntity getCodesListExternalLink();
+        @Nullable CodesListExternalLinkEntity getCodesListExternalLink();
         boolean isDeprecated();
         boolean isValid();
     }

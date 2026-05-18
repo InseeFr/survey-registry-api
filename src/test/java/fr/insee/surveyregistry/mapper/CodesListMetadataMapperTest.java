@@ -3,7 +3,7 @@ package fr.insee.surveyregistry.mapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import fr.insee.surveyregistry.dto.CodesListExternalLinkDto;
-import fr.insee.surveyregistry.dto.MetadataDto;
+import fr.insee.surveyregistry.dto.CodesListMetadataDto;
 import fr.insee.surveyregistry.entity.CodesListExternalLinkEntity;
 import fr.insee.surveyregistry.repository.CodesListRepository.MetadataProjection;
 
@@ -12,20 +12,20 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class MetadataMapperTest {
+class CodesListMetadataMapperTest {
 
     private CodesListExternalLinkMapper externalLinkMapper;
-    private MetadataMapper metadataMapper;
+    private CodesListMetadataMapper metadataMapper;
 
     @BeforeEach
     void setup() {
         externalLinkMapper = mock(CodesListExternalLinkMapper.class);
-        metadataMapper = new MetadataMapper(externalLinkMapper);
+        metadataMapper = new CodesListMetadataMapper(externalLinkMapper);
     }
 
     @Test
     void toDto_shouldReturnNull_whenProjectionIsNull() {
-        MetadataDto dto = metadataMapper.toDto(null);
+        CodesListMetadataDto dto = metadataMapper.toDto(null);
         assertNull(dto);
     }
 
@@ -47,7 +47,7 @@ class MetadataMapperTest {
         CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1");
         when(externalLinkMapper.toDto(externalLinkEntity)).thenReturn(externalLinkDto);
 
-        MetadataDto dto = metadataMapper.toDto(projection);
+        CodesListMetadataDto dto = metadataMapper.toDto(projection);
 
         assertNotNull(dto);
         assertEquals(id, dto.id());
@@ -77,7 +77,7 @@ class MetadataMapperTest {
         when(projection.isValid()).thenReturn(true);
 
 
-        MetadataDto dto = metadataMapper.toDto(projection);
+        CodesListMetadataDto dto = metadataMapper.toDto(projection);
 
         assertNotNull(dto);
         assertEquals(id, dto.id());

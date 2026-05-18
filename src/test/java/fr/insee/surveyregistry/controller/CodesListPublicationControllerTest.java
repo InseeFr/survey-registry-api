@@ -1,16 +1,17 @@
 package fr.insee.surveyregistry.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import fr.insee.surveyregistry.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import fr.insee.surveyregistry.service.CodesListPublicationService;
 import fr.insee.surveyregistry.service.CodesListRecoveryService;
@@ -25,7 +26,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
+@WithMockUser(username = "testUser", roles = {"ADMIN"})
 @WebMvcTest(CodesListPublicationController.class)
 class CodesListPublicationControllerTest {
 
@@ -63,7 +66,7 @@ class CodesListPublicationControllerTest {
     void testCreateCodesListMetadataOnly() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        MetadataDto metadataDto = new MetadataDto(
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(
                 null,
                 "CodesList1",
                 1,
@@ -74,7 +77,7 @@ class CodesListPublicationControllerTest {
                 true
         );
 
-        MetadataDto returnedMetadata = new MetadataDto(
+        CodesListMetadataDto returnedMetadata = new CodesListMetadataDto(
                 testId,
                 "CodesList1",
                 1,
@@ -90,6 +93,7 @@ class CodesListPublicationControllerTest {
                 .thenReturn(Optional.of(returnedMetadata));
 
         mockMvc.perform(post("/codes-lists")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(metadataDto)))
                 .andExpect(status().isCreated())
@@ -109,13 +113,14 @@ class CodesListPublicationControllerTest {
 
         CodesListDto codesListDto = getCodesListDto(testId, externalLinkDto);
 
-        MetadataDto returnedMetadata = codesListDto.metadata();
+        CodesListMetadataDto returnedMetadata = codesListDto.metadata();
 
         Mockito.when(codesListPublicationService.createCodesList(any())).thenReturn(testId);
         Mockito.when(codesListRecoveryService.getMetadataById(testId))
                 .thenReturn(Optional.of(returnedMetadata));
 
         mockMvc.perform(post("/codes-lists/full")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(codesListDto)))
                 .andExpect(status().isCreated())
@@ -137,7 +142,7 @@ class CodesListPublicationControllerTest {
     }
 
     private static CodesListDto getCodesListDto(UUID testId, CodesListExternalLinkDto externalLinkDto) {
-        MetadataDto metadataDto = new MetadataDto(
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(
                 testId,
                 "CodesList1",
                 1,
@@ -171,6 +176,7 @@ class CodesListPublicationControllerTest {
         UUID testId = UUID.randomUUID();
 
         mockMvc.perform(put("/codes-lists/" + testId + "/content")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(contentJson)))
                 .andExpect(status().isCreated());
@@ -186,6 +192,7 @@ class CodesListPublicationControllerTest {
         UUID testId = UUID.randomUUID();
 
         mockMvc.perform(put("/codes-lists/" + testId + "/external-link")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(externalLink)))
                 .andExpect(status().isCreated());
@@ -199,6 +206,7 @@ class CodesListPublicationControllerTest {
         UUID testId = UUID.randomUUID();
 
         mockMvc.perform(put("/codes-lists/" + testId + "/search-configuration")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(searchConfig)))
                 .andExpect(status().isCreated());
@@ -211,7 +219,8 @@ class CodesListPublicationControllerTest {
     void testMarkCodesListAsDeprecated() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        mockMvc.perform(patch("/codes-lists/" + testId + "/deprecated"))
+        mockMvc.perform(patch("/codes-lists/" + testId + "/deprecated")
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Codes list has been marked as deprecated"))
                 .andExpect(jsonPath("$.id").value(testId.toString()));
@@ -224,7 +233,8 @@ class CodesListPublicationControllerTest {
     void testMarkCodesListAsInvalid() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        mockMvc.perform(patch("/codes-lists/" + testId + "/valid"))
+        mockMvc.perform(patch("/codes-lists/" + testId + "/valid")
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Codes list has been marked as invalid"))
                 .andExpect(jsonPath("$.id").value(testId.toString()));

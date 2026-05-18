@@ -17,7 +17,7 @@ import java.util.UUID;
         date = "2025-07-08T13:56:08.508051800+02:00[Europe/Paris]"
 )
 @Schema(description = "Metadata information for a code list")
-public record MetadataDto(
+public record CodesListMetadataDto(
 
         @Schema(
                 name = "id",
@@ -84,7 +84,7 @@ public record MetadataDto(
                 accessMode = Schema.AccessMode.READ_ONLY
         )
         @JsonProperty("isDeprecated")
-        boolean isDeprecated,
+        Boolean isDeprecated,
 
         @Schema(
                 name = "isValid",
@@ -93,5 +93,5 @@ public record MetadataDto(
                 accessMode = Schema.AccessMode.READ_ONLY
         )
         @JsonProperty("isValid")
-        boolean isValid
+        Boolean isValid
 ) { }

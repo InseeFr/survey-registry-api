@@ -35,7 +35,7 @@ class CodesListPublicationServiceTest {
 
     @Test
     void testCreateCodesListMetadataOnly_WithExternalLink() {
-        MetadataDto metadataDto = new MetadataDto(
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(
                 null,
                 "Label1",
                 1,
@@ -64,7 +64,7 @@ class CodesListPublicationServiceTest {
 
     @Test
     void testCreateCodesListMetadataOnly_WithoutExternalLink() {
-        MetadataDto metadataDto = new MetadataDto(null, "Label1", 1, "COMMUNES", "2024", null, false, true);
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "Label1", 1, "COMMUNES", "2024", null, false, true);
 
         CodesListEntity entity = new CodesListEntity();
         when(codesListMapper.toEntity(any(CodesListDto.class))).thenReturn(entity);
@@ -273,7 +273,7 @@ class CodesListPublicationServiceTest {
     @Test
     void testMarkAsDeprecated() {
         UUID id = UUID.randomUUID();
-        MetadataDto metadataDto = new MetadataDto(null, "LabelX", 1, "COMMUNES", "2025", null, false, true);
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "LabelX", 1, "COMMUNES", "2025", null, false, true);
         CodesListDto dto = new CodesListDto(null, metadataDto, null, null);
 
         CodesListEntity entity = new CodesListEntity();
@@ -298,7 +298,7 @@ class CodesListPublicationServiceTest {
     @Test
     void testMarkAsInvalid() {
         UUID id = UUID.randomUUID();
-        MetadataDto metadataDto = new MetadataDto(null, "LabelX", 1, "COMMUNES", "2025", null, false, true);
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "LabelX", 1, "COMMUNES", "2025", null, false, true);
         CodesListDto dto = new CodesListDto(null, metadataDto, null, null);
 
         CodesListEntity entity = new CodesListEntity();

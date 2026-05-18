@@ -40,7 +40,7 @@ class CodesListPublicationServiceIntegrationTest {
     private CodesListDto buildEmptyCodesListDto(String label, String theme, String referenceYear) {
         return new CodesListDto(
                 null,
-                new MetadataDto(null, label, null, theme, referenceYear, null, false, true),
+                new CodesListMetadataDto(null, label, null, theme, referenceYear, null, false, true),
                 null,
                 null
         );
@@ -53,7 +53,7 @@ class CodesListPublicationServiceIntegrationTest {
         externalLinkEntity.setVersion("v1");
         externalLinkRepository.save(externalLinkEntity);
 
-        MetadataDto metadataDto = new MetadataDto(null, "Label1", null, "COMMUNES", "2024",
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "Label1", null, "COMMUNES", "2024",
                 new CodesListExternalLinkDto("ExternalLink1"), false, true);
 
         service.createCodesListMetadataOnly(metadataDto);
@@ -75,7 +75,7 @@ class CodesListPublicationServiceIntegrationTest {
 
     @Test
     void testCreateCodesListMetadataOnly_WithoutExternalLink() {
-        MetadataDto metadataDto = new MetadataDto(null, "Label2", null, "COMMUNES", "2024", null, false, true);
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "Label2", null, "COMMUNES", "2024", null, false, true);
 
         service.createCodesListMetadataOnly(metadataDto);
 
