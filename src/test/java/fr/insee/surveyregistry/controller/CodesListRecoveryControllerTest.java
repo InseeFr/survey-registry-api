@@ -1,5 +1,9 @@
 package fr.insee.surveyregistry.controller;
 
+import fr.insee.surveyregistry.dto.CodesListContent;
+import fr.insee.surveyregistry.dto.CodesListMetadataDto;
+import fr.insee.surveyregistry.dto.SearchConfig;
+import fr.insee.surveyregistry.service.CodesListRecoveryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -7,12 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import fr.insee.surveyregistry.dto.CodesListContent;
-import fr.insee.surveyregistry.dto.CodesListMetadataDto;
-import fr.insee.surveyregistry.dto.SearchConfig;
-import fr.insee.surveyregistry.service.CodesListRecoveryService;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WithMockUser(username = "testUser", roles = {"ADMIN"})
+@EnableMethodSecurity
 @WebMvcTest(CodesListRecoveryController.class)
 class CodesListRecoveryControllerTest {
 
@@ -47,6 +48,7 @@ class CodesListRecoveryControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testGetAllCodesLists() throws Exception {
         UUID testId = UUID.randomUUID();
 
@@ -62,6 +64,14 @@ class CodesListRecoveryControllerTest {
     }
 
     @Test
+    void testGetAllCodesLists_Unauthorized() throws Exception {
+
+        mockMvc.perform(get("/codes-lists"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "designer", roles = {"DESIGNER"})
     void testGetCodesListById_found() throws Exception {
         UUID testId = UUID.randomUUID();
 
@@ -80,6 +90,7 @@ class CodesListRecoveryControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "designer_alternative", roles = {"DESIGNER_ALTERNATIVE"})
     void testGetCodesListById_notFound() throws Exception {
 
         UUID testId = UUID.randomUUID();
@@ -91,6 +102,7 @@ class CodesListRecoveryControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testGetCodesListMetadataById_found() throws Exception {
         UUID testId = UUID.randomUUID();
 
@@ -109,6 +121,7 @@ class CodesListRecoveryControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "webclient", roles = {"WEBCLIENT"})
     void testGetCodesListMetadataById_notFound() throws Exception {
 
         UUID testId = UUID.randomUUID();
@@ -120,6 +133,7 @@ class CodesListRecoveryControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "designer", roles = {"DESIGNER"})
     void testGetCodesListSearchConfigById() throws Exception {
         UUID testId = UUID.randomUUID();
 

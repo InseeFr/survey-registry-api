@@ -1,5 +1,6 @@
 package fr.insee.surveyregistry.controller;
 
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import tools.jackson.databind.ObjectMapper;
 import fr.insee.surveyregistry.dto.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
-@WithMockUser(username = "testUser", roles = {"ADMIN"})
+@EnableMethodSecurity
 @WebMvcTest(CodesListPublicationController.class)
 class CodesListPublicationControllerTest {
 
@@ -63,6 +64,7 @@ class CodesListPublicationControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testCreateCodesListMetadataOnly() throws Exception {
         UUID testId = UUID.randomUUID();
 
@@ -106,6 +108,50 @@ class CodesListPublicationControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "designer", roles = {"DESIGNER"})
+    void testCreateCodesListMetadataOnly_Forbidden() throws Exception {
+
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(
+                null,
+                "CodesList1",
+                1,
+                "COMMUNES",
+                "2024",
+                new CodesListExternalLinkDto("ExternalLink1"),
+                false,
+                true
+        );
+
+        mockMvc.perform(post("/codes-lists")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(metadataDto)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testCreateCodesListMetadataOnly_Unauthorized() throws Exception {
+
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(
+                null,
+                "CodesList1",
+                1,
+                "COMMUNES",
+                "2024",
+                new CodesListExternalLinkDto("ExternalLink1"),
+                false,
+                true
+        );
+
+        mockMvc.perform(post("/codes-lists")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(metadataDto)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testCreateFullCodesList_WithMetadataAndExternalLink() throws Exception {
         UUID testId = UUID.randomUUID();
 
@@ -168,6 +214,7 @@ class CodesListPublicationControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testPutCodesListContentById() throws Exception {
         List<Map<String, Object>> contentJson = List.of(
                 Map.of("id", "code1", "label", "Label1")
@@ -186,6 +233,7 @@ class CodesListPublicationControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testPutCodesListExternalLinkById() throws Exception {
         CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto("ExternalLink1");
 
@@ -201,6 +249,7 @@ class CodesListPublicationControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testPutCodesListSearchConfigById() throws Exception {
         Map<String, Object> searchConfig = Map.of("filter", true);
         UUID testId = UUID.randomUUID();
@@ -216,6 +265,7 @@ class CodesListPublicationControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testMarkCodesListAsDeprecated() throws Exception {
         UUID testId = UUID.randomUUID();
 
@@ -230,6 +280,7 @@ class CodesListPublicationControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testMarkCodesListAsInvalid() throws Exception {
         UUID testId = UUID.randomUUID();
 

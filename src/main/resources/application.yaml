@@ -1,6 +1,43 @@
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+
+application:
+  host: localhost:${server.port}
+  timezoneId: "Europe/Paris"
+  name: Registre
+  version: @project.version@
+  scheme: http
+  public-urls:
+    - /actuator/**
+    - /swagger-ui/**
+    - /v3/api-docs/**
+    - /api/healthcheck
+  roles:
+    admin: 'admin'
+    designer: 'designer'
+    webclient: 'webclient'
+    designer-alternative: 'designer-alternative'
+  corsOrigins: '*'
+
+springdoc:
+  swagger-ui:
+    enabled: ${feature.swagger.enabled}
+    path: /swagger-ui.html
+    oauth:
+      client-id: ${feature.oidc.client-id}
+      use-pkce-with-authorization-code-grant: true
+    syntax-highlight:
+      activated: false
+    tagsSorter: alpha
+    doc-expansion: none
+
 spring:
   application:
-    name: Registre
+    name: ${application.name}
 
   datasource:
     url:
@@ -19,9 +56,24 @@ spring:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-springdoc:
-  api-docs:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${feature.oidc.auth-server-url}/realms/${feature.oidc.realm}
+
+feature:
+  swagger:
     enabled: true
-  swagger-ui:
-    enabled: true
-    path: /swagger-ui.html
+  oidc:
+    enabled: false
+    auth-server-url: https://auth-server.host/auth
+    client-id: my-client-id
+    realm: my-client-id
+    principal-attribute: id-claim
+    role-claim: 'role-claim' # can be a json Path like 'deep.value.to.roles'
+    stamp-claim: stamp
+    username-claim: name
+    scopes:
+      - profile
+      - roles

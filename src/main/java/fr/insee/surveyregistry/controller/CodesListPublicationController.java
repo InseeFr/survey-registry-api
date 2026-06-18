@@ -1,5 +1,6 @@
 package fr.insee.surveyregistry.controller;
 
+import fr.insee.surveyregistry.configuration.auth.AuthorityPrivileges;
 import fr.insee.surveyregistry.dto.*;
 import fr.insee.surveyregistry.service.CodesListPublicationService;
 import fr.insee.surveyregistry.service.CodesListRecoveryService;
@@ -14,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -23,6 +25,7 @@ import java.util.UUID;
 @RequestMapping("/codes-lists")
 @RequiredArgsConstructor
 @Tag(name = "Codes List Publication", description = "Codes List Endpoints for publication")
+@PreAuthorize(AuthorityPrivileges.HAS_ADMIN_PRIVILEGES)
 public class CodesListPublicationController {
 
     private final CodesListPublicationService codesListPublicationService;
