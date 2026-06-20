@@ -1,6 +1,10 @@
 package fr.insee.surveyregistry.service;
 
 import fr.insee.surveyregistry.dto.*;
+import fr.insee.surveyregistry.entity.CodesListEntity;
+import fr.insee.surveyregistry.entity.CodesListExternalLinkEntity;
+import fr.insee.surveyregistry.repository.CodesListExternalLinkRepository;
+import fr.insee.surveyregistry.repository.CodesListRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -9,10 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import fr.insee.surveyregistry.entity.CodesListEntity;
-import fr.insee.surveyregistry.entity.CodesListExternalLinkEntity;
-import fr.insee.surveyregistry.repository.CodesListExternalLinkRepository;
-import fr.insee.surveyregistry.repository.CodesListRepository;
 
 import java.util.*;
 
