@@ -1,5 +1,6 @@
 package fr.insee.surveyregistry.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Generated;
@@ -8,6 +9,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 import java.util.UUID;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 /**
  * Metadata DTO (immutable record version)
@@ -93,5 +96,16 @@ public record CodesListMetadataDto(
                 accessMode = Schema.AccessMode.READ_ONLY
         )
         @JsonProperty("isValid")
-        Boolean isValid
+        Boolean isValid,
+
+        @Schema(
+                name = "searchConfiguration",
+                description = "Search configuration JSON object",
+                type = "Map<String,Object>",
+                example = "{}",
+                requiredMode = Schema.RequiredMode.NOT_REQUIRED
+        )
+        @JsonInclude(NON_NULL)
+        @JsonProperty("searchConfiguration")
+        SearchConfig searchConfiguration
 ) { }

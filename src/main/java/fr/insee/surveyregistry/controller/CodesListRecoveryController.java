@@ -1,5 +1,6 @@
 package fr.insee.surveyregistry.controller;
 
+import fr.insee.surveyregistry.enums.CodesListMetadataExpandableFieldsEnum;
 import fr.insee.surveyregistry.configuration.auth.AuthorityPrivileges;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -97,6 +99,7 @@ public class CodesListRecoveryController {
      * GET /codes-lists/{codesListId}/metadata : Get codes list metadata
      *
      * @param codesListId  (required)
+     * @param expand Allow to include additional fields such as "searchConfiguration". (optional)
      * @return Metadata of a codes list (status code 200)
      */
     @Operation(
@@ -118,9 +121,11 @@ public class CodesListRecoveryController {
     @GetMapping(value = "/{codesListId}/metadata", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CodesListMetadataDto> getCodesListMetadataById(
             @Parameter(name = "codesListId", required = true, in = ParameterIn.PATH)
-            @PathVariable UUID codesListId) {
-
-        return codesListRecoveryService.getMetadataById(codesListId)
+            @PathVariable UUID codesListId,
+            @Parameter(name = "expand", in = ParameterIn.QUERY)
+            @RequestParam(name = "expand", required = false) List<CodesListMetadataExpandableFieldsEnum> expand
+        ) {
+        return codesListRecoveryService.getMetadataById(codesListId, expand)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

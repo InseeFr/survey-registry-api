@@ -76,7 +76,8 @@ class CodesListPublicationControllerTest {
                 "2024",
                 new CodesListExternalLinkDto("ExternalLink1"),
                 false,
-                true
+                true,
+                null
         );
 
         CodesListMetadataDto returnedMetadata = new CodesListMetadataDto(
@@ -87,7 +88,8 @@ class CodesListPublicationControllerTest {
                 "2024",
                 new CodesListExternalLinkDto("ExternalLink1"),
                 false,
-                true
+                true,
+                null
         );
 
         Mockito.when(codesListPublicationService.createCodesListMetadataOnly(metadataDto)).thenReturn(testId);
@@ -119,7 +121,8 @@ class CodesListPublicationControllerTest {
                 "2024",
                 new CodesListExternalLinkDto("ExternalLink1"),
                 false,
-                true
+                true,
+                null
         );
 
         mockMvc.perform(post("/codes-lists")
@@ -140,7 +143,8 @@ class CodesListPublicationControllerTest {
                 "2024",
                 new CodesListExternalLinkDto("ExternalLink1"),
                 false,
-                true
+                true,
+                null
         );
 
         mockMvc.perform(post("/codes-lists")
@@ -196,7 +200,8 @@ class CodesListPublicationControllerTest {
                 "2024",
                 externalLinkDto,
                 false,
-                true
+                true,
+                null
         );
 
         List<Map<String, Object>> contentJson = List.of(

@@ -27,7 +27,8 @@ public class CodesListMapper {
                         ? externalLinkMapper.toDto(entity.getCodesListExternalLink())
                         : null,
                 entity.isDeprecated(),
-                entity.isValid()
+                entity.isValid(),
+                null
         );
 
         return new CodesListDto(

@@ -1,5 +1,6 @@
 package fr.insee.surveyregistry.controller;
 
+import fr.insee.surveyregistry.enums.CodesListMetadataExpandableFieldsEnum;
 import fr.insee.surveyregistry.dto.CodesListContent;
 import fr.insee.surveyregistry.dto.CodesListMetadataDto;
 import fr.insee.surveyregistry.dto.SearchConfig;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,7 +54,7 @@ class CodesListRecoveryControllerTest {
     void testGetAllCodesLists() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", null, false, true);
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", null, false, true, null);
 
         List<CodesListMetadataDto> metadataList = List.of(metadata);
         Mockito.when(codesListRecoveryService.getAllMetadata()).thenReturn(metadataList);
@@ -106,18 +108,59 @@ class CodesListRecoveryControllerTest {
     void testGetCodesListMetadataById_found() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", null, false, true);
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", null, false, true, null);
 
-        Mockito.when(codesListRecoveryService.getMetadataById(testId)).thenReturn(Optional.of(metadata));
+        Mockito.when(codesListRecoveryService.getMetadataById(testId, null)).thenReturn(Optional.of(metadata));
 
-        mockMvc.perform(get("/codes-lists/"+ testId +"/metadata"))
+        String response = mockMvc.perform(get("/codes-lists/"+ testId +"/metadata"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.label").value("CodesList1"))
                 .andExpect(jsonPath("$.version").value(1))
                 .andExpect(jsonPath("$.theme").value("COMMUNES"))
                 .andExpect(jsonPath("$.referenceYear").value("2024"))
                 .andExpect(jsonPath("$.isDeprecated").value(false))
-                .andExpect(jsonPath("$.isValid").value(true));
+                .andExpect(jsonPath("$.isValid").value(true))
+                .andExpect(jsonPath("$.searchConfiguration").doesNotExist())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertEquals("{\"id\":\""+testId+"\",\"label\":\"CodesList1\",\"version\":1,\"theme\":\"COMMUNES\",\"referenceYear\":\"2024\",\"externalLink\":null,\"isDeprecated\":false,\"isValid\":true}", response);
+    }
+
+    @Test
+    @WithMockUser(username = "webclient", roles = {"WEBCLIENT"})
+    void testGetCodesListMetadataById_withExpandSearchConfiguration() throws Exception {
+        UUID testId = UUID.randomUUID();
+
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", null, false, true, new SearchConfig(Map.of("enabled", true)));
+
+        List<CodesListMetadataExpandableFieldsEnum> expand = List.of(CodesListMetadataExpandableFieldsEnum.SEARCH_CONFIGURATION);
+        Mockito.when(codesListRecoveryService.getMetadataById(testId, expand)).thenReturn(Optional.of(metadata));
+
+        String response = mockMvc.perform(get("/codes-lists/"+ testId +"/metadata?expand=searchConfiguration"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.label").value("CodesList1"))
+                .andExpect(jsonPath("$.version").value(1))
+                .andExpect(jsonPath("$.theme").value("COMMUNES"))
+                .andExpect(jsonPath("$.referenceYear").value("2024"))
+                .andExpect(jsonPath("$.isDeprecated").value(false))
+                .andExpect(jsonPath("$.isValid").value(true))
+                .andExpect(jsonPath("$.searchConfiguration.enabled").value(true))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertEquals("{\"id\":\""+testId+"\",\"label\":\"CodesList1\",\"version\":1,\"theme\":\"COMMUNES\",\"referenceYear\":\"2024\",\"externalLink\":null,\"isDeprecated\":false,\"isValid\":true,\"searchConfiguration\":{\"enabled\":true}}", response);
+    }
+
+    @Test
+    @WithMockUser(username = "webclient", roles = {"WEBCLIENT"})
+    void testGetCodesListMetadataById_withInvalidExpand() throws Exception {
+        UUID testId = UUID.randomUUID();
+
+        mockMvc.perform(get("/codes-lists/"+ testId +"/metadata?expand=toto"))
+                .andExpect(status().is4xxClientError());
     }
 
     @Test

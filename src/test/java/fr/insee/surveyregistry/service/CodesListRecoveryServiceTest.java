@@ -1,11 +1,11 @@
 package fr.insee.surveyregistry.service;
 
 import fr.insee.surveyregistry.dto.*;
+import fr.insee.surveyregistry.enums.CodesListMetadataExpandableFieldsEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 import fr.insee.surveyregistry.entity.CodesListExternalLinkEntity;
-import fr.insee.surveyregistry.mapper.CodesListMapper;
 import fr.insee.surveyregistry.mapper.CodesListMetadataMapper;
 import fr.insee.surveyregistry.repository.CodesListRepository;
 
@@ -21,16 +21,14 @@ import static org.mockito.Mockito.when;
 class CodesListRecoveryServiceTest {
 
     private CodesListRepository repository;
-    private CodesListMapper codesListMapper;
     private CodesListMetadataMapper metadataMapper;
     private CodesListRecoveryService service;
 
     @BeforeEach
     void setUp() {
         repository = mock(CodesListRepository.class);
-        codesListMapper = mock(CodesListMapper.class);
         metadataMapper = mock(CodesListMetadataMapper.class);
-        service = new CodesListRecoveryService(repository, codesListMapper, metadataMapper);
+        service = new CodesListRecoveryService(repository, metadataMapper);
     }
 
     @Test
@@ -44,7 +42,7 @@ class CodesListRecoveryServiceTest {
 
         when(repository.findAllBy()).thenReturn(List.of(projection));
 
-        CodesListMetadataDto dtoMock = new CodesListMetadataDto(id1, "Label1", 1, "COMMUNES", "2024", null, false, true);
+        CodesListMetadataDto dtoMock = new CodesListMetadataDto(id1, "Label1", 1, "COMMUNES", "2024", null, false, true, null);
         when(metadataMapper.toDto(projection)).thenReturn(dtoMock);
 
         List<CodesListMetadataDto> result = service.getAllMetadata();
@@ -76,7 +74,7 @@ class CodesListRecoveryServiceTest {
 
         CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1");
 
-        CodesListMetadataDto mappedDto = new CodesListMetadataDto(id2, "Label2", 2, "COMMUNES","2024", externalLinkDto, false, true);
+        CodesListMetadataDto mappedDto = new CodesListMetadataDto(id2, "Label2", 2, "COMMUNES","2024", externalLinkDto, false, true, null);
 
         when(repository.findAllBy()).thenReturn(List.of(projection));
 
@@ -98,19 +96,91 @@ class CodesListRecoveryServiceTest {
 
     @Test
     void testGetMetadataById_Found() {
-        CodesListEntity entity = new CodesListEntity();
-        CodesListMetadataDto metadata = new CodesListMetadataDto(null,null,null, null, null,null, false, true);
-        CodesListDto dto = new CodesListDto(null, metadata,null,null);
-
         UUID id = UUID.randomUUID();
+        CodesListRepository.MetadataProjection projection = mock(CodesListRepository.MetadataProjection.class);
+        CodesListExternalLinkEntity linkEntity = new CodesListExternalLinkEntity();
 
-        when(repository.findById(id)).thenReturn(Optional.of(entity));
-        when(codesListMapper.toDto(entity)).thenReturn(dto);
+        SearchConfig searchConfig = new SearchConfig(Map.of("filter", true));
+
+        when(projection.getId()).thenReturn(id);
+        when(projection.getLabel()).thenReturn("Label2");
+        when(projection.getVersion()).thenReturn(2);
+        when(projection.getTheme()).thenReturn("COMMUNES");
+        when(projection.getReferenceYear()).thenReturn("2024");
+        when(projection.getCodesListExternalLink()).thenReturn(linkEntity);
+        when(projection.getSearchConfiguration()).thenReturn(searchConfig);
+
+        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1");
+
+        CodesListMetadataDto mappedDto = new CodesListMetadataDto(id, "Label2", 2, "COMMUNES","2024", externalLinkDto, false, true, null);
+
+        when(repository.findMetadataById(id)).thenReturn(Optional.of(projection));
+        when(metadataMapper.toDto(projection, null)).thenReturn(mappedDto);
 
         Optional<CodesListMetadataDto> result = service.getMetadataById(id);
 
         assertTrue(result.isPresent());
-        assertSame(metadata, result.get());
+        assertSame(mappedDto, result.get());
+    }
+
+    @Test
+    void testGetMetadataById_withExpandSearchConfiguration() {
+        UUID id = UUID.randomUUID();
+        CodesListRepository.MetadataProjection projection = mock(CodesListRepository.MetadataProjection.class);
+        CodesListExternalLinkEntity linkEntity = new CodesListExternalLinkEntity();
+
+        SearchConfig searchConfig = new SearchConfig(Map.of("filter", true));
+
+        when(projection.getId()).thenReturn(id);
+        when(projection.getLabel()).thenReturn("Label2");
+        when(projection.getVersion()).thenReturn(2);
+        when(projection.getTheme()).thenReturn("COMMUNES");
+        when(projection.getReferenceYear()).thenReturn("2024");
+        when(projection.getCodesListExternalLink()).thenReturn(linkEntity);
+        when(projection.getSearchConfiguration()).thenReturn(searchConfig);
+
+        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1");
+
+        CodesListMetadataDto mappedDto = new CodesListMetadataDto(id, "Label2", 2, "COMMUNES","2024", externalLinkDto, false, true, searchConfig);
+
+        List<CodesListMetadataExpandableFieldsEnum> expand = List.of(CodesListMetadataExpandableFieldsEnum.SEARCH_CONFIGURATION);
+
+        when(repository.findMetadataById(id)).thenReturn(Optional.of(projection));
+        when(metadataMapper.toDto(projection, expand)).thenReturn(mappedDto);
+
+        Optional<CodesListMetadataDto> result = service.getMetadataById(id, expand);
+
+        assertTrue(result.isPresent());
+        assertSame(mappedDto, result.get());
+    }
+
+    @Test
+    void testGetMetadataById_withNoExpand() {
+        UUID id = UUID.randomUUID();
+        CodesListRepository.MetadataProjection projection = mock(CodesListRepository.MetadataProjection.class);
+        CodesListExternalLinkEntity linkEntity = new CodesListExternalLinkEntity();
+
+        SearchConfig searchConfig = new SearchConfig(Map.of("filter", true));
+
+        when(projection.getId()).thenReturn(id);
+        when(projection.getLabel()).thenReturn("Label2");
+        when(projection.getVersion()).thenReturn(2);
+        when(projection.getTheme()).thenReturn("COMMUNES");
+        when(projection.getReferenceYear()).thenReturn("2024");
+        when(projection.getCodesListExternalLink()).thenReturn(linkEntity);
+        when(projection.getSearchConfiguration()).thenReturn(searchConfig);
+
+        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1");
+
+        CodesListMetadataDto mappedDto = new CodesListMetadataDto(id, "Label2", 2, "COMMUNES","2024", externalLinkDto, false, true, null);
+
+        when(repository.findMetadataById(id)).thenReturn(Optional.of(projection));
+        when(metadataMapper.toDto(projection, null)).thenReturn(mappedDto);
+
+        Optional<CodesListMetadataDto> result = service.getMetadataById(id);
+
+        assertTrue(result.isPresent());
+        assertSame(mappedDto, result.get());
     }
 
     @Test

@@ -1,5 +1,6 @@
 package fr.insee.surveyregistry.repository;
 
+import fr.insee.surveyregistry.dto.SearchConfig;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,7 @@ import fr.insee.surveyregistry.entity.CodesListEntity;
 import fr.insee.surveyregistry.entity.CodesListExternalLinkEntity;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @NullMarked
@@ -24,7 +26,10 @@ public interface CodesListRepository extends JpaRepository<CodesListEntity, UUID
         @Nullable CodesListExternalLinkEntity getCodesListExternalLink();
         boolean isDeprecated();
         boolean isValid();
+        SearchConfig getSearchConfiguration();
     }
+
+    Optional<MetadataProjection> findMetadataById(UUID id);
 
     List<MetadataProjection> findAllBy();
 

@@ -71,7 +71,7 @@ class CodesListMapperTest {
 
         CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto(testId1);
 
-        CodesListMetadataDto metadata = new CodesListMetadataDto(testId2, "Label2", 2, "COMMUNES", "2024", externalLink, false, true);
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId2, "Label2", 2, "COMMUNES", "2024", externalLink, false, true, null);
 
         CodesListDto dto = new CodesListDto(testId2, metadata, new SearchConfig(Map.of("enabled", false)),
                 new CodesListContent(List.of(Map.of("code", "01"))));
@@ -104,6 +104,7 @@ class CodesListMapperTest {
                 1,
                 "COMMUNES",
                 "2024",
+                null,
                 null,
                 null,
                 null

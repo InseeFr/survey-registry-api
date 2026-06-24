@@ -46,7 +46,8 @@ public class CodesListPublicationService {
                         metadataDto.referenceYear(),
                         metadataDto.externalLink(),
                         metadataDto.isDeprecated(),
-                        metadataDto.isValid()
+                        metadataDto.isValid(),
+                        null
                 ),
                 null,
                 null
