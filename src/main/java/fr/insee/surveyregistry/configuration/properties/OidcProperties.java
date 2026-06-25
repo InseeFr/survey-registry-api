@@ -14,5 +14,7 @@ public record OidcProperties(
         String clientId,
         String stampClaim,
         String usernameClaim,
-        List<String> scopes) {
+        List<String> scopes,
+        /* List of valid issuers for user's JWT */
+        List<String> issuers) {
 }

@@ -17,18 +17,20 @@ import java.util.Arrays;
 public class SpringDocConfiguration {
 
     public static final String OAUTH2SCHEME = "oAuth2";
+    public static final String BEARERSCHEME = "bearerAuth";
 
     @Bean
     @ConditionalOnProperty(name = "feature.oidc.enabled", havingValue = "false")
     protected OpenAPI noAuthOpenAPI(ApplicationProperties applicationProperties) {
-        return generateOpenAPI(applicationProperties);
+        return generateOpenAPI(applicationProperties, null);
     }
 
     @Bean
     @ConditionalOnProperty(name = "feature.oidc.enabled", havingValue = "true")
     protected OpenAPI oidcOpenAPI(OidcProperties oidcProperties, ApplicationProperties applicationProperties) {
-        return generateOpenAPI(applicationProperties)
+        return generateOpenAPI(applicationProperties, oidcProperties)
                 .addSecurityItem(new SecurityRequirement().addList(OAUTH2SCHEME, Arrays.asList("read", "write")))
+                .addSecurityItem(new SecurityRequirement().addList(BEARERSCHEME, Arrays.asList("read", "write")))
                 .components(
                         new Components()
                                 .addSecuritySchemes(OAUTH2SCHEME,
@@ -37,14 +39,27 @@ public class SpringDocConfiguration {
                                                 .type(SecurityScheme.Type.OAUTH2)
                                                 .flows(getFlows(oidcProperties))
                                 )
+                                .addSecuritySchemes(BEARERSCHEME,
+                                        new SecurityScheme()
+                                                .name(BEARERSCHEME)
+                                                .type(SecurityScheme.Type.HTTP)
+                                                .scheme("bearer")
+                                                .bearerFormat("JWT")
+                                )
+
                 );
     }
 
-    private OpenAPI generateOpenAPI(ApplicationProperties applicationProperties) {
+    private OpenAPI generateOpenAPI(ApplicationProperties applicationProperties, OidcProperties oidcProperties) {
+        String issuersInfo = oidcProperties != null ? "<br/><b>Valid issuers:</b><ul>"+ oidcProperties.issuers().stream().reduce(
+                "",
+                (acc, issuer) -> acc + "<li><a target=\"_blank\" href=\"" + issuer + "\">"+ issuer + "</li>",
+                String::concat
+        ) : "";
         return new OpenAPI().info(
                 new Info()
                         .title(applicationProperties.name())
-                        .description("<h2>Rest Endpoints and services exposing codes-lists and questionnaires for surveys</h2>")
+                        .description("<h2>Rest Endpoints and services exposing codes-lists and questionnaires for surveys</h2>" + issuersInfo)
                         .version(applicationProperties.version())
         );
     }

@@ -27,7 +27,7 @@
 		<url/>
 	</scm>
 	<properties>
-        <revision>1.5.0</revision> <!-- Version is managed by git tags -->
+        <revision>1.6.1</revision> <!-- Version is managed by git tags -->
 		<java.version>25</java.version>
 		<final.asset.name>survey-registry-api</final.asset.name>
 		<!-- override Spring Boot, see https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-dependencies/4.1.0 -->

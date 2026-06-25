@@ -56,11 +56,12 @@ spring:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${feature.oidc.auth-server-url}/realms/${feature.oidc.realm}
+  # This property is no longer used directly, as it is managed by the resolver
+  #security:
+   # oauth2:
+    #  resourceserver:
+     #   jwt:
+          # issuer-uri: ${feature.oidc.auth-server-url}/realms/${feature.oidc.realm}
 
 feature:
   swagger:
@@ -77,3 +78,5 @@ feature:
     scopes:
       - profile
       - roles
+    issuers:
+      - ${feature.oidc.auth-server-url}/realms/${feature.oidc.realm}

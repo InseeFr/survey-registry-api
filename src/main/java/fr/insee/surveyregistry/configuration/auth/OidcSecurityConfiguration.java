@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,13 +19,18 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
+import org.springframework.security.oauth2.server.resource.authentication.JwtIssuerAuthenticationManagerResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Spring security configuration when using OIDC auth
@@ -36,18 +43,35 @@ import java.util.Collection;
 public class OidcSecurityConfiguration {
     private final PublicSecurityFilterChain publicSecurityFilterChainConfiguration;
 
+    @Bean
+    public JwtIssuerAuthenticationManagerResolver authenticationManagerResolver(OidcProperties oidcProperties, RoleProperties roleProperties) {
+        // cache for authentication Manager
+        Map<String, AuthenticationManager> authenticationManagers = new HashMap<>();
+
+        for (String issuer : oidcProperties.issuers()) {
+            NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder
+                    .withJwkSetUri(issuer + "/protocol/openid-connect/certs")
+                    .build();
+
+            JwtAuthenticationProvider provider = new JwtAuthenticationProvider(jwtDecoder);
+            provider.setJwtAuthenticationConverter(jwtAuthenticationConverter(oidcProperties, roleProperties));
+
+            AuthenticationManager manager = new ProviderManager(provider);
+            authenticationManagers.put(issuer, manager);
+        }
+
+        return new JwtIssuerAuthenticationManagerResolver(authenticationManagers::get);
+    }
+
     /**
      * Configure spring security filter chain to handle OIDC authentication
      *
      * @param http Http Security Object
      * @return the spring security filter
-     * @throws Exception exception
      */
-
     @Bean
     @Order(2)
-    protected SecurityFilterChain filterChain(HttpSecurity http,
-                                              OidcProperties oidcProperties, RoleProperties roleProperties) throws Exception {
+    protected SecurityFilterChain filterChain(HttpSecurity http, JwtIssuerAuthenticationManagerResolver authenticationManagerResolver) {
         return http
                 .securityMatcher("/**")
                 .csrf(AbstractHttpConfigurer::disable)
@@ -66,7 +90,7 @@ public class OidcSecurityConfiguration {
                         .authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter(oidcProperties, roleProperties))))
+                .oauth2ResourceServer(oauth2 -> oauth2.authenticationManagerResolver(authenticationManagerResolver))
                 .build();
     }
 
