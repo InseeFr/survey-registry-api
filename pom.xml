@@ -32,7 +32,7 @@
 		<final.asset.name>survey-registry-api</final.asset.name>
 		<!-- override Spring Boot, see https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-dependencies/4.1.0 -->
 		<!-- Version properties not managed by Spring Boot -->
-		<jacoco.version>0.8.14</jacoco.version>
+		<jacoco.version>0.8.15</jacoco.version>
 		<!-- Sonar properties -->
 		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
