@@ -1,23 +1,21 @@
 package fr.insee.surveyregistry.mapper;
 
-import fr.insee.surveyregistry.dto.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import fr.insee.surveyregistry.dto.CodesListContent;
+import fr.insee.surveyregistry.dto.CodesListDto;
+import fr.insee.surveyregistry.dto.CodesListMetadataDto;
+import fr.insee.surveyregistry.dto.SearchConfig;
 import fr.insee.surveyregistry.entity.CodesListEntity;
-import fr.insee.surveyregistry.entity.CodesListExternalLinkEntity;
+import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CodesListMapperTest {
 
-    private CodesListMapper codesListMapper;
-
-    @BeforeEach
-    void setUp() {
-        codesListMapper = new CodesListMapper(new CodesListExternalLinkMapper());
-    }
+    private final CodesListMapper codesListMapper = new CodesListMapper();
 
     @Test
     void testToDto_WithValidEntity() {
@@ -31,11 +29,6 @@ class CodesListMapperTest {
         codesListEntity.setReferenceYear("2024");
         codesListEntity.setDeprecated(false);
         codesListEntity.setValid(true);
-
-        CodesListExternalLinkEntity externalLink = new CodesListExternalLinkEntity();
-        externalLink.setId("ExternalLink1");
-        externalLink.setVersion("v1");
-        codesListEntity.setCodesListExternalLink(externalLink);
 
         codesListEntity.setSearchConfiguration(new SearchConfig(Map.of("enabled", true)));
         codesListEntity.setContent(new CodesListContent(List.of(Map.of("code","01"))));
@@ -52,8 +45,6 @@ class CodesListMapperTest {
         assertEquals(1, dto.metadata().version().intValue());
         assertEquals("COMMUNES", dto.metadata().theme());
         assertEquals("2024", dto.metadata().referenceYear());
-        assertNotNull(dto.metadata().externalLink());
-        assertEquals("ExternalLink1", dto.metadata().externalLink().id());
         assertFalse(dto.metadata().isDeprecated());
         assertTrue(dto.metadata().isValid());
 
@@ -66,14 +57,11 @@ class CodesListMapperTest {
     @Test
     void testToEntity_WithValidDto() {
         // Given
-        String testId1 = UUID.randomUUID().toString();
-        UUID testId2 = UUID.randomUUID();
+        UUID testId = UUID.randomUUID();
 
-        CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto(testId1);
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "Label2", 2, "COMMUNES", "2024", false, true, null);
 
-        CodesListMetadataDto metadata = new CodesListMetadataDto(testId2, "Label2", 2, "COMMUNES", "2024", externalLink, false, true, null);
-
-        CodesListDto dto = new CodesListDto(testId2, metadata, new SearchConfig(Map.of("enabled", false)),
+        CodesListDto dto = new CodesListDto(testId, metadata, new SearchConfig(Map.of("enabled", false)),
                 new CodesListContent(List.of(Map.of("code", "01"))));
 
         // When
@@ -81,7 +69,7 @@ class CodesListMapperTest {
 
         // Then
         assertNotNull(entity);
-        assertEquals(testId2, entity.getId());
+        assertEquals(testId, entity.getId());
         assertEquals("Label2", entity.getLabel());
         assertEquals(2, entity.getVersion().intValue());
         assertEquals("COMMUNES", entity.getTheme());
@@ -104,7 +92,6 @@ class CodesListMapperTest {
                 1,
                 "COMMUNES",
                 "2024",
-                null,
                 null,
                 null,
                 null

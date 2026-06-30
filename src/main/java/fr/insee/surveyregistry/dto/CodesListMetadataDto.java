@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Generated;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
@@ -69,16 +68,6 @@ public record CodesListMetadataDto(
         )
         @JsonProperty("referenceYear")
         String referenceYear,
-
-                @Valid
-        @Schema(
-                name = "externalLink",
-                description = "Optional external link. Must refer to an existing external resource if provided.",
-                requiredMode = Schema.RequiredMode.NOT_REQUIRED,
-                hidden = true
-        )
-        @JsonProperty("externalLink")
-        CodesListExternalLinkDto externalLink,
 
         @Schema(
                 name = "isDeprecated",

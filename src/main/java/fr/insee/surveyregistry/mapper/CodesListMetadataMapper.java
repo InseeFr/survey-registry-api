@@ -12,12 +12,6 @@ import java.util.List;
 @Component
 public class CodesListMetadataMapper {
 
-    private final CodesListExternalLinkMapper externalLinkMapper;
-
-    public CodesListMetadataMapper(CodesListExternalLinkMapper externalLinkMapper) {
-        this.externalLinkMapper = externalLinkMapper;
-    }
-
     public CodesListMetadataDto toDto(MetadataProjection projection) {
         return toDto(projection, null);
     }
@@ -33,9 +27,6 @@ public class CodesListMetadataMapper {
                 projection.getVersion(),
                 projection.getTheme(),
                 projection.getReferenceYear(),
-                projection.getCodesListExternalLink() != null
-                        ? externalLinkMapper.toDto(projection.getCodesListExternalLink())
-                        : null,
                 projection.isDeprecated(),
                 projection.isValid(),
                 computeSearchConfiguration(projection, expand)

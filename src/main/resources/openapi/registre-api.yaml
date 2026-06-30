@@ -339,26 +339,6 @@ paths:
         "200":
           $ref: "#/components/responses/CodesListMetadata"
 
-  /codes-lists/{codesListId}/external-link:
-    put:
-      tags:
-        - Codes List Publication
-      summary: Set external link for a codes list
-      operationId: putCodesListExternalLinkById
-      parameters:
-        - name: codesListId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        $ref: "#/components/requestBodies/CodesListExternalLinkMetadata"
-      responses:
-        "201":
-          description: External link set successfully
-        "409":
-          $ref: "#/components/responses/ErrorResponse"
-
   /healthcheck:
     get:
       operationId: getHealthcheck
@@ -436,22 +416,9 @@ components:
           type: string
         version:
           type: string
-        externalLink:
-          $ref: "#/components/schemas/CodesListExternalLink"
 
     CodesListSearchConfiguration:
       type: object
-
-    CodesListExternalLink:
-      type: object
-      properties:
-        uuid:
-          type: string
-          format: uuid
-          description: UUID from RMeS
-        version:
-          type: string
-          description: version of code-list from RMeS
 
     CodesList:
       type: array
@@ -516,12 +483,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/CodesListSearchConfiguration"
-
-    CodesListExternalLinkMetadata:
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/CodesListExternalLink"
 
   responses:
     QuestionnaireDto:

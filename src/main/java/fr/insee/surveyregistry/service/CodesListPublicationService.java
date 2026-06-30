@@ -1,17 +1,18 @@
 package fr.insee.surveyregistry.service;
 
-import fr.insee.surveyregistry.dto.*;
+import fr.insee.surveyregistry.dto.CodesListContent;
+import fr.insee.surveyregistry.dto.CodesListDto;
+import fr.insee.surveyregistry.dto.CodesListMetadataDto;
+import fr.insee.surveyregistry.dto.SearchConfig;
+import fr.insee.surveyregistry.entity.CodesListEntity;
+import fr.insee.surveyregistry.mapper.CodesListMapper;
+import fr.insee.surveyregistry.repository.CodesListRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import fr.insee.surveyregistry.entity.CodesListEntity;
-import fr.insee.surveyregistry.entity.CodesListExternalLinkEntity;
-import fr.insee.surveyregistry.mapper.CodesListMapper;
-import fr.insee.surveyregistry.repository.CodesListExternalLinkRepository;
-import fr.insee.surveyregistry.repository.CodesListRepository;
 
 import java.util.UUID;
 
@@ -22,7 +23,6 @@ public class CodesListPublicationService {
     private static final String CODES_LIST_NOT_FOUND = "Codes list not found";
     private static final String ALREADY_EXISTS = " already exists";
 
-    private final CodesListExternalLinkRepository codesListExternalLinkRepository;
     private final CodesListRepository codesListRepository;
     private final CodesListMapper codesListMapper;
 
@@ -44,7 +44,6 @@ public class CodesListPublicationService {
                         nextVersion,
                         metadataDto.theme(),
                         metadataDto.referenceYear(),
-                        metadataDto.externalLink(),
                         metadataDto.isDeprecated(),
                         metadataDto.isValid(),
                         null
@@ -53,13 +52,7 @@ public class CodesListPublicationService {
                 null
         );
 
-        UUID id = createCodesList(dto);
-
-        if (metadataDto.externalLink() != null) {
-            createExternalLink(id, metadataDto.externalLink());
-        }
-
-        return id;
+        return createCodesList(dto);
     }
 
     /**
@@ -140,36 +133,6 @@ public class CodesListPublicationService {
 
         codesListRepository.findById(codesListId).ifPresent(entity -> {
             entity.setContent(content);
-            codesListRepository.save(entity);
-        });
-    }
-
-    /**
-     * Adds an external link to an existing codes list.
-     *
-     * @param codesListId the UUID of the codes list
-     * @param externalLinkDto the external link DTO
-     */
-    public void createExternalLink(UUID codesListId, CodesListExternalLinkDto externalLinkDto) {
-        if (!codesListRepository.existsById(codesListId)) {
-            throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
-        }
-
-        if (codesListRepository.existsByIdAndCodesListExternalLinkIsNotNull(codesListId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "External link of " + codesListId + ALREADY_EXISTS
-            );
-        }
-
-        codesListRepository.findById(codesListId).ifPresent(entity -> {
-            if (externalLinkDto != null) {
-                CodesListExternalLinkEntity externalLinkEntity = codesListExternalLinkRepository
-                        .findById(externalLinkDto.id())
-                        .orElseThrow(() -> new IllegalArgumentException("External link not found"));
-
-                entity.setCodesListExternalLink(externalLinkEntity);
-            }
             codesListRepository.save(entity);
         });
     }

@@ -46,10 +46,6 @@ public class CodesListEntity {
     @Column(name = "is_valid", nullable = false)
     private boolean valid = true;
 
-    @ManyToOne
-    @JoinColumn(name = "external_link_id")
-    private CodesListExternalLinkEntity codesListExternalLink;
-
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "search_config")
     private SearchConfig searchConfiguration;

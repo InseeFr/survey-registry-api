@@ -74,7 +74,6 @@ class CodesListPublicationControllerTest {
                 1,
                 "COMMUNES",
                 "2024",
-                new CodesListExternalLinkDto("ExternalLink1"),
                 false,
                 true,
                 null
@@ -86,7 +85,6 @@ class CodesListPublicationControllerTest {
                 1,
                 "COMMUNES",
                 "2024",
-                new CodesListExternalLinkDto("ExternalLink1"),
                 false,
                 true,
                 null
@@ -119,7 +117,6 @@ class CodesListPublicationControllerTest {
                 1,
                 "COMMUNES",
                 "2024",
-                new CodesListExternalLinkDto("ExternalLink1"),
                 false,
                 true,
                 null
@@ -141,7 +138,6 @@ class CodesListPublicationControllerTest {
                 1,
                 "COMMUNES",
                 "2024",
-                new CodesListExternalLinkDto("ExternalLink1"),
                 false,
                 true,
                 null
@@ -156,12 +152,10 @@ class CodesListPublicationControllerTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void testCreateFullCodesList_WithMetadataAndExternalLink() throws Exception {
+    void testCreateFullCodesList_WithMetadata() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1");
-
-        CodesListDto codesListDto = getCodesListDto(testId, externalLinkDto);
+        CodesListDto codesListDto = getCodesListDto(testId);
 
         CodesListMetadataDto returnedMetadata = codesListDto.metadata();
 
@@ -180,7 +174,6 @@ class CodesListPublicationControllerTest {
         Mockito.verify(codesListPublicationService).createCodesList(any());
         Mockito.verify(codesListPublicationService)
                 .createContent(eq(testId), ArgumentMatchers.any());
-        Mockito.verify(codesListPublicationService).createExternalLink(testId, externalLinkDto);
         Mockito.verify(codesListPublicationService)
                 .createSearchConfiguration(eq(testId), ArgumentMatchers.any());
         Mockito.verify(codesListPublicationService)
@@ -191,14 +184,13 @@ class CodesListPublicationControllerTest {
                 );
     }
 
-    private static CodesListDto getCodesListDto(UUID testId, CodesListExternalLinkDto externalLinkDto) {
+    private static CodesListDto getCodesListDto(UUID testId) {
         CodesListMetadataDto metadataDto = new CodesListMetadataDto(
                 testId,
                 "CodesList1",
                 1,
                 "COMMUNES",
                 "2024",
-                externalLinkDto,
                 false,
                 true,
                 null
@@ -235,22 +227,6 @@ class CodesListPublicationControllerTest {
 
         Mockito.verify(codesListPublicationService)
                 .createContent(eq(testId), ArgumentMatchers.any(CodesListContent.class));
-    }
-
-    @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void testPutCodesListExternalLinkById() throws Exception {
-        CodesListExternalLinkDto externalLink = new CodesListExternalLinkDto("ExternalLink1");
-
-        UUID testId = UUID.randomUUID();
-
-        mockMvc.perform(put("/codes-lists/" + testId + "/external-link")
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(externalLink)))
-                .andExpect(status().isCreated());
-
-        Mockito.verify(codesListPublicationService).createExternalLink(eq(testId), any());
     }
 
     @Test

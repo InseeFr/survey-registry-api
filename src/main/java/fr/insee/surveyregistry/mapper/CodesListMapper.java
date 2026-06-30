@@ -8,12 +8,6 @@ import fr.insee.surveyregistry.entity.CodesListEntity;
 @Component
 public class CodesListMapper {
 
-    private final CodesListExternalLinkMapper externalLinkMapper;
-
-    public CodesListMapper(CodesListExternalLinkMapper externalLinkMapper) {
-        this.externalLinkMapper = externalLinkMapper;
-    }
-
     public CodesListDto toDto(CodesListEntity entity) {
         if (entity == null) return null;
 
@@ -23,9 +17,6 @@ public class CodesListMapper {
                 entity.getVersion(),
                 entity.getTheme(),
                 entity.getReferenceYear(),
-                entity.getCodesListExternalLink() != null
-                        ? externalLinkMapper.toDto(entity.getCodesListExternalLink())
-                        : null,
                 entity.isDeprecated(),
                 entity.isValid(),
                 null

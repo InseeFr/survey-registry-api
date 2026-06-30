@@ -54,7 +54,7 @@ class CodesListRecoveryControllerTest {
     void testGetAllCodesLists() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", null, false, true, null);
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", false, true, null);
 
         List<CodesListMetadataDto> metadataList = List.of(metadata);
         Mockito.when(codesListRecoveryService.getAllMetadata()).thenReturn(metadataList);
@@ -108,7 +108,7 @@ class CodesListRecoveryControllerTest {
     void testGetCodesListMetadataById_found() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", null, false, true, null);
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", false, true, null);
 
         Mockito.when(codesListRecoveryService.getMetadataById(testId, null)).thenReturn(Optional.of(metadata));
 
@@ -125,7 +125,7 @@ class CodesListRecoveryControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        assertEquals("{\"id\":\""+testId+"\",\"label\":\"CodesList1\",\"version\":1,\"theme\":\"COMMUNES\",\"referenceYear\":\"2024\",\"externalLink\":null,\"isDeprecated\":false,\"isValid\":true}", response);
+        assertEquals("{\"id\":\""+testId+"\",\"label\":\"CodesList1\",\"version\":1,\"theme\":\"COMMUNES\",\"referenceYear\":\"2024\",\"isDeprecated\":false,\"isValid\":true}", response);
     }
 
     @Test
@@ -133,7 +133,7 @@ class CodesListRecoveryControllerTest {
     void testGetCodesListMetadataById_withExpandSearchConfiguration() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", null, false, true, new SearchConfig(Map.of("enabled", true)));
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", false, true, new SearchConfig(Map.of("enabled", true)));
 
         List<CodesListMetadataExpandableFieldsEnum> expand = List.of(CodesListMetadataExpandableFieldsEnum.SEARCH_CONFIGURATION);
         Mockito.when(codesListRecoveryService.getMetadataById(testId, expand)).thenReturn(Optional.of(metadata));
@@ -151,7 +151,7 @@ class CodesListRecoveryControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        assertEquals("{\"id\":\""+testId+"\",\"label\":\"CodesList1\",\"version\":1,\"theme\":\"COMMUNES\",\"referenceYear\":\"2024\",\"externalLink\":null,\"isDeprecated\":false,\"isValid\":true,\"searchConfiguration\":{\"enabled\":true}}", response);
+        assertEquals("{\"id\":\""+testId+"\",\"label\":\"CodesList1\",\"version\":1,\"theme\":\"COMMUNES\",\"referenceYear\":\"2024\",\"isDeprecated\":false,\"isValid\":true,\"searchConfiguration\":{\"enabled\":true}}", response);
     }
 
     @Test

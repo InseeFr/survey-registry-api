@@ -119,10 +119,6 @@ public class CodesListPublicationController {
             codesListPublicationService.createContent(id, codesListDto.content());
         }
 
-        if (codesListDto.metadata().externalLink() != null) {
-            codesListPublicationService.createExternalLink(id, codesListDto.metadata().externalLink());
-        }
-
         if (codesListDto.searchConfiguration() != null) {
             codesListPublicationService.createSearchConfiguration(id, codesListDto.searchConfiguration());
         }
@@ -167,37 +163,6 @@ public class CodesListPublicationController {
             @Valid @RequestBody CodesListContent content) {
 
         codesListPublicationService.createContent(codesListId, content);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-
-    /**
-     * PUT /codes-lists/{codesListId}/external-link : Set external link for a codes list
-     *
-     * @param codesListId  (required)
-     * @param codesListExternalLink  (optional)
-     * @return External link set successfully (status code 201)
-     *         or Structured error (status code 409)
-     */
-    @Operation(
-            operationId = "putCodesListExternalLinkById",
-            summary = "Set external link for a codes list",
-            tags = { "Codes List Publication" },
-            responses = {
-                    @ApiResponse(responseCode = "201", description = "External link set successfully"),
-                    @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
-                    })
-            }
-    )
-    @PutMapping(value = "/{codesListId}/external-link", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Void> putCodesListExternalLinkById(
-            @Parameter(name = "codesListId", required = true, in = ParameterIn.PATH)
-            @PathVariable UUID codesListId,
-            @Parameter(name = "CodesListExternalLink", description = "")
-            @Valid @RequestBody CodesListExternalLinkDto codesListExternalLink) {
-
-        codesListPublicationService.createExternalLink(codesListId, codesListExternalLink);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

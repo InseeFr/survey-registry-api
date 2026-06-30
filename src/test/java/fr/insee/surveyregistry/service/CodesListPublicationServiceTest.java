@@ -7,9 +7,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import fr.insee.surveyregistry.entity.CodesListEntity;
-import fr.insee.surveyregistry.entity.CodesListExternalLinkEntity;
 import fr.insee.surveyregistry.mapper.CodesListMapper;
-import fr.insee.surveyregistry.repository.CodesListExternalLinkRepository;
 import fr.insee.surveyregistry.repository.CodesListRepository;
 
 import java.util.*;
@@ -19,7 +17,6 @@ import static org.mockito.Mockito.*;
 
 class CodesListPublicationServiceTest {
 
-    private CodesListExternalLinkRepository externalLinkRepository;
     private CodesListRepository codesListRepository;
     private CodesListMapper codesListMapper;
     private CodesListPublicationService service;
@@ -27,21 +24,19 @@ class CodesListPublicationServiceTest {
     @BeforeEach
     void setUp() {
         codesListRepository = mock(CodesListRepository.class);
-        externalLinkRepository = mock(CodesListExternalLinkRepository.class);
         codesListMapper = mock(CodesListMapper.class);
 
-        service = new CodesListPublicationService(externalLinkRepository, codesListRepository, codesListMapper);
+        service = new CodesListPublicationService(codesListRepository, codesListMapper);
     }
 
     @Test
-    void testCreateCodesListMetadataOnly_WithExternalLink() {
+    void testCreateCodesListMetadataOnly() {
         CodesListMetadataDto metadataDto = new CodesListMetadataDto(
                 null,
                 "Label1",
                 1,
                 "COMMUNES",
                 "2024",
-                new CodesListExternalLinkDto("ExternalLink1"),
                 false,
                 true,
                 null
@@ -52,24 +47,6 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.save(entity)).thenReturn(entity);
         when(codesListRepository.existsById(any(UUID.class))).thenReturn(true);
         when(codesListRepository.findById(any(UUID.class))).thenReturn(Optional.of(entity));
-
-        CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
-        externalLinkEntity.setId("ExternalLink1");
-        externalLinkEntity.setVersion("v1");
-        when(externalLinkRepository.findById("ExternalLink1")).thenReturn(Optional.of(externalLinkEntity));
-
-        service.createCodesListMetadataOnly(metadataDto);
-
-        verify(codesListRepository, times(2)).save(entity);
-    }
-
-    @Test
-    void testCreateCodesListMetadataOnly_WithoutExternalLink() {
-        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "Label1", 1, "COMMUNES", "2024", null, false, true, null);
-
-        CodesListEntity entity = new CodesListEntity();
-        when(codesListMapper.toEntity(any(CodesListDto.class))).thenReturn(entity);
-        when(codesListRepository.save(entity)).thenReturn(entity);
 
         service.createCodesListMetadataOnly(metadataDto);
 
@@ -159,52 +136,6 @@ class CodesListPublicationServiceTest {
     }
 
     @Test
-    void testCreateExternalLink_WhenCodesListExists() {
-        UUID id = UUID.randomUUID();
-        CodesListEntity entity = new CodesListEntity();
-
-        when(codesListRepository.existsById(id)).thenReturn(true);
-        when(codesListRepository.existsByIdAndCodesListExternalLinkIsNotNull(id)).thenReturn(false);
-        when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
-
-        CodesListExternalLinkDto externalLinkDto = new CodesListExternalLinkDto("ExternalLink1");
-
-        CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
-        externalLinkEntity.setVersion("v1");
-        when(externalLinkRepository.findById("ExternalLink1")).thenReturn(Optional.of(externalLinkEntity));
-
-        service.createExternalLink(id, externalLinkDto);
-
-        verify(codesListRepository).save(entity);
-    }
-
-
-    @Test
-    void testCreateExternalLink_WhenCodesListDoesNotExist() {
-        UUID id = UUID.randomUUID();
-        when(codesListRepository.findById(id)).thenReturn(Optional.empty());
-        Executable executable = () -> service.createExternalLink(id, new CodesListExternalLinkDto("ExternalLink1"));
-        assertThrows(IllegalArgumentException.class, executable);
-    }
-
-    @Test
-    void testCreateExternalLink_WhenExternalLinkAlreadyExists() {
-        UUID id = UUID.randomUUID();
-
-        when(codesListRepository.existsById(id)).thenReturn(true);
-        when(codesListRepository.existsByIdAndCodesListExternalLinkIsNotNull(id)).thenReturn(true);
-
-        CodesListExternalLinkDto dto = new CodesListExternalLinkDto("ExternalLink1");
-
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> service.createExternalLink(id, dto));
-
-        assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
-        assertTrue(Objects.requireNonNull(ex.getReason()).contains("already exists"));
-        verify(codesListRepository, never()).save(any());
-    }
-
-    @Test
     void testCreateSearchConfiguration_WithValidJson() {
         UUID id = UUID.randomUUID();
         CodesListEntity entity = new CodesListEntity();
@@ -274,7 +205,7 @@ class CodesListPublicationServiceTest {
     @Test
     void testMarkAsDeprecated() {
         UUID id = UUID.randomUUID();
-        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "LabelX", 1, "COMMUNES", "2025", null, false, true, null);
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "LabelX", 1, "COMMUNES", "2025", false, true, null);
         CodesListDto dto = new CodesListDto(null, metadataDto, null, null);
 
         CodesListEntity entity = new CodesListEntity();
@@ -299,7 +230,7 @@ class CodesListPublicationServiceTest {
     @Test
     void testMarkAsInvalid() {
         UUID id = UUID.randomUUID();
-        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "LabelX", 1, "COMMUNES", "2025", null, false, true, null);
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "LabelX", 1, "COMMUNES", "2025", false, true, null);
         CodesListDto dto = new CodesListDto(null, metadataDto, null, null);
 
         CodesListEntity entity = new CodesListEntity();

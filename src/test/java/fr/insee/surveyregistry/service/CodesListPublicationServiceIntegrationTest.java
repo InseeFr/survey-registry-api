@@ -2,8 +2,6 @@ package fr.insee.surveyregistry.service;
 
 import fr.insee.surveyregistry.dto.*;
 import fr.insee.surveyregistry.entity.CodesListEntity;
-import fr.insee.surveyregistry.entity.CodesListExternalLinkEntity;
-import fr.insee.surveyregistry.repository.CodesListExternalLinkRepository;
 import fr.insee.surveyregistry.repository.CodesListRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,54 +26,23 @@ class CodesListPublicationServiceIntegrationTest {
     @Autowired
     private CodesListRepository codesListRepository;
 
-    @Autowired
-    private CodesListExternalLinkRepository externalLinkRepository;
-
     @BeforeEach
     void cleanDatabase() {
-        externalLinkRepository.deleteAll();
         codesListRepository.deleteAll();
     }
 
     private CodesListDto buildEmptyCodesListDto(String label, String theme, String referenceYear) {
         return new CodesListDto(
                 null,
-                new CodesListMetadataDto(null, label, null, theme, referenceYear, null, false, true, null),
+                new CodesListMetadataDto(null, label, null, theme, referenceYear, false, true, null),
                 null,
                 null
         );
     }
 
     @Test
-    void testCreateCodesListMetadataOnly_WithExternalLink() {
-        CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
-        externalLinkEntity.setId("ExternalLink1");
-        externalLinkEntity.setVersion("v1");
-        externalLinkRepository.save(externalLinkEntity);
-
-        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "Label1", null, "COMMUNES", "2024",
-                new CodesListExternalLinkDto("ExternalLink1"), false, true, null);
-
-        service.createCodesListMetadataOnly(metadataDto);
-
-        CodesListEntity entity = codesListRepository.findAll().stream()
-                .filter(e -> "Label1".equals(e.getLabel()))
-                .findFirst()
-                .orElseThrow();
-
-        assertEquals(1, entity.getVersion());
-        assertEquals("COMMUNES", entity.getTheme());
-        assertEquals("2024", entity.getReferenceYear());
-        assertNotNull(entity.getCodesListExternalLink());
-        assertEquals("ExternalLink1", entity.getCodesListExternalLink().getId());
-        assertEquals("v1", entity.getCodesListExternalLink().getVersion());
-        assertFalse(entity.isDeprecated());
-        assertTrue(entity.isValid());
-    }
-
-    @Test
-    void testCreateCodesListMetadataOnly_WithoutExternalLink() {
-        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "Label2", null, "COMMUNES", "2024", null, false, true, null);
+    void testCreateCodesListMetadataOnly() {
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "Label2", null, "COMMUNES", "2024", false, true, null);
 
         service.createCodesListMetadataOnly(metadataDto);
 
@@ -88,7 +55,6 @@ class CodesListPublicationServiceIntegrationTest {
         assertEquals(1, entity.getVersion());
         assertEquals("COMMUNES", entity.getTheme());
         assertEquals("2024", entity.getReferenceYear());
-        assertNull(entity.getCodesListExternalLink());
         assertFalse(entity.isDeprecated());
         assertTrue(entity.isValid());
     }
@@ -171,24 +137,6 @@ class CodesListPublicationServiceIntegrationTest {
     }
 
     @Test
-    void testCreateExternalLink_WhenNotExists() {
-        CodesListDto dto = buildEmptyCodesListDto("LabelX", "COMMUNES", "2025");
-        UUID id = service.createCodesList(dto);
-
-        CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
-        externalLinkEntity.setId("ExternalLink1");
-        externalLinkEntity.setVersion("v1");
-        externalLinkRepository.save(externalLinkEntity);
-
-        CodesListExternalLinkDto link = new CodesListExternalLinkDto("ExternalLink1");
-        service.createExternalLink(id, link);
-
-        CodesListEntity created = codesListRepository.findById(id).orElseThrow();
-        assertNotNull(created.getCodesListExternalLink());
-        assertEquals("v1", created.getCodesListExternalLink().getVersion());
-    }
-
-    @Test
     void testCreateSearchConfiguration_WhenNotExists() {
         CodesListDto dto = buildEmptyCodesListDto("LabelX", "COMMUNES", "2025");
         UUID id = service.createCodesList(dto);
@@ -217,25 +165,6 @@ class CodesListPublicationServiceIntegrationTest {
         service.createContent(id, new CodesListContent(contentList));
 
         Executable action = () -> service.createContent(id, new CodesListContent(contentList));
-
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class, action);
-        assertEquals(409, ex.getStatusCode().value());
-    }
-
-    @Test
-    void testCreateExternalLink_WhenAlreadyExists_ShouldThrow409() {
-        CodesListDto dto = buildEmptyCodesListDto("LabelX", "COMMUNES", "2025");
-        UUID id = service.createCodesList(dto);
-
-        CodesListExternalLinkEntity externalLinkEntity = new CodesListExternalLinkEntity();
-        externalLinkEntity.setId("ExternalLink1");
-        externalLinkEntity.setVersion("v1");
-        externalLinkRepository.save(externalLinkEntity);
-
-        CodesListExternalLinkDto link = new CodesListExternalLinkDto("ExternalLink1");
-        service.createExternalLink(id, link);
-
-        Executable action = () -> service.createExternalLink(id, link);
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, action);
         assertEquals(409, ex.getStatusCode().value());

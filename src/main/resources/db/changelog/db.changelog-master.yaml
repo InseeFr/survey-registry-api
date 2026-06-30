@@ -267,3 +267,18 @@ databaseChangeLog:
             oldColumnName: id
             newColumnName: collection_instrument_id
             columnDataType: uuid
+
+  - changeSet:
+      id: 13
+      author: rverriez
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: codes_list
+            constraintName: fk_codes_list_external_link
+
+        - dropColumn:
+            tableName: codes_list
+            columnName: external_link_id
+
+        - dropTable:
+            tableName: external_link

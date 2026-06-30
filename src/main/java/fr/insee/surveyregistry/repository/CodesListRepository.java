@@ -1,14 +1,12 @@
 package fr.insee.surveyregistry.repository;
 
 import fr.insee.surveyregistry.dto.SearchConfig;
+import fr.insee.surveyregistry.entity.CodesListEntity;
 import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import fr.insee.surveyregistry.entity.CodesListEntity;
-import fr.insee.surveyregistry.entity.CodesListExternalLinkEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +21,6 @@ public interface CodesListRepository extends JpaRepository<CodesListEntity, UUID
         Integer getVersion();
         String getTheme();
         String getReferenceYear();
-        @Nullable CodesListExternalLinkEntity getCodesListExternalLink();
         boolean isDeprecated();
         boolean isValid();
         SearchConfig getSearchConfiguration();
@@ -35,9 +32,6 @@ public interface CodesListRepository extends JpaRepository<CodesListEntity, UUID
 
     // Check if the content already exists
     boolean existsByIdAndContentIsNotNull(UUID id);
-
-    // Check if an external link is already defined
-    boolean existsByIdAndCodesListExternalLinkIsNotNull(UUID id);
 
     // Check if the search configuration already exists
     boolean existsByIdAndSearchConfigurationIsNotNull(UUID id);
