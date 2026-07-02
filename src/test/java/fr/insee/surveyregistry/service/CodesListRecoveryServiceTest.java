@@ -16,8 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class CodesListRecoveryServiceTest {
 
@@ -40,12 +39,12 @@ class CodesListRecoveryServiceTest {
         when(projection.getLabel()).thenReturn("Label1");
         when(projection.getVersion()).thenReturn(1);
 
-        when(repository.findAllBy()).thenReturn(List.of(projection));
+        when(repository.findAllMetadata(null, null)).thenReturn(List.of(projection));
 
-        CodesListMetadataDto dtoMock = new CodesListMetadataDto(id, "Label1", 1, "COMMUNES", "2024", false, true, null);
-        when(metadataMapper.toDto(projection)).thenReturn(dtoMock);
+        CodesListMetadataDto dtoMock = new CodesListMetadataDto(id, "Label1", 1, "COMMUNES", "2024", "urn:ddi:communes:2024:1", false, true, null);
+        when(metadataMapper.toDto(projection, null)).thenReturn(dtoMock);
 
-        List<CodesListMetadataDto> result = service.getAllMetadata();
+        List<CodesListMetadataDto> result = service.getAllMetadata(null, null, null);
 
         assertEquals(1, result.size());
         CodesListMetadataDto dto = result.getFirst();
@@ -54,8 +53,21 @@ class CodesListRecoveryServiceTest {
         assertEquals(1, dto.version());
         assertEquals("COMMUNES", dto.theme());
         assertEquals("2024", dto.referenceYear());
+        assertEquals("urn:ddi:communes:2024:1", dto.urn());
         assertFalse(dto.isDeprecated());
         assertTrue(dto.isValid());
+
+        verify(repository).findAllMetadata(null, null);
+        verify(metadataMapper).toDto(projection, null);
+    }
+
+    @Test
+    void testGetAllMetadataWithFilters() {
+        when(repository.findAllMetadata(true, false)).thenReturn(List.of());
+
+        service.getAllMetadata(null, true, false);
+
+        verify(repository).findAllMetadata(true, false);
     }
 
     @Test
@@ -70,9 +82,10 @@ class CodesListRecoveryServiceTest {
         when(projection.getVersion()).thenReturn(2);
         when(projection.getTheme()).thenReturn("COMMUNES");
         when(projection.getReferenceYear()).thenReturn("2024");
+        when(projection.getUrn()).thenReturn("urn:ddi:communes:2024:1");
         when(projection.getSearchConfiguration()).thenReturn(searchConfig);
 
-        CodesListMetadataDto mappedDto = new CodesListMetadataDto(id, "Label2", 2, "COMMUNES","2024", false, true, null);
+        CodesListMetadataDto mappedDto = new CodesListMetadataDto(id, "Label2", 2, "COMMUNES","2024", "urn:ddi:communes:2024:1", false, true, null);
 
         when(repository.findMetadataById(id)).thenReturn(Optional.of(projection));
         when(metadataMapper.toDto(projection, null)).thenReturn(mappedDto);
@@ -95,9 +108,10 @@ class CodesListRecoveryServiceTest {
         when(projection.getVersion()).thenReturn(2);
         when(projection.getTheme()).thenReturn("COMMUNES");
         when(projection.getReferenceYear()).thenReturn("2024");
+        when(projection.getUrn()).thenReturn("urn:ddi:communes:2024:1");
         when(projection.getSearchConfiguration()).thenReturn(searchConfig);
 
-        CodesListMetadataDto mappedDto = new CodesListMetadataDto(id, "Label2", 2, "COMMUNES","2024", false, true, searchConfig);
+        CodesListMetadataDto mappedDto = new CodesListMetadataDto(id, "Label2", 2, "COMMUNES","2024", "urn:ddi:communes:2024:1", false, true, searchConfig);
 
         List<CodesListMetadataExpandableFieldsEnum> expand = List.of(CodesListMetadataExpandableFieldsEnum.SEARCH_CONFIGURATION);
 

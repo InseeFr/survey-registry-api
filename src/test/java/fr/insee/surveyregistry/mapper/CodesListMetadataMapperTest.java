@@ -34,6 +34,7 @@ class CodesListMetadataMapperTest {
         when(projection.getVersion()).thenReturn(1);
         when(projection.getTheme()).thenReturn("COMMUNES");
         when(projection.getReferenceYear()).thenReturn("2024");
+        when(projection.getUrn()).thenReturn("urn:ddi:communes:2024:1");
         when(projection.isDeprecated()).thenReturn(false);
         when(projection.isValid()).thenReturn(true);
 
@@ -45,6 +46,7 @@ class CodesListMetadataMapperTest {
         assertEquals(1, dto.version().intValue());
         assertEquals("COMMUNES", dto.theme());
         assertEquals("2024", dto.referenceYear());
+        assertEquals("urn:ddi:communes:2024:1", dto.urn());
         assertFalse(dto.isDeprecated());
         assertTrue(dto.isValid());
     }
@@ -59,6 +61,7 @@ class CodesListMetadataMapperTest {
         when(projection.getVersion()).thenReturn(1);
         when(projection.getTheme()).thenReturn("COMMUNES");
         when(projection.getReferenceYear()).thenReturn("2024");
+        when(projection.getUrn()).thenReturn("urn:ddi:communes:2024:1");
         when(projection.isDeprecated()).thenReturn(false);
         when(projection.isValid()).thenReturn(true);
         when(projection.getSearchConfiguration()).thenReturn(new SearchConfig(Map.of("enabled", true)));
@@ -80,6 +83,7 @@ class CodesListMetadataMapperTest {
         when(projection.getVersion()).thenReturn(1);
         when(projection.getTheme()).thenReturn("COMMUNES");
         when(projection.getReferenceYear()).thenReturn("2024");
+        when(projection.getUrn()).thenReturn("urn:ddi:communes:2024:1");
         when(projection.isDeprecated()).thenReturn(false);
         when(projection.isValid()).thenReturn(true);
         when(projection.getSearchConfiguration()).thenReturn(new SearchConfig(Map.of("enabled", true)));

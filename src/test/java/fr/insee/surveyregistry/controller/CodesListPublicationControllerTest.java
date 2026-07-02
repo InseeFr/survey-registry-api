@@ -74,6 +74,7 @@ class CodesListPublicationControllerTest {
                 1,
                 "COMMUNES",
                 "2024",
+                "urn:ddi:communes:2024:1",
                 false,
                 true,
                 null
@@ -85,6 +86,7 @@ class CodesListPublicationControllerTest {
                 1,
                 "COMMUNES",
                 "2024",
+                "urn:ddi:communes:2024:1",
                 false,
                 true,
                 null
@@ -117,6 +119,7 @@ class CodesListPublicationControllerTest {
                 1,
                 "COMMUNES",
                 "2024",
+                "urn:ddi:communes:2024:1",
                 false,
                 true,
                 null
@@ -138,6 +141,7 @@ class CodesListPublicationControllerTest {
                 1,
                 "COMMUNES",
                 "2024",
+                "urn:ddi:communes:2024:1",
                 false,
                 true,
                 null
@@ -191,6 +195,7 @@ class CodesListPublicationControllerTest {
                 1,
                 "COMMUNES",
                 "2024",
+                "urn:ddi:communes:2024:1",
                 false,
                 true,
                 null
@@ -243,6 +248,38 @@ class CodesListPublicationControllerTest {
 
         Mockito.verify(codesListPublicationService)
                 .createSearchConfiguration(eq(testId), any(SearchConfig.class));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testPutCodesListURNById() throws Exception {
+        String urn = "urn:ddi:communes:2024:1";
+        UUID testId = UUID.randomUUID();
+
+        mockMvc.perform(put("/codes-lists/" + testId + "/urn")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(urn))
+                .andExpect(status().isCreated());
+
+        Mockito.verify(codesListPublicationService)
+                .createURN(eq(testId), eq(urn));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testPutCodesListURNById_invalid() throws Exception {
+        String urn = "my-super-urn";
+        UUID testId = UUID.randomUUID();
+
+        mockMvc.perform(put("/codes-lists/" + testId + "/urn")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(urn))
+                .andExpect(status().is4xxClientError());
+
+        Mockito.verify(codesListPublicationService, Mockito.never())
+                    .createURN(any(), any());
     }
 
     @Test

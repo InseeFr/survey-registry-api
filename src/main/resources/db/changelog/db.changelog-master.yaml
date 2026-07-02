@@ -282,3 +282,16 @@ databaseChangeLog:
 
         - dropTable:
             tableName: external_link
+
+  - changeSet:
+      id: 14
+      author: crenaud
+      changes:
+        - addColumn:
+            tableName: codes_list
+            columns:
+              - column:
+                  name: urn
+                  type: varchar
+                  constraints:
+                    nullable: true

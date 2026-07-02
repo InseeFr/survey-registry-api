@@ -46,6 +46,9 @@ public class CodesListEntity {
     @Column(name = "is_valid", nullable = false)
     private boolean valid = true;
 
+    @Column(name = "urn")
+    private String urn;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "search_config")
     private SearchConfig searchConfiguration;

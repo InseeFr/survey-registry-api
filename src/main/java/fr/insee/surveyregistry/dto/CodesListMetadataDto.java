@@ -1,7 +1,7 @@
 package fr.insee.surveyregistry.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import fr.insee.surveyregistry.constants.RegexPatterns;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotBlank;
@@ -26,7 +26,6 @@ public record CodesListMetadataDto(
                 example = "123e4567-e89b-12d3-a456-426614174000",
                 accessMode = Schema.AccessMode.READ_ONLY
         )
-        @JsonProperty("id")
         UUID id,
 
         @NotBlank
@@ -36,7 +35,6 @@ public record CodesListMetadataDto(
                 example = "Communes du Nord",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        @JsonProperty("label")
         String label,
 
         @Schema(
@@ -45,7 +43,6 @@ public record CodesListMetadataDto(
                 example = "1",
                 accessMode = Schema.AccessMode.READ_ONLY
         )
-        @JsonProperty("version")
         Integer version,
 
         @NotBlank
@@ -55,7 +52,6 @@ public record CodesListMetadataDto(
                 example = "COMMUNES",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        @JsonProperty("theme")
         String theme,
 
         @NotBlank
@@ -66,8 +62,16 @@ public record CodesListMetadataDto(
                 example = "2025",
                 requiredMode = Schema.RequiredMode.REQUIRED
         )
-        @JsonProperty("referenceYear")
         String referenceYear,
+
+        @Pattern(regexp = RegexPatterns.URN, message = "URN must be of the correct urn syntax (see RFC 8141).")
+        @Schema(
+                name = "urn",
+                description = "Optional urn. Must refer to an existing urn.",
+                example = "urn:ddi:fr.insee:l_activites-2-2-0:1",
+                requiredMode = Schema.RequiredMode.NOT_REQUIRED
+        )
+        String urn,
 
         @Schema(
                 name = "isDeprecated",
@@ -75,7 +79,6 @@ public record CodesListMetadataDto(
                 example = "false",
                 accessMode = Schema.AccessMode.READ_ONLY
         )
-        @JsonProperty("isDeprecated")
         Boolean isDeprecated,
 
         @Schema(
@@ -84,7 +87,6 @@ public record CodesListMetadataDto(
                 example = "true",
                 accessMode = Schema.AccessMode.READ_ONLY
         )
-        @JsonProperty("isValid")
         Boolean isValid,
 
         @Schema(
@@ -95,6 +97,5 @@ public record CodesListMetadataDto(
                 requiredMode = Schema.RequiredMode.NOT_REQUIRED
         )
         @JsonInclude(NON_NULL)
-        @JsonProperty("searchConfiguration")
         SearchConfig searchConfiguration
 ) { }

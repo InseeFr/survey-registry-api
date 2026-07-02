@@ -307,6 +307,26 @@ paths:
         "200":
           $ref: "#/components/responses/CodesListSearchConfiguration"
 
+  /codes-lists/{codesListId}/urn:
+    put:
+      tags:
+        - Codes List Publication
+      summary: Add URN to a codes list
+      operationId: putCodesListURNById
+      parameters:
+        - name: codesListId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/CodesListURN"
+      responses:
+        "201":
+          description: URN set successfully
+        "409":
+          $ref: "#/components/responses/ErrorResponse"
+
   /codes-lists/{codesListId}:
     get:
       tags:
@@ -416,9 +436,14 @@ components:
           type: string
         version:
           type: string
+        urn:
+          $ref: "#/components/schemas/CodesListURN"
 
     CodesListSearchConfiguration:
       type: object
+
+    CodesListURN:
+      type: string
 
     CodesList:
       type: array
@@ -483,6 +508,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/CodesListSearchConfiguration"
+
+    CodesListURN:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CodesListURN"
 
   responses:
     QuestionnaireDto:

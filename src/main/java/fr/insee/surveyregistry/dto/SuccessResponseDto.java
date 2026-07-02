@@ -1,6 +1,5 @@
 package fr.insee.surveyregistry.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -14,7 +13,6 @@ public record SuccessResponseDto(
                 example = "Codes list has been marked as deprecated",
                 description = "A descriptive message about the result of the operation"
         )
-        @JsonProperty("message")
         String message,
 
         @Schema(
@@ -23,7 +21,6 @@ public record SuccessResponseDto(
                 description = "The ID of the affected codes list, if applicable",
                 requiredMode = Schema.RequiredMode.NOT_REQUIRED
         )
-        @JsonProperty("id")
         String id
 
 ) { }

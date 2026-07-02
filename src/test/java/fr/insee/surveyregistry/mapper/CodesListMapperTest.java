@@ -27,6 +27,7 @@ class CodesListMapperTest {
         codesListEntity.setVersion(1);
         codesListEntity.setTheme("COMMUNES");
         codesListEntity.setReferenceYear("2024");
+        codesListEntity.setUrn("urn:ddi:communes:2024:1");
         codesListEntity.setDeprecated(false);
         codesListEntity.setValid(true);
 
@@ -45,6 +46,7 @@ class CodesListMapperTest {
         assertEquals(1, dto.metadata().version().intValue());
         assertEquals("COMMUNES", dto.metadata().theme());
         assertEquals("2024", dto.metadata().referenceYear());
+        assertEquals("urn:ddi:communes:2024:1", dto.metadata().urn());
         assertFalse(dto.metadata().isDeprecated());
         assertTrue(dto.metadata().isValid());
 
@@ -59,7 +61,7 @@ class CodesListMapperTest {
         // Given
         UUID testId = UUID.randomUUID();
 
-        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "Label2", 2, "COMMUNES", "2024", false, true, null);
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "Label2", 2, "COMMUNES", "2024", "urn:ddi:communes:2024:1", false, true, null);
 
         CodesListDto dto = new CodesListDto(testId, metadata, new SearchConfig(Map.of("enabled", false)),
                 new CodesListContent(List.of(Map.of("code", "01"))));
@@ -74,6 +76,7 @@ class CodesListMapperTest {
         assertEquals(2, entity.getVersion().intValue());
         assertEquals("COMMUNES", entity.getTheme());
         assertEquals("2024", entity.getReferenceYear());
+        assertEquals("urn:ddi:communes:2024:1", entity.getUrn());
         assertFalse(entity.isDeprecated());
         assertTrue(entity.isValid());
         // searchConfiguration and content are not set in toEntity()
@@ -92,6 +95,7 @@ class CodesListMapperTest {
                 1,
                 "COMMUNES",
                 "2024",
+                "urn:ddi:communes:2024:1",
                 null,
                 null,
                 null

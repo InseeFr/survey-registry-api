@@ -44,6 +44,7 @@ public class CodesListPublicationService {
                         nextVersion,
                         metadataDto.theme(),
                         metadataDto.referenceYear(),
+                        metadataDto.urn(),
                         metadataDto.isDeprecated(),
                         metadataDto.isValid(),
                         null
@@ -157,6 +158,30 @@ public class CodesListPublicationService {
 
         codesListRepository.findById(codesListId).ifPresent(entity -> {
             entity.setSearchConfiguration(searchConfig);
+            codesListRepository.save(entity);
+        });
+    }
+
+    /**
+     * Set the URN of an existing codes list which had none.
+     *
+     * @param codesListId the UUID of the codes list
+     * @param urn the urn string
+     */
+    public void createURN(UUID codesListId, String urn) {
+        if (!codesListRepository.existsById(codesListId)) {
+            throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
+        }
+
+        if (codesListRepository.existsByIdAndUrnIsNotNull(codesListId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "URN of " + codesListId + ALREADY_EXISTS
+            );
+        }
+
+        codesListRepository.findById(codesListId).ifPresent(entity -> {
+            entity.setUrn(urn);
             codesListRepository.save(entity);
         });
     }

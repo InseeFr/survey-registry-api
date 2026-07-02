@@ -37,6 +37,7 @@ class CodesListPublicationServiceTest {
                 1,
                 "COMMUNES",
                 "2024",
+                "urn:ddi:communes:2024:1",
                 false,
                 true,
                 null
@@ -203,9 +204,51 @@ class CodesListPublicationServiceTest {
     }
 
     @Test
+    void testCreateURN_WhenCodesListExists() {
+        UUID id = UUID.randomUUID();
+        CodesListEntity entity = new CodesListEntity();
+
+        when(codesListRepository.existsById(id)).thenReturn(true);
+        when(codesListRepository.existsByIdAndUrnIsNotNull(id)).thenReturn(false);
+        when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
+
+        String urn = "urn:ddi:communes:2024:1";
+
+        service.createURN(id, urn);
+
+        assertEquals(urn, entity.getUrn());
+        verify(codesListRepository).save(entity);
+    }
+
+    @Test
+    void testCreateURN_WhenCodesListDoesNotExist() {
+        UUID id = UUID.randomUUID();
+        when(codesListRepository.existsById(id)).thenReturn(false);
+
+        Executable executable = () -> service.createURN(id, "urn:ddi:communes:2024:1");
+
+        assertThrows(IllegalArgumentException.class, executable);
+    }
+
+    @Test
+    void testCreateURN_WhenURNAlreadyExists() {
+        UUID id = UUID.randomUUID();
+
+        when(codesListRepository.existsById(id)).thenReturn(true);
+        when(codesListRepository.existsByIdAndUrnIsNotNull(id)).thenReturn(true);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> service.createURN(id, "urn:ddi:communes:2024:1"));
+
+        assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
+        assertTrue(Objects.requireNonNull(ex.getReason()).contains("already exists"));
+        verify(codesListRepository, never()).save(any());
+    }
+
+    @Test
     void testMarkAsDeprecated() {
         UUID id = UUID.randomUUID();
-        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "LabelX", 1, "COMMUNES", "2025", false, true, null);
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "LabelX", 1, "COMMUNES", "2025", "urn:ddi:communes:2024:1", false, true, null);
         CodesListDto dto = new CodesListDto(null, metadataDto, null, null);
 
         CodesListEntity entity = new CodesListEntity();
@@ -230,7 +273,7 @@ class CodesListPublicationServiceTest {
     @Test
     void testMarkAsInvalid() {
         UUID id = UUID.randomUUID();
-        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "LabelX", 1, "COMMUNES", "2025", false, true, null);
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "LabelX", 1, "COMMUNES", "2025", "urn:ddi:communes:2024:1", false, true, null);
         CodesListDto dto = new CodesListDto(null, metadataDto, null, null);
 
         CodesListEntity entity = new CodesListEntity();

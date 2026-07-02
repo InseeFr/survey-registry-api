@@ -27,6 +27,7 @@ public class CodesListMetadataMapper {
                 projection.getVersion(),
                 projection.getTheme(),
                 projection.getReferenceYear(),
+                projection.getUrn(),
                 projection.isDeprecated(),
                 projection.isValid(),
                 computeSearchConfiguration(projection, expand)

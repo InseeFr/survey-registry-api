@@ -17,6 +17,7 @@ public class CodesListMapper {
                 entity.getVersion(),
                 entity.getTheme(),
                 entity.getReferenceYear(),
+                entity.getUrn(),
                 entity.isDeprecated(),
                 entity.isValid(),
                 null
@@ -41,6 +42,7 @@ public class CodesListMapper {
         entity.setVersion(metadata.version());
         entity.setTheme(metadata.theme());
         entity.setReferenceYear(metadata.referenceYear());
+        entity.setUrn(metadata.urn());
         entity.setDeprecated(Boolean.TRUE.equals(metadata.isDeprecated()));
         entity.setValid(metadata.isValid() == null || metadata.isValid());
 

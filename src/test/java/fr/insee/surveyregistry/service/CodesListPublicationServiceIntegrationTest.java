@@ -34,7 +34,7 @@ class CodesListPublicationServiceIntegrationTest {
     private CodesListDto buildEmptyCodesListDto(String label, String theme, String referenceYear) {
         return new CodesListDto(
                 null,
-                new CodesListMetadataDto(null, label, null, theme, referenceYear, false, true, null),
+                new CodesListMetadataDto(null, label, null, theme, referenceYear, "urn:ddi:communes:2024:1", false, true, null),
                 null,
                 null
         );
@@ -42,7 +42,7 @@ class CodesListPublicationServiceIntegrationTest {
 
     @Test
     void testCreateCodesListMetadataOnly() {
-        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "Label2", null, "COMMUNES", "2024", false, true, null);
+        CodesListMetadataDto metadataDto = new CodesListMetadataDto(null, "Label2", null, "COMMUNES", "2024", "urn:ddi:communes:2024:1", false, true, null);
 
         service.createCodesListMetadataOnly(metadataDto);
 
@@ -55,6 +55,7 @@ class CodesListPublicationServiceIntegrationTest {
         assertEquals(1, entity.getVersion());
         assertEquals("COMMUNES", entity.getTheme());
         assertEquals("2024", entity.getReferenceYear());
+        assertEquals("urn:ddi:communes:2024:1", entity.getUrn());
         assertFalse(entity.isDeprecated());
         assertTrue(entity.isValid());
     }

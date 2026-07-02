@@ -38,7 +38,7 @@ public class CodesListRecoveryController {
 
 
     /**
-     * GET /codes-lists : Get all codes lists metadata
+     * GET /codes-lists : Get all codes lists metadata with optional filters.
      *
      * @return List of codes list metadata (status code 200)
      */
@@ -53,8 +53,23 @@ public class CodesListRecoveryController {
             }
     )
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<CodesListMetadataDto>> getAllCodesLists() {
-        List<CodesListMetadataDto> metadataList = codesListRecoveryService.getAllMetadata();
+    public ResponseEntity<List<CodesListMetadataDto>> getAllCodesLists(
+            @Parameter(name = "expand", in = ParameterIn.QUERY)
+            @RequestParam(name = "expand", required = false)
+            List<CodesListMetadataExpandableFieldsEnum> expand,
+
+            @Parameter(name = "valid", in = ParameterIn.QUERY)
+            @RequestParam(name = "valid", required = false)
+            Boolean valid,
+
+            @Parameter(name = "deprecated", in = ParameterIn.QUERY)
+            @RequestParam(name = "deprecated", required = false)
+            Boolean deprecated
+    ) {
+
+        List<CodesListMetadataDto> metadataList =
+                codesListRecoveryService.getAllMetadata(expand, valid, deprecated);
+
         return ResponseEntity.ok(metadataList);
     }
 

@@ -1,5 +1,6 @@
 package fr.insee.surveyregistry.service;
 
+import fr.insee.surveyregistry.enums.CodesListMetadataExpandableFieldsEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +11,7 @@ import fr.insee.surveyregistry.dto.SearchConfig;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 import fr.insee.surveyregistry.repository.CodesListRepository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,7 +43,7 @@ class CodesListRecoveryServiceIntegrationTest {
 
         repository.save(codesList);
 
-        List<CodesListMetadataDto> result = service.getAllMetadata();
+        List<CodesListMetadataDto> result = service.getAllMetadata(null, null, null);
 
         assertEquals(1, result.size());
         assertEquals("Label1", result.getFirst().label());
@@ -54,6 +52,123 @@ class CodesListRecoveryServiceIntegrationTest {
         assertEquals("2024", result.getFirst().referenceYear());
         assertFalse(result.getFirst().isDeprecated());
         assertTrue(result.getFirst().isValid());
+    }
+
+    @Test
+    void testGetAllMetadataWithSearchConfig() {
+        CodesListEntity codesList = new CodesListEntity();
+        UUID id1 = UUID.randomUUID();
+        codesList.setId(id1);
+        codesList.setLabel("Label1");
+        codesList.setVersion(1);
+        codesList.setTheme("COMMUNES");
+        codesList.setReferenceYear("2024");
+        codesList.setDeprecated(false);
+        codesList.setValid(true);
+        codesList.setSearchConfiguration(new SearchConfig(Map.of("key", "value")));
+
+        repository.save(codesList);
+
+        List<CodesListMetadataDto> result = service.getAllMetadata(List.of(CodesListMetadataExpandableFieldsEnum.SEARCH_CONFIGURATION), null, null);
+
+        assertEquals(1, result.size());
+        assertEquals("Label1", result.getFirst().label());
+        assertEquals(1, result.getFirst().version());
+        assertEquals("COMMUNES", result.getFirst().theme());
+        assertEquals("2024", result.getFirst().referenceYear());
+        assertEquals("value", result.getFirst().searchConfiguration().content().get("key"));
+        assertFalse(result.getFirst().isDeprecated());
+        assertTrue(result.getFirst().isValid());
+    }
+
+    @Test
+    void testGetAllMetadataFilteredByValid() {
+        CodesListEntity codesList = new CodesListEntity();
+        codesList.setId(UUID.randomUUID());
+        codesList.setLabel("Label1");
+        codesList.setVersion(1);
+        codesList.setTheme("COMMUNES");
+        codesList.setReferenceYear("2024");
+        codesList.setDeprecated(false);
+        codesList.setValid(true);
+
+        repository.save(codesList);
+
+        List<CodesListMetadataDto> result =
+                service.getAllMetadata(null, true, null);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void testGetAllMetadataFilteredByValidFalse() {
+
+        CodesListEntity codesList = new CodesListEntity();
+        codesList.setId(UUID.randomUUID());
+        codesList.setLabel("Label1");
+        codesList.setVersion(1);
+        codesList.setTheme("COMMUNES");
+        codesList.setReferenceYear("2024");
+        codesList.setDeprecated(false);
+        codesList.setValid(false);
+
+        repository.save(codesList);
+
+        List<CodesListMetadataDto> result =
+                service.getAllMetadata(null, false, null);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void testGetAllMetadataFilteredByDeprecated() {
+
+        CodesListEntity codesList = new CodesListEntity();
+        codesList.setId(UUID.randomUUID());
+        codesList.setLabel("Label1");
+        codesList.setVersion(1);
+        codesList.setTheme("COMMUNES");
+        codesList.setReferenceYear("2024");
+        codesList.setDeprecated(true);
+        codesList.setValid(true);
+
+        repository.save(codesList);
+
+        List<CodesListMetadataDto> result =
+                service.getAllMetadata(null, null, true);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void testGetAllMetadataFilteredByValidAndDeprecated() {
+
+        CodesListEntity codesList1 = new CodesListEntity();
+        codesList1.setId(UUID.randomUUID());
+        codesList1.setLabel("Label1");
+        codesList1.setVersion(1);
+        codesList1.setTheme("COMMUNES");
+        codesList1.setReferenceYear("2024");
+        codesList1.setDeprecated(false);
+        codesList1.setValid(true);
+
+        CodesListEntity codesList2 = new CodesListEntity();
+        codesList2.setId(UUID.randomUUID());
+        codesList2.setLabel("Label2");
+        codesList2.setVersion(1);
+        codesList2.setTheme("PAYS");
+        codesList2.setReferenceYear("2024");
+        codesList2.setDeprecated(true);
+        codesList2.setValid(true);
+
+        repository.save(codesList1);
+        repository.save(codesList2);
+
+        List<CodesListMetadataDto> result =
+                service.getAllMetadata(null, true, false);
+
+        assertEquals(1, result.size());
+        assertEquals("Label1", result.getFirst().label());
     }
 
     @Test

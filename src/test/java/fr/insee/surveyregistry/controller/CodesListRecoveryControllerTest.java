@@ -54,15 +54,60 @@ class CodesListRecoveryControllerTest {
     void testGetAllCodesLists() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", false, true, null);
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", "urn:ddi:communes:2024:1",false, true, null);
 
         List<CodesListMetadataDto> metadataList = List.of(metadata);
-        Mockito.when(codesListRecoveryService.getAllMetadata()).thenReturn(metadataList);
+        Mockito.when(codesListRecoveryService.getAllMetadata(null, null, null)).thenReturn(metadataList);
 
         mockMvc.perform(get("/codes-lists"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].label").value("CodesList1"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testGetAllCodesListsFilteredByValid() throws Exception {
+        Mockito.when(codesListRecoveryService.getAllMetadata(null, true, null))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/codes-lists")
+                        .param("valid", "true"))
+                .andExpect(status().isOk());
+
+        Mockito.verify(codesListRecoveryService)
+                .getAllMetadata(null, true, null);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testGetAllCodesListsFilteredByDeprecated() throws Exception {
+
+        Mockito.when(codesListRecoveryService.getAllMetadata(null, null, false))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/codes-lists")
+                        .param("deprecated", "false"))
+                .andExpect(status().isOk());
+
+        Mockito.verify(codesListRecoveryService)
+                .getAllMetadata(null, null, false);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testGetAllCodesListsFilteredByValidAndDeprecated() throws Exception {
+
+        Mockito.when(codesListRecoveryService.getAllMetadata(null, true, false))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/codes-lists")
+                        .param("valid", "true")
+                        .param("deprecated", "false"))
+                .andExpect(status().isOk());
+
+        Mockito.verify(codesListRecoveryService)
+                .getAllMetadata(null, true, false);
     }
 
     @Test
@@ -108,7 +153,7 @@ class CodesListRecoveryControllerTest {
     void testGetCodesListMetadataById_found() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", false, true, null);
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", "urn:ddi:communes:2024:1", false, true, null);
 
         Mockito.when(codesListRecoveryService.getMetadataById(testId, null)).thenReturn(Optional.of(metadata));
 
@@ -118,6 +163,7 @@ class CodesListRecoveryControllerTest {
                 .andExpect(jsonPath("$.version").value(1))
                 .andExpect(jsonPath("$.theme").value("COMMUNES"))
                 .andExpect(jsonPath("$.referenceYear").value("2024"))
+                .andExpect(jsonPath("$.urn").value("urn:ddi:communes:2024:1"))
                 .andExpect(jsonPath("$.isDeprecated").value(false))
                 .andExpect(jsonPath("$.isValid").value(true))
                 .andExpect(jsonPath("$.searchConfiguration").doesNotExist())
@@ -125,7 +171,7 @@ class CodesListRecoveryControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        assertEquals("{\"id\":\""+testId+"\",\"label\":\"CodesList1\",\"version\":1,\"theme\":\"COMMUNES\",\"referenceYear\":\"2024\",\"isDeprecated\":false,\"isValid\":true}", response);
+        assertEquals("{\"id\":\""+testId+"\",\"label\":\"CodesList1\",\"version\":1,\"theme\":\"COMMUNES\",\"referenceYear\":\"2024\",\"urn\":\"urn:ddi:communes:2024:1\",\"isDeprecated\":false,\"isValid\":true}", response);
     }
 
     @Test
@@ -133,7 +179,7 @@ class CodesListRecoveryControllerTest {
     void testGetCodesListMetadataById_withExpandSearchConfiguration() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", false, true, new SearchConfig(Map.of("enabled", true)));
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", "urn:ddi:communes:2024:1", false, true, new SearchConfig(Map.of("enabled", true)));
 
         List<CodesListMetadataExpandableFieldsEnum> expand = List.of(CodesListMetadataExpandableFieldsEnum.SEARCH_CONFIGURATION);
         Mockito.when(codesListRecoveryService.getMetadataById(testId, expand)).thenReturn(Optional.of(metadata));
@@ -144,6 +190,7 @@ class CodesListRecoveryControllerTest {
                 .andExpect(jsonPath("$.version").value(1))
                 .andExpect(jsonPath("$.theme").value("COMMUNES"))
                 .andExpect(jsonPath("$.referenceYear").value("2024"))
+                .andExpect(jsonPath("$.urn").value("urn:ddi:communes:2024:1"))
                 .andExpect(jsonPath("$.isDeprecated").value(false))
                 .andExpect(jsonPath("$.isValid").value(true))
                 .andExpect(jsonPath("$.searchConfiguration.enabled").value(true))
@@ -151,7 +198,7 @@ class CodesListRecoveryControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        assertEquals("{\"id\":\""+testId+"\",\"label\":\"CodesList1\",\"version\":1,\"theme\":\"COMMUNES\",\"referenceYear\":\"2024\",\"isDeprecated\":false,\"isValid\":true,\"searchConfiguration\":{\"enabled\":true}}", response);
+        assertEquals("{\"id\":\""+testId+"\",\"label\":\"CodesList1\",\"version\":1,\"theme\":\"COMMUNES\",\"referenceYear\":\"2024\",\"urn\":\"urn:ddi:communes:2024:1\",\"isDeprecated\":false,\"isValid\":true,\"searchConfiguration\":{\"enabled\":true}}", response);
     }
 
     @Test

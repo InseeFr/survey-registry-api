@@ -1,6 +1,5 @@
 package fr.insee.surveyregistry.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Generated;
 
@@ -19,7 +18,6 @@ public record ErrorResponseDto(
                 example = "409",
                 requiredMode = Schema.RequiredMode.NOT_REQUIRED
         )
-        @JsonProperty("code")
         Integer code,
 
         @Schema(
@@ -27,7 +25,6 @@ public record ErrorResponseDto(
                 example = "Content of ${codeListId} already exists",
                 requiredMode = Schema.RequiredMode.NOT_REQUIRED
         )
-        @JsonProperty("message")
         String message
 
 ) { }

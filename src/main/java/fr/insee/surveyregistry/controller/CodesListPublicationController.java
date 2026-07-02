@@ -1,6 +1,7 @@
 package fr.insee.surveyregistry.controller;
 
 import fr.insee.surveyregistry.configuration.auth.AuthorityPrivileges;
+import fr.insee.surveyregistry.constants.RegexPatterns;
 import fr.insee.surveyregistry.dto.*;
 import fr.insee.surveyregistry.service.CodesListPublicationService;
 import fr.insee.surveyregistry.service.CodesListRecoveryService;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -194,6 +196,38 @@ public class CodesListPublicationController {
             @Valid @RequestBody SearchConfig searchConfig) {
 
         codesListPublicationService.createSearchConfiguration(codesListId, searchConfig);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+
+    /**
+     * PUT /codes-lists/{codesListId}/urn : Set the codes list's urn.
+     *
+     * @param codesListId  (required)
+     * @param urn  (optional)
+     * @return URN set successfully (status code 201)
+     *         or Structured error (status code 409)
+     */
+    @Operation(
+            operationId = "putURNById",
+            summary = "Set urn of the codes list",
+            tags = { "Codes List Publication" },
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "URN set successfully"),
+                    @ApiResponse(responseCode = "409", description = "Structured error", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
+                    })
+            }
+    )
+    @PutMapping(value = "/{codesListId}/urn", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Void> putCodesListURNById(
+            @Parameter(name = "codesListId", required = true, in = ParameterIn.PATH)
+            @PathVariable UUID codesListId,
+            @Parameter(name = "urn", description = "")
+            @Pattern(regexp = RegexPatterns.URN, message = "URN must be of the correct urn syntax (see RFC 8141).")
+            @RequestBody String urn
+    ) {
+        codesListPublicationService.createURN(codesListId, urn);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
