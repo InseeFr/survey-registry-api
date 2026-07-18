@@ -38,6 +38,7 @@ public record GrantedAuthorityConverter(Map<String, List<SimpleGrantedAuthority>
         initRole(roleProperties.designer(), AuthorityRoleEnum.DESIGNER);
         initRole(roleProperties.designerAlternative(), AuthorityRoleEnum.DESIGNER_ALTERNATIVE);
         initRole(roleProperties.webclient(), AuthorityRoleEnum.WEBCLIENT);
+        initRole(roleProperties.readOnlyUser(), AuthorityRoleEnum.READ_ONLY_USER);
     }
 
     @Override

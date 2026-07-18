@@ -20,6 +20,7 @@ application:
     admin: 'admin'
     designer: 'designer'
     webclient: 'webclient'
+    read-only-user: 'read-only-user'
     designer-alternative: 'designer-alternative'
   corsOrigins: '*'
 

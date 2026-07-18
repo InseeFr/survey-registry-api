@@ -7,6 +7,7 @@ public record RoleProperties(
         String designer,
         String designerAlternative,
         String admin,
-        String webclient
+        String webclient,
+        String readOnlyUser
 ) {
 }

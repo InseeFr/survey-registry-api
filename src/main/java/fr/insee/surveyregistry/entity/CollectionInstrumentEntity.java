@@ -1,36 +1,60 @@
 package fr.insee.surveyregistry.entity;
 
 import fr.insee.surveyregistry.enums.CollectionInstrumentMode;
-import fr.insee.surveyregistry.enums.CollectionInstrumentType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "instrument_collection")
+@Table(
+        name = "collection_instrument",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uq_collection_instrument_pogues_id_mode_version",
+                columnNames = {
+                        "pogues_id",
+                        "mode",
+                        "version"
+                }
+        )
+)
 public class CollectionInstrumentEntity {
 
     @Id
     @Column(name = "collection_instrument_id", columnDefinition = "uuid")
     private UUID collectionInstrumentId;
 
-    @ManyToOne
-    @JoinColumn(name = "conceptual_model_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pogues_id", nullable = false)
     private ConceptualModelEntity conceptualModel;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "mode", nullable = false)
     private CollectionInstrumentMode mode;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
-    private CollectionInstrumentType type;
+    @Column(name = "version", nullable = false)
+    private Integer version;
 
-    @Column(name = "content", columnDefinition = "text")
-    private String content;
+    @Column(name = "pogues_version_id", nullable = false, columnDefinition = "uuid")
+    private UUID poguesVersionId;
+
+    @Column(name = "generation_parameters", nullable = false)
+    private String generationParameters;
+
+    @Column(name = "release_description", nullable = false)
+    private String releaseDescription;
+
+    @Column(name = "release_date")
+    private Instant releaseDate;
+
+    @Column(name = "lunatic_content", columnDefinition = "jsonb")
+    private String lunaticContent;
+
+    @Column(name = "ddi_content", columnDefinition = "text")
+    private String ddiContent;
 
 }

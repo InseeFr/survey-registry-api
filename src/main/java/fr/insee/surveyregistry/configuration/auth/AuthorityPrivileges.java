@@ -8,7 +8,7 @@ public class AuthorityPrivileges {
             "hasAnyRole('DESIGNER', 'DESIGNER_ALTERNATIVE')";
 
     public static final String HAS_USER_PRIVILEGES =
-            "hasAnyRole('DESIGNER', 'DESIGNER_ALTERNATIVE', 'ADMIN', 'WEBCLIENT')";
+            "hasAnyRole('DESIGNER', 'DESIGNER_ALTERNATIVE', 'ADMIN', 'WEBCLIENT', 'READ_ONLY_USER')";
 
     public static final String HAS_ADMIN_PRIVILEGES =
             "hasRole('ADMIN')";

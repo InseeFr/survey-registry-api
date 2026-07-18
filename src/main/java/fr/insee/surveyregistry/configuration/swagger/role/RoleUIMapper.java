@@ -14,7 +14,8 @@ public enum RoleUIMapper {
             AuthorityRoleEnum.ADMIN,
             AuthorityRoleEnum.DESIGNER,
             AuthorityRoleEnum.DESIGNER_ALTERNATIVE,
-            AuthorityRoleEnum.WEBCLIENT),
+            AuthorityRoleEnum.WEBCLIENT,
+            AuthorityRoleEnum.READ_ONLY_USER),
     DESIGNER(AuthorityPrivileges.HAS_DESIGNER_PRIVILEGES,
             AuthorityRoleEnum.DESIGNER,
             AuthorityRoleEnum.DESIGNER_ALTERNATIVE);
