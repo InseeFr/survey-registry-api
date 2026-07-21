@@ -1,11 +1,11 @@
-package fr.insee.surveyregistry.service;
+package fr.insee.surveyregistry.service.codeslist;
 
-import fr.insee.surveyregistry.dto.CodesListContent;
-import fr.insee.surveyregistry.dto.CodesListMetadataDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
 import fr.insee.surveyregistry.dto.SearchConfig;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 import fr.insee.surveyregistry.enums.CodesListMetadataExpandableFieldsEnum;
-import fr.insee.surveyregistry.mapper.CodesListMetadataMapper;
+import fr.insee.surveyregistry.mapper.codeslist.CodesListMetadataMapper;
 import fr.insee.surveyregistry.repository.CodesListRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

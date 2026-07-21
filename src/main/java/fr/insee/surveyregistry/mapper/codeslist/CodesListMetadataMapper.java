@@ -1,10 +1,10 @@
-package fr.insee.surveyregistry.mapper;
+package fr.insee.surveyregistry.mapper.codeslist;
 
 import fr.insee.surveyregistry.dto.SearchConfig;
 import fr.insee.surveyregistry.enums.CodesListMetadataExpandableFieldsEnum;
 import jakarta.annotation.Nullable;
 import org.springframework.stereotype.Component;
-import fr.insee.surveyregistry.dto.CodesListMetadataDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
 import fr.insee.surveyregistry.repository.CodesListRepository.MetadataProjection;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package fr.insee.surveyregistry.dto;
+package fr.insee.surveyregistry.dto.codeslist;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.List;

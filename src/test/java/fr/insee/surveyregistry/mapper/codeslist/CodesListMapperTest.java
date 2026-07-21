@@ -1,8 +1,8 @@
-package fr.insee.surveyregistry.mapper;
+package fr.insee.surveyregistry.mapper.codeslist;
 
-import fr.insee.surveyregistry.dto.CodesListContent;
-import fr.insee.surveyregistry.dto.CodesListDto;
-import fr.insee.surveyregistry.dto.CodesListMetadataDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
 import fr.insee.surveyregistry.dto.SearchConfig;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 import org.junit.jupiter.api.Test;

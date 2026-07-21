@@ -1,5 +1,8 @@
-package fr.insee.surveyregistry.controller;
+package fr.insee.surveyregistry.controller.codeslist;
 
+import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import tools.jackson.databind.ObjectMapper;
 import fr.insee.surveyregistry.dto.*;
@@ -14,8 +17,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import fr.insee.surveyregistry.service.CodesListPublicationService;
-import fr.insee.surveyregistry.service.CodesListRecoveryService;
+import fr.insee.surveyregistry.service.codeslist.CodesListPublicationService;
+import fr.insee.surveyregistry.service.codeslist.CodesListRecoveryService;
 
 import java.util.List;
 import java.util.Map;

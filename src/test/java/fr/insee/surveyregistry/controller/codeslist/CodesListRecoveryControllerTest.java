@@ -1,10 +1,10 @@
-package fr.insee.surveyregistry.controller;
+package fr.insee.surveyregistry.controller.codeslist;
 
 import fr.insee.surveyregistry.enums.CodesListMetadataExpandableFieldsEnum;
-import fr.insee.surveyregistry.dto.CodesListContent;
-import fr.insee.surveyregistry.dto.CodesListMetadataDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
 import fr.insee.surveyregistry.dto.SearchConfig;
-import fr.insee.surveyregistry.service.CodesListRecoveryService;
+import fr.insee.surveyregistry.service.codeslist.CodesListRecoveryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -45,9 +45,7 @@ class CodesListRecoveryControllerTest {
     }
 
     @BeforeEach
-    void resetMocks() {
-        Mockito.reset(codesListRecoveryService);
-    }
+    void resetMocks() {Mockito.reset(codesListRecoveryService);}
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})

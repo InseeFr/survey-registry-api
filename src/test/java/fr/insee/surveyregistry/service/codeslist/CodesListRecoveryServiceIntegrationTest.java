@@ -1,12 +1,12 @@
-package fr.insee.surveyregistry.service;
+package fr.insee.surveyregistry.service.codeslist;
 
 import fr.insee.surveyregistry.enums.CodesListMetadataExpandableFieldsEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import fr.insee.surveyregistry.dto.CodesListContent;
-import fr.insee.surveyregistry.dto.CodesListMetadataDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
 import fr.insee.surveyregistry.dto.SearchConfig;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 import fr.insee.surveyregistry.repository.CodesListRepository;

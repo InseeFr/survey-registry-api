@@ -1,8 +1,8 @@
-package fr.insee.surveyregistry.mapper;
+package fr.insee.surveyregistry.mapper.codeslist;
 
 import org.springframework.stereotype.Component;
-import fr.insee.surveyregistry.dto.CodesListDto;
-import fr.insee.surveyregistry.dto.CodesListMetadataDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 
 @Component

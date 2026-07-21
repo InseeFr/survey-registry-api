@@ -1,13 +1,16 @@
-package fr.insee.surveyregistry.service;
+package fr.insee.surveyregistry.service.codeslist;
 
 import fr.insee.surveyregistry.dto.*;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import fr.insee.surveyregistry.entity.CodesListEntity;
-import fr.insee.surveyregistry.mapper.CodesListMapper;
+import fr.insee.surveyregistry.mapper.codeslist.CodesListMapper;
 import fr.insee.surveyregistry.repository.CodesListRepository;
 
 import java.util.*;

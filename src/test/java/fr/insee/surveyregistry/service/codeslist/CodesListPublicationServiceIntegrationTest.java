@@ -1,6 +1,9 @@
-package fr.insee.surveyregistry.service;
+package fr.insee.surveyregistry.service.codeslist;
 
 import fr.insee.surveyregistry.dto.*;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 import fr.insee.surveyregistry.repository.CodesListRepository;
 import org.junit.jupiter.api.BeforeEach;

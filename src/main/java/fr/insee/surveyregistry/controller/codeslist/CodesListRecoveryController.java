@@ -1,4 +1,4 @@
-package fr.insee.surveyregistry.controller;
+package fr.insee.surveyregistry.controller.codeslist;
 
 import fr.insee.surveyregistry.enums.CodesListMetadataExpandableFieldsEnum;
 import fr.insee.surveyregistry.configuration.auth.AuthorityPrivileges;
@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import fr.insee.surveyregistry.dto.CodesListContent;
-import fr.insee.surveyregistry.dto.CodesListMetadataDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
 import fr.insee.surveyregistry.dto.SearchConfig;
-import fr.insee.surveyregistry.service.CodesListRecoveryService;
+import fr.insee.surveyregistry.service.codeslist.CodesListRecoveryService;
 
 import java.util.List;
 import java.util.UUID;

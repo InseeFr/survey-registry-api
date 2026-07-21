@@ -1,10 +1,14 @@
-package fr.insee.surveyregistry.controller;
+package fr.insee.surveyregistry.controller.codeslist;
 
 import fr.insee.surveyregistry.configuration.auth.AuthorityPrivileges;
 import fr.insee.surveyregistry.constants.RegexPatterns;
 import fr.insee.surveyregistry.dto.*;
-import fr.insee.surveyregistry.service.CodesListPublicationService;
-import fr.insee.surveyregistry.service.CodesListRecoveryService;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
+import fr.insee.surveyregistry.dto.ErrorResponseDto;
+import fr.insee.surveyregistry.service.codeslist.CodesListPublicationService;
+import fr.insee.surveyregistry.service.codeslist.CodesListRecoveryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

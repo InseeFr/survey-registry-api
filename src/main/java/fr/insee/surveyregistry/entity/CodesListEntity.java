@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import fr.insee.surveyregistry.dto.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
 import fr.insee.surveyregistry.dto.SearchConfig;
 
 import java.util.UUID;
