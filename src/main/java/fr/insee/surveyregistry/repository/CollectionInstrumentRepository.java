@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,7 +22,7 @@ public interface CollectionInstrumentRepository extends JpaRepository<Collection
         CollectionInstrumentMode getMode();
         Integer getVersion();
         UUID getPoguesVersionId();
-        String getGenerationParameters();
+        Map<String, Object> getGenerationParameters();
         String getReleaseDescription();
         Instant getReleaseDate();
     }
@@ -49,7 +50,7 @@ public interface CollectionInstrumentRepository extends JpaRepository<Collection
     // Get only the Lunatic JSON content of a collection instrument
     // Avoids loading metadata and DDI content when only Lunatic data is required
     @Query("SELECT c.lunaticContent FROM CollectionInstrumentEntity c WHERE c.collectionInstrumentId = :id")
-    Optional<String> findLunaticContentById(@Param("id") UUID id);
+    Optional<Map<String, Object>> findLunaticContentById(@Param("id") UUID id);
 
     // Get only the DDI content of a collection instrument
     // Avoids loading metadata and Lunatic content when only DDI data is required

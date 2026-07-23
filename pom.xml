@@ -27,7 +27,7 @@
 		<url/>
 	</scm>
 	<properties>
-        <revision>2.5.0</revision> <!-- Version is managed by git tags -->
+        <revision>2.5.1</revision> <!-- Version is managed by git tags -->
 		<java.version>25</java.version>
 		<final.asset.name>survey-registry-api</final.asset.name>
 		<!-- override Spring Boot, see https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-dependencies/4.1.0 -->
@@ -135,15 +135,26 @@
 
 	</dependencies>
 
-	<!-- Force Apache Commons Lang3 to a secure version (>= 3.18.0) to fix CVE-2025-48924 / GHSA-j288-q9x7-2f5v -->
 	<dependencyManagement>
+
 		<dependencies>
+
+			<!-- Force Apache Commons Lang3 to a secure version (>= 3.18.0) to fix CVE-2025-48924 / GHSA-j288-q9x7-2f5v -->
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
 				<version>3.20.0</version>
 			</dependency>
+
+			<!-- Force Jackson Databind to a secure version (>= 2.21.5) to fix CVE-2026-54515 -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>2.21.5</version>
+			</dependency>
+
 		</dependencies>
+
 	</dependencyManagement>
 
 	<build>

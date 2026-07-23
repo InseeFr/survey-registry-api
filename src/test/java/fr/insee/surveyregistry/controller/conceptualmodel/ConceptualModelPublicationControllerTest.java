@@ -46,7 +46,7 @@ class ConceptualModelPublicationControllerTest {
     void setup() {Mockito.reset(conceptualModelPublicationService);}
 
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithMockUser(username = "designer", roles = {"DESIGNER"})
     void testCreateConceptualModel() throws Exception {
 
         ConceptualModelDto dto = new ConceptualModelDto("mquod4mj","s1193");
@@ -65,7 +65,7 @@ class ConceptualModelPublicationControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @WithMockUser(username = "designer", roles = {"DESIGNER"})
     void testCreateConceptualModel_AlreadyExists() throws Exception {
 
         ConceptualModelDto dto = new ConceptualModelDto("mquod4mj","s1193");
@@ -80,15 +80,16 @@ class ConceptualModelPublicationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.code").value(409))
-                .andExpect(jsonPath("$.message")
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.title").value("Resource already exists"))
+                .andExpect(jsonPath("$.detail")
                         .value("Conceptual model already exists for poguesId: mquod4mj"));
 
         Mockito.verify(conceptualModelPublicationService).create(dto);
     }
 
     @Test
-    @WithMockUser(username = "designer", roles = {"DESIGNER"})
+    @WithMockUser(username = "webclient", roles = {"WEBCLIENT"})
     void testCreateConceptualModel_Forbidden() throws Exception {
         ConceptualModelDto dto = new ConceptualModelDto("mquod4mj","s1193");
 

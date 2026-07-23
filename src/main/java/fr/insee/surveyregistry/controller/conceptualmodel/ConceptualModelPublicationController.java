@@ -1,7 +1,6 @@
 package fr.insee.surveyregistry.controller.conceptualmodel;
 
 import fr.insee.surveyregistry.configuration.auth.AuthorityPrivileges;
-import fr.insee.surveyregistry.dto.ErrorResponseDto;
 import fr.insee.surveyregistry.dto.conceptualmodel.ConceptualModelDto;
 import fr.insee.surveyregistry.service.conceptualmodel.ConceptualModelPublicationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,9 +12,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/conceptual-model")
@@ -24,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
         name = "Conceptual Model Publication",
         description = "Conceptual Model Endpoints for creation"
 )
-@PreAuthorize(AuthorityPrivileges.HAS_ADMIN_PRIVILEGES)
+@PreAuthorize(AuthorityPrivileges.HAS_DESIGNER_PRIVILEGES)
 public class ConceptualModelPublicationController {
 
     private final ConceptualModelPublicationService conceptualModelPublicationService;
@@ -54,9 +57,9 @@ public class ConceptualModelPublicationController {
                             responseCode = "409",
                             description = "Conceptual model already exists",
                             content = @Content(
-                                    mediaType = "application/json",
+                                    mediaType = "application/problem+json",
                                     schema = @Schema(
-                                            implementation = ErrorResponseDto.class
+                                            implementation = ProblemDetail.class
                                     )
                             )
                     )

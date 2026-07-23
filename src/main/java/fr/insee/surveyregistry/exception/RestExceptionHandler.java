@@ -1,45 +1,41 @@
 package fr.insee.surveyregistry.exception;
 
-import fr.insee.surveyregistry.dto.ErrorResponseDto;
-import lombok.NonNull;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.net.URI;
 
 @RestControllerAdvice
 public class RestExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<@NonNull ErrorResponseDto> handleResourceNotFound(
-            ResourceNotFoundException exception
-    ) {
-        return buildErrorResponse(
-                HttpStatus.NOT_FOUND,
-                exception.getMessage()
-        );
+    public ProblemDetail handleResourceNotFound(
+            ResourceNotFoundException exception,
+            HttpServletRequest request) {
+
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+
+        problemDetail.setTitle("Resource not found");
+        problemDetail.setDetail(exception.getMessage());
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
+
+        return problemDetail;
     }
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
-    public ResponseEntity<@NonNull ErrorResponseDto> handleResourceAlreadyExists(
-            ResourceAlreadyExistsException exception
-    ) {
-        return buildErrorResponse(
-                HttpStatus.CONFLICT,
-                exception.getMessage()
-        );
-    }
+    public ProblemDetail handleResourceAlreadyExists(
+            ResourceAlreadyExistsException exception,
+            HttpServletRequest request) {
 
-    private ResponseEntity<@NonNull ErrorResponseDto> buildErrorResponse(
-            HttpStatus status,
-            String message
-    ) {
-        return ResponseEntity
-                .status(status)
-                .body(new ErrorResponseDto(
-                        status.value(),
-                        message
-                ));
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+
+        problemDetail.setTitle("Resource already exists");
+        problemDetail.setDetail(exception.getMessage());
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
+
+        return problemDetail;
     }
 }

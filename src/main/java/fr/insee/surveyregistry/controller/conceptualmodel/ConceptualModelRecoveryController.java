@@ -1,7 +1,6 @@
 package fr.insee.surveyregistry.controller.conceptualmodel;
 
 import fr.insee.surveyregistry.configuration.auth.AuthorityPrivileges;
-import fr.insee.surveyregistry.dto.ErrorResponseDto;
 import fr.insee.surveyregistry.dto.conceptualmodel.ConceptualModelDto;
 import fr.insee.surveyregistry.service.conceptualmodel.ConceptualModelRecoveryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,9 +54,9 @@ public class ConceptualModelRecoveryController {
                             responseCode = "404",
                             description = "Conceptual model not found",
                             content = @Content(
-                                    mediaType = "application/json",
+                                    mediaType = "application/problem+json",
                                     schema = @Schema(
-                                            implementation = ErrorResponseDto.class
+                                            implementation = ProblemDetail.class
                                     )
                             )
                     )

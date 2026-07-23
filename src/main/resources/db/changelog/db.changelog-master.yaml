@@ -415,3 +415,12 @@ databaseChangeLog:
             columns:
               - column:
                   name: pogues_version_id
+
+  - changeSet:
+      id: 16
+      author: rverriez
+      changes:
+        - modifyDataType:
+            tableName: collection_instrument
+            columnName: generation_parameters
+            newDataType: jsonb

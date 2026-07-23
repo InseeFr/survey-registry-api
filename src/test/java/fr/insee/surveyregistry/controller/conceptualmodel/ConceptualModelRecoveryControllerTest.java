@@ -63,7 +63,11 @@ class ConceptualModelRecoveryControllerTest {
         );
 
         mockMvc.perform(get("/conceptual-model").param("poguesId", "unknown"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.title").value("Resource not found"))
+                .andExpect(jsonPath("$.detail")
+                        .value("Conceptual model not found for poguesId: unknown"));
 
         Mockito.verify(conceptualModelRecoveryService).getByPoguesId("unknown");
     }
