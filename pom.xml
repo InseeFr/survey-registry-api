@@ -32,7 +32,7 @@
         <final.asset.name>survey-registry-api</final.asset.name>
         <!-- override Spring Boot, see https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-dependencies/4.1.0 -->
         <netty.version>4.2.16.Final</netty.version>
-        <postgresql.version>42.7.12</postgresql.version>
+        <postgresql.version>42.7.13</postgresql.version>
         <jackson-2-bom.version>2.21.5</jackson-2-bom.version>
         <jackson-bom.version>3.1.5</jackson-bom.version>
         <!-- Version properties not managed by Spring Boot -->
