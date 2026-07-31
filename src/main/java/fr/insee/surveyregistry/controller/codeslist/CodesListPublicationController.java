@@ -3,10 +3,11 @@ package fr.insee.surveyregistry.controller.codeslist;
 import fr.insee.surveyregistry.configuration.auth.AuthorityPrivileges;
 import fr.insee.surveyregistry.constants.RegexPatterns;
 import fr.insee.surveyregistry.dto.*;
-import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContentDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
 import fr.insee.surveyregistry.dto.ErrorResponseDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 import fr.insee.surveyregistry.service.codeslist.CodesListPublicationService;
 import fr.insee.surveyregistry.service.codeslist.CodesListRecoveryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -166,7 +167,7 @@ public class CodesListPublicationController {
             @Parameter(name = "codesListId", required = true, in = ParameterIn.PATH)
             @PathVariable UUID codesListId,
             @Parameter(name = "content", description = "")
-            @Valid @RequestBody CodesListContent content) {
+            @Valid @RequestBody CodesListContentDto content) {
 
         codesListPublicationService.createContent(codesListId, content);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -197,7 +198,7 @@ public class CodesListPublicationController {
             @Parameter(name = "codesListId", required = true, in = ParameterIn.PATH)
             @PathVariable UUID codesListId,
             @Parameter(name = "searchConfig", description = "")
-            @Valid @RequestBody SearchConfig searchConfig) {
+            @Valid @RequestBody CodesListSearchConfigDto searchConfig) {
 
         codesListPublicationService.createSearchConfiguration(codesListId, searchConfig);
         return ResponseEntity.status(HttpStatus.CREATED).build();

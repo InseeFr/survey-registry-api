@@ -1,8 +1,8 @@
 package fr.insee.surveyregistry.service.codeslist;
 
-import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContentDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
-import fr.insee.surveyregistry.dto.SearchConfig;
+import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 import fr.insee.surveyregistry.enums.CodesListMetadataExpandableFieldsEnum;
 import fr.insee.surveyregistry.mapper.codeslist.CodesListMetadataMapper;
@@ -75,7 +75,7 @@ class CodesListRecoveryServiceTest {
         UUID id = UUID.randomUUID();
         CodesListRepository.MetadataProjection projection = mock(CodesListRepository.MetadataProjection.class);
 
-        SearchConfig searchConfig = new SearchConfig(Map.of("filter", true));
+        CodesListSearchConfigDto searchConfig = new CodesListSearchConfigDto(Map.of("filter", true));
 
         when(projection.getId()).thenReturn(id);
         when(projection.getLabel()).thenReturn("Label2");
@@ -101,7 +101,7 @@ class CodesListRecoveryServiceTest {
         UUID id = UUID.randomUUID();
         CodesListRepository.MetadataProjection projection = mock(CodesListRepository.MetadataProjection.class);
 
-        SearchConfig searchConfig = new SearchConfig(Map.of("filter", true));
+        CodesListSearchConfigDto searchConfig = new CodesListSearchConfigDto(Map.of("filter", true));
 
         when(projection.getId()).thenReturn(id);
         when(projection.getLabel()).thenReturn("Label2");
@@ -131,15 +131,15 @@ class CodesListRecoveryServiceTest {
         );
 
         CodesListEntity entity = new CodesListEntity();
-        entity.setContent(new CodesListContent(contentList));
+        entity.setContent(new CodesListContentDto(contentList));
 
         UUID id = UUID.randomUUID();
         when(repository.findById(id)).thenReturn(Optional.of(entity));
 
-        Optional<CodesListContent> result = service.getCodesListById(id);
+        Optional<CodesListContentDto> result = service.getCodesListById(id);
 
         assertTrue(result.isPresent());
-        CodesListContent contentWrapper = result.get();
+        CodesListContentDto contentWrapper = result.get();
 
         assertEquals("Code1", contentWrapper.items().getFirst().get("id"));
         assertEquals("Label1", contentWrapper.items().getFirst().get("label"));
@@ -150,15 +150,15 @@ class CodesListRecoveryServiceTest {
         Map<String,Object> searchConfigMap = Map.of("filter", true);
 
         CodesListEntity entity = new CodesListEntity();
-        entity.setSearchConfiguration(new SearchConfig(searchConfigMap));
+        entity.setSearchConfiguration(new CodesListSearchConfigDto(searchConfigMap));
 
         UUID id = UUID.randomUUID();
         when(repository.findById(id)).thenReturn(Optional.of(entity));
 
-        Optional<SearchConfig> result = service.getSearchConfiguration(id);
+        Optional<CodesListSearchConfigDto> result = service.getSearchConfiguration(id);
 
         assertTrue(result.isPresent());
-        SearchConfig configWrapper = result.get();
+        CodesListSearchConfigDto configWrapper = result.get();
 
         assertEquals(true, configWrapper.content().get("filter"));
     }
@@ -168,7 +168,7 @@ class CodesListRecoveryServiceTest {
         UUID id = UUID.randomUUID();
         when(repository.findById(id)).thenReturn(Optional.empty());
 
-        Optional<SearchConfig> result = service.getSearchConfiguration(id);
+        Optional<CodesListSearchConfigDto> result = service.getSearchConfiguration(id);
 
         assertTrue(result.isEmpty());
     }

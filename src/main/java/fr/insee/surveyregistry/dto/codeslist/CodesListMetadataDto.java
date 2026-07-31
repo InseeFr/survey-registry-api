@@ -2,7 +2,6 @@ package fr.insee.surveyregistry.dto.codeslist;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import fr.insee.surveyregistry.constants.RegexPatterns;
-import fr.insee.surveyregistry.dto.SearchConfig;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.NotBlank;
@@ -98,5 +97,5 @@ public record CodesListMetadataDto(
                 requiredMode = Schema.RequiredMode.NOT_REQUIRED
         )
         @JsonInclude(NON_NULL)
-        SearchConfig searchConfiguration
+        CodesListSearchConfigDto searchConfiguration
 ) { }

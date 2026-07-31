@@ -1,9 +1,9 @@
 package fr.insee.surveyregistry.controller.codeslist;
 
 import fr.insee.surveyregistry.enums.CodesListMetadataExpandableFieldsEnum;
-import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContentDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
-import fr.insee.surveyregistry.dto.SearchConfig;
+import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 import fr.insee.surveyregistry.service.codeslist.CodesListRecoveryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -125,7 +125,7 @@ class CodesListRecoveryControllerTest {
         );
 
         Mockito.when(codesListRecoveryService.getCodesListById(testId))
-                .thenReturn(Optional.of(new CodesListContent(content)));
+                .thenReturn(Optional.of(new CodesListContentDto(content)));
 
         mockMvc.perform(get("/codes-lists/" + testId))
                 .andExpect(status().isOk())
@@ -177,7 +177,7 @@ class CodesListRecoveryControllerTest {
     void testGetCodesListMetadataById_withExpandSearchConfiguration() throws Exception {
         UUID testId = UUID.randomUUID();
 
-        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", "urn:ddi:communes:2024:1", false, true, new SearchConfig(Map.of("enabled", true)));
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", "urn:ddi:communes:2024:1", false, true, new CodesListSearchConfigDto(Map.of("enabled", true)));
 
         List<CodesListMetadataExpandableFieldsEnum> expand = List.of(CodesListMetadataExpandableFieldsEnum.SEARCH_CONFIGURATION);
         Mockito.when(codesListRecoveryService.getMetadataById(testId, expand)).thenReturn(Optional.of(metadata));
@@ -228,7 +228,7 @@ class CodesListRecoveryControllerTest {
         Map<String, Object> searchConfig = Map.of("filter", true);
 
         Mockito.when(codesListRecoveryService.getSearchConfiguration(testId))
-                .thenReturn(Optional.of(new SearchConfig(searchConfig)));
+                .thenReturn(Optional.of(new CodesListSearchConfigDto(searchConfig)));
 
         mockMvc.perform(get("/codes-lists/" + testId + "/search-configuration"))
                 .andExpect(status().isOk())

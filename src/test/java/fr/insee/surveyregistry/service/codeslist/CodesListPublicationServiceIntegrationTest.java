@@ -1,9 +1,9 @@
 package fr.insee.surveyregistry.service.codeslist;
 
-import fr.insee.surveyregistry.dto.*;
-import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContentDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 import fr.insee.surveyregistry.repository.CodesListRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -129,10 +129,10 @@ class CodesListPublicationServiceIntegrationTest {
         List<Map<String, Object>> contentList = new ArrayList<>();
         contentList.add(code1);
 
-        service.createContent(id, new CodesListContent(contentList));
+        service.createContent(id, new CodesListContentDto(contentList));
 
         CodesListEntity created = codesListRepository.findById(id).orElseThrow();
-        CodesListContent createdContent = created.getContent();
+        CodesListContentDto createdContent = created.getContent();
 
         assertNotNull(createdContent);
         assertEquals(1, createdContent.items().size());
@@ -147,10 +147,10 @@ class CodesListPublicationServiceIntegrationTest {
 
         Map<String, Object> configMap = Map.of("type", "simple");
 
-        service.createSearchConfiguration(id, new SearchConfig(configMap));
+        service.createSearchConfiguration(id, new CodesListSearchConfigDto(configMap));
 
         CodesListEntity updated = codesListRepository.findById(id).orElseThrow();
-        SearchConfig searchConfigWrapper = updated.getSearchConfiguration();
+        CodesListSearchConfigDto searchConfigWrapper = updated.getSearchConfiguration();
 
         assertNotNull(searchConfigWrapper);
         Map<String, Object> searchConfig = searchConfigWrapper.content();
@@ -166,9 +166,9 @@ class CodesListPublicationServiceIntegrationTest {
         Map<String, Object> code1 = Map.of("id", "code1", "label", "Label1");
         List<Map<String, Object>> contentList = List.of(code1);
 
-        service.createContent(id, new CodesListContent(contentList));
+        service.createContent(id, new CodesListContentDto(contentList));
 
-        Executable action = () -> service.createContent(id, new CodesListContent(contentList));
+        Executable action = () -> service.createContent(id, new CodesListContentDto(contentList));
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, action);
         assertEquals(409, ex.getStatusCode().value());
@@ -181,9 +181,9 @@ class CodesListPublicationServiceIntegrationTest {
 
         Map<String, Object> configMap = Map.of("type", "simple");
 
-        service.createSearchConfiguration(id, new SearchConfig(configMap));
+        service.createSearchConfiguration(id, new CodesListSearchConfigDto(configMap));
 
-        Executable action = () -> service.createSearchConfiguration(id, new SearchConfig(configMap));
+        Executable action = () -> service.createSearchConfiguration(id, new CodesListSearchConfigDto(configMap));
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, action);
         assertEquals(409, ex.getStatusCode().value());

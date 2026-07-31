@@ -1,9 +1,9 @@
 package fr.insee.surveyregistry.service.codeslist;
 
-import fr.insee.surveyregistry.dto.*;
-import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContentDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -97,9 +97,9 @@ class CodesListPublicationServiceTest {
                 Map.of("code", "code2")
         );
 
-        service.createContent(id, new CodesListContent(contentList));
+        service.createContent(id, new CodesListContentDto(contentList));
 
-        CodesListContent createdContent = entity.getContent();
+        CodesListContentDto createdContent = entity.getContent();
 
         assertNotNull(createdContent);
         assertEquals(2, createdContent.items().size());
@@ -116,7 +116,7 @@ class CodesListPublicationServiceTest {
 
         List<Map<String, Object>> contentList = List.of(Map.of("code", "dummy"));
 
-        Executable executable = () -> service.createContent(id, new CodesListContent(contentList));
+        Executable executable = () -> service.createContent(id, new CodesListContentDto(contentList));
 
         assertThrows(IllegalArgumentException.class, executable);
     }
@@ -129,7 +129,7 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsByIdAndContentIsNotNull(id)).thenReturn(true);
 
         List<Map<String, Object>> contentList = List.of(Map.of("code", "code1"));
-        CodesListContent contentWrapper = new CodesListContent(contentList);
+        CodesListContentDto contentWrapper = new CodesListContentDto(contentList);
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                 () -> service.createContent(id, contentWrapper));
@@ -149,7 +149,7 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
         Map<String,Object> searchConfigMap = Map.of("type", "advanced");
-        SearchConfig searchConfig = new SearchConfig(searchConfigMap);
+        CodesListSearchConfigDto searchConfig = new CodesListSearchConfigDto(searchConfigMap);
 
         service.createSearchConfiguration(id, searchConfig);
 
@@ -168,7 +168,7 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
         Map<String,Object> searchConfigMap = Map.of();
-        SearchConfig searchConfig = new SearchConfig(searchConfigMap);
+        CodesListSearchConfigDto searchConfig = new CodesListSearchConfigDto(searchConfigMap);
 
         service.createSearchConfiguration(id, searchConfig);
 
@@ -181,7 +181,7 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsById(id)).thenReturn(false);
 
         Map<String,Object> searchConfigMap = Map.of("type", "advanced");
-        SearchConfig searchConfig = new SearchConfig(searchConfigMap);
+        CodesListSearchConfigDto searchConfig = new CodesListSearchConfigDto(searchConfigMap);
 
         Executable executable = () -> service.createSearchConfiguration(id, searchConfig);
 
@@ -196,7 +196,7 @@ class CodesListPublicationServiceTest {
         when(codesListRepository.existsByIdAndSearchConfigurationIsNotNull(id)).thenReturn(true);
 
         Map<String,Object> configMap = Map.of("type", "advanced");
-        SearchConfig configWrapper = new SearchConfig(configMap);
+        CodesListSearchConfigDto configWrapper = new CodesListSearchConfigDto(configMap);
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                 () -> service.createSearchConfiguration(id, configWrapper));

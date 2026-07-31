@@ -1,9 +1,9 @@
 package fr.insee.surveyregistry.service.codeslist;
 
-import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContentDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
-import fr.insee.surveyregistry.dto.SearchConfig;
+import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 import fr.insee.surveyregistry.mapper.codeslist.CodesListMapper;
 import fr.insee.surveyregistry.repository.CodesListRepository;
@@ -97,8 +97,10 @@ public class CodesListPublicationService {
      * @return next version as Integer
      */
     private Integer computeNextVersion(String theme, String referenceYear) {
-        Integer maxVersion = codesListRepository.findMaxVersionByThemeAndReferenceYear(theme, referenceYear);
-        return (maxVersion != null) ? maxVersion + 1 : 1;
+        return codesListRepository
+                .findMaxVersionByThemeAndReferenceYear(theme, referenceYear)
+                .map(maxVersion -> maxVersion + 1)
+                .orElse(1);
     }
 
     /**
@@ -120,7 +122,7 @@ public class CodesListPublicationService {
      * @param codesListId the UUID of the codes list
      * @param content the content object
      */
-    public void createContent(UUID codesListId, CodesListContent content) {
+    public void createContent(UUID codesListId, CodesListContentDto content) {
         if (!codesListRepository.existsById(codesListId)) {
             throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
         }
@@ -144,7 +146,7 @@ public class CodesListPublicationService {
      * @param codesListId the UUID of the codes list
      * @param searchConfig the search configuration object
      */
-    public void createSearchConfiguration(UUID codesListId, SearchConfig searchConfig) {
+    public void createSearchConfiguration(UUID codesListId, CodesListSearchConfigDto searchConfig) {
         if (!codesListRepository.existsById(codesListId)) {
             throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
         }

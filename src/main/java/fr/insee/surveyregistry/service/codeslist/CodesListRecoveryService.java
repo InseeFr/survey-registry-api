@@ -4,9 +4,9 @@ import fr.insee.surveyregistry.enums.CodesListMetadataExpandableFieldsEnum;
 import jakarta.annotation.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContentDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
-import fr.insee.surveyregistry.dto.SearchConfig;
+import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 import fr.insee.surveyregistry.mapper.codeslist.CodesListMetadataMapper;
 import fr.insee.surveyregistry.repository.CodesListRepository;
@@ -41,7 +41,7 @@ public class CodesListRecoveryService {
                 .toList();
     }
 
-    public Optional<CodesListContent> getCodesListById(UUID id) {
+    public Optional<CodesListContentDto> getCodesListById(UUID id) {
         return codesListRepository.findById(id)
                 .map(CodesListEntity::getContent);
     }
@@ -64,7 +64,7 @@ public class CodesListRecoveryService {
     }
 
     /** Return the search configuration associated to the codes list ID. */
-    public Optional<SearchConfig> getSearchConfiguration(UUID id) {
+    public Optional<CodesListSearchConfigDto> getSearchConfiguration(UUID id) {
         return codesListRepository.findById(id)
                 .map(CodesListEntity::getSearchConfiguration);
     }

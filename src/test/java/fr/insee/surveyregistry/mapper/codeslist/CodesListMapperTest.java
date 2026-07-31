@@ -1,9 +1,9 @@
 package fr.insee.surveyregistry.mapper.codeslist;
 
-import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContentDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
-import fr.insee.surveyregistry.dto.SearchConfig;
+import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 import org.junit.jupiter.api.Test;
 
@@ -31,8 +31,8 @@ class CodesListMapperTest {
         codesListEntity.setDeprecated(false);
         codesListEntity.setValid(true);
 
-        codesListEntity.setSearchConfiguration(new SearchConfig(Map.of("enabled", true)));
-        codesListEntity.setContent(new CodesListContent(List.of(Map.of("code","01"))));
+        codesListEntity.setSearchConfiguration(new CodesListSearchConfigDto(Map.of("enabled", true)));
+        codesListEntity.setContent(new CodesListContentDto(List.of(Map.of("code","01"))));
 
         // When
         CodesListDto dto = codesListMapper.toDto(codesListEntity);
@@ -63,8 +63,8 @@ class CodesListMapperTest {
 
         CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "Label2", 2, "COMMUNES", "2024", "urn:ddi:communes:2024:1", false, true, null);
 
-        CodesListDto dto = new CodesListDto(testId, metadata, new SearchConfig(Map.of("enabled", false)),
-                new CodesListContent(List.of(Map.of("code", "01"))));
+        CodesListDto dto = new CodesListDto(testId, metadata, new CodesListSearchConfigDto(Map.of("enabled", false)),
+                new CodesListContentDto(List.of(Map.of("code", "01"))));
 
         // When
         CodesListEntity entity = codesListMapper.toEntity(dto);

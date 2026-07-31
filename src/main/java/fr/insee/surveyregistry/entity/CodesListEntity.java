@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
-import fr.insee.surveyregistry.dto.SearchConfig;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContentDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 
 import java.util.UUID;
 
@@ -51,10 +51,10 @@ public class CodesListEntity {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "search_config")
-    private SearchConfig searchConfiguration;
+    private CodesListSearchConfigDto searchConfiguration;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "content")
-    private CodesListContent content;
+    private CodesListContentDto content;
 
 }

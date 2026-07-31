@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContentDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
-import fr.insee.surveyregistry.dto.SearchConfig;
+import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 import fr.insee.surveyregistry.service.codeslist.CodesListRecoveryService;
 
 import java.util.List;
@@ -100,7 +100,7 @@ public class CodesListRecoveryController {
             }
     )
     @GetMapping(value = "/{codesListId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CodesListContent> getCodesListById(
+    public ResponseEntity<CodesListContentDto> getCodesListById(
             @Parameter(name = "codesListId", required = true, in = ParameterIn.PATH)
             @PathVariable UUID codesListId) {
 
@@ -162,14 +162,14 @@ public class CodesListRecoveryController {
                             description = "Search configuration",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = SearchConfig.class)
+                                    schema = @Schema(implementation = CodesListSearchConfigDto.class)
                             )
                     ),
                     @ApiResponse(responseCode = "404", description = "Codes list not found")
             }
     )
     @GetMapping(value = "/{codesListId}/search-configuration", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SearchConfig> getCodesListSearchConfigById(
+    public ResponseEntity<CodesListSearchConfigDto> getCodesListSearchConfigById(
             @Parameter(name = "codesListId", required = true, in = ParameterIn.PATH)
             @PathVariable UUID codesListId) {
 

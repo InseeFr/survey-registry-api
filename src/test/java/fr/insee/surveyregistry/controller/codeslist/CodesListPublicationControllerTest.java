@@ -1,11 +1,11 @@
 package fr.insee.surveyregistry.controller.codeslist;
 
-import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContentDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import tools.jackson.databind.ObjectMapper;
-import fr.insee.surveyregistry.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -213,8 +213,8 @@ class CodesListPublicationControllerTest {
         return new CodesListDto(
                 testId,
                 metadataDto,
-                new SearchConfig(searchConfigJson),
-                new CodesListContent(contentJson)
+                new CodesListSearchConfigDto(searchConfigJson),
+                new CodesListContentDto(contentJson)
         );
     }
 
@@ -234,7 +234,7 @@ class CodesListPublicationControllerTest {
                 .andExpect(status().isCreated());
 
         Mockito.verify(codesListPublicationService)
-                .createContent(eq(testId), ArgumentMatchers.any(CodesListContent.class));
+                .createContent(eq(testId), ArgumentMatchers.any(CodesListContentDto.class));
     }
 
     @Test
@@ -250,7 +250,7 @@ class CodesListPublicationControllerTest {
                 .andExpect(status().isCreated());
 
         Mockito.verify(codesListPublicationService)
-                .createSearchConfiguration(eq(testId), any(SearchConfig.class));
+                .createSearchConfiguration(eq(testId), any(CodesListSearchConfigDto.class));
     }
 
     @Test

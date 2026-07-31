@@ -1,6 +1,6 @@
 package fr.insee.surveyregistry.mapper.codeslist;
 
-import fr.insee.surveyregistry.dto.SearchConfig;
+import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 import fr.insee.surveyregistry.enums.CodesListMetadataExpandableFieldsEnum;
 import jakarta.annotation.Nullable;
 import org.springframework.stereotype.Component;
@@ -35,7 +35,7 @@ public class CodesListMetadataMapper {
     }
 
     /** Only return the search configuration if the optional field is needed. */
-    private SearchConfig computeSearchConfiguration(MetadataProjection projection, @Nullable List<CodesListMetadataExpandableFieldsEnum> expand) {
+    private CodesListSearchConfigDto computeSearchConfiguration(MetadataProjection projection, @Nullable List<CodesListMetadataExpandableFieldsEnum> expand) {
         if (expand != null && expand.contains(CodesListMetadataExpandableFieldsEnum.SEARCH_CONFIGURATION)) {
             return projection.getSearchConfiguration();
         }

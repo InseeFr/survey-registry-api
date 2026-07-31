@@ -1,6 +1,6 @@
 package fr.insee.surveyregistry.repository;
 
-import fr.insee.surveyregistry.dto.SearchConfig;
+import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -25,7 +25,7 @@ public interface CodesListRepository extends JpaRepository<CodesListEntity, UUID
         @Nullable String getUrn();
         boolean isDeprecated();
         boolean isValid();
-        SearchConfig getSearchConfiguration();
+        CodesListSearchConfigDto getSearchConfiguration();
     }
 
     Optional<MetadataProjection> findMetadataById(UUID id);
@@ -50,7 +50,7 @@ public interface CodesListRepository extends JpaRepository<CodesListEntity, UUID
 
     // Get the maximum version for a given theme and referenceYear
     @Query("SELECT MAX(c.version) FROM CodesListEntity c WHERE c.theme = :theme AND c.referenceYear = :referenceYear")
-    Integer findMaxVersionByThemeAndReferenceYear(@Param("theme") String theme, @Param("referenceYear") String referenceYear);
+    Optional<Integer> findMaxVersionByThemeAndReferenceYear(@Param("theme") String theme, @Param("referenceYear") String referenceYear);
 
     // Deprecates all older versions of a codes list with the same theme and referenceYear, except for the current one
     @Modifying

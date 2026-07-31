@@ -38,4 +38,18 @@ public class RestExceptionHandler {
 
         return problemDetail;
     }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ProblemDetail handleInvalidRequest(
+            InvalidRequestException exception,
+            HttpServletRequest request) {
+
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+
+        problemDetail.setTitle("Invalid request");
+        problemDetail.setDetail(exception.getMessage());
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
+
+        return problemDetail;
+    }
 }

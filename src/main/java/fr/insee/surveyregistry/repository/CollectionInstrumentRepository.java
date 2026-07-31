@@ -45,7 +45,7 @@ public interface CollectionInstrumentRepository extends JpaRepository<Collection
     // Get the highest version number for a given conceptual model and collection mode
     // Used when creating a new collection instrument version
     @Query("SELECT MAX(c.version) FROM CollectionInstrumentEntity c WHERE c.conceptualModel.poguesId = :poguesId AND c.mode = :mode")
-    Integer findMaxVersionByPoguesIdAndMode(@Param("poguesId") String poguesId, @Param("mode") CollectionInstrumentMode mode);
+    Optional<Integer> findMaxVersionByPoguesIdAndMode(@Param("poguesId") String poguesId, @Param("mode") CollectionInstrumentMode mode);
 
     // Get only the Lunatic JSON content of a collection instrument
     // Avoids loading metadata and DDI content when only Lunatic data is required

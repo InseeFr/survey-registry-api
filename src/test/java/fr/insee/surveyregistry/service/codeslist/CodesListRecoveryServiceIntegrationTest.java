@@ -5,9 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import fr.insee.surveyregistry.dto.codeslist.CodesListContent;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContentDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
-import fr.insee.surveyregistry.dto.SearchConfig;
+import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 import fr.insee.surveyregistry.entity.CodesListEntity;
 import fr.insee.surveyregistry.repository.CodesListRepository;
 
@@ -65,7 +65,7 @@ class CodesListRecoveryServiceIntegrationTest {
         codesList.setReferenceYear("2024");
         codesList.setDeprecated(false);
         codesList.setValid(true);
-        codesList.setSearchConfiguration(new SearchConfig(Map.of("key", "value")));
+        codesList.setSearchConfiguration(new CodesListSearchConfigDto(Map.of("key", "value")));
 
         repository.save(codesList);
 
@@ -211,14 +211,14 @@ class CodesListRecoveryServiceIntegrationTest {
         List<Map<String,Object>> contentList = List.of(
                 Map.of("id", "Code1", "label", "Label1")
         );
-        codesList.setContent(new CodesListContent(contentList));
+        codesList.setContent(new CodesListContentDto(contentList));
 
         repository.save(codesList);
 
-        Optional<CodesListContent> result = service.getCodesListById(id3);
+        Optional<CodesListContentDto> result = service.getCodesListById(id3);
 
         assertTrue(result.isPresent());
-        CodesListContent contentWrapper = result.get();
+        CodesListContentDto contentWrapper = result.get();
 
         assertEquals("Code1", contentWrapper.items().getFirst().get("id"));
         assertEquals("Label1", contentWrapper.items().getFirst().get("label"));
@@ -240,14 +240,14 @@ class CodesListRecoveryServiceIntegrationTest {
         codesList.setValid(true);
 
         Map<String,Object> configMap = Map.of("filter", true);
-        codesList.setSearchConfiguration(new SearchConfig(configMap));
+        codesList.setSearchConfiguration(new CodesListSearchConfigDto(configMap));
 
         repository.save(codesList);
 
-        Optional<SearchConfig> result = service.getSearchConfiguration(id4);
+        Optional<CodesListSearchConfigDto> result = service.getSearchConfiguration(id4);
 
         assertTrue(result.isPresent());
-        SearchConfig configWrapper = result.get();
+        CodesListSearchConfigDto configWrapper = result.get();
 
         assertEquals(true, configWrapper.content().get("filter"));
     }
@@ -255,7 +255,7 @@ class CodesListRecoveryServiceIntegrationTest {
     @Test
     void testGetSearchConfiguration_NotFound() {
         UUID id = UUID.randomUUID();
-        Optional<SearchConfig> result = service.getSearchConfiguration(id);
+        Optional<CodesListSearchConfigDto> result = service.getSearchConfiguration(id);
         assertTrue(result.isEmpty());
     }
 }

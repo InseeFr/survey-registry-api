@@ -1,7 +1,7 @@
 package fr.insee.surveyregistry.mapper.codeslist;
 
 import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
-import fr.insee.surveyregistry.dto.SearchConfig;
+import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 import fr.insee.surveyregistry.enums.CodesListMetadataExpandableFieldsEnum;
 import fr.insee.surveyregistry.repository.CodesListRepository.MetadataProjection;
 import org.junit.jupiter.api.Test;
@@ -64,13 +64,13 @@ class CodesListMetadataMapperTest {
         when(projection.getUrn()).thenReturn("urn:ddi:communes:2024:1");
         when(projection.isDeprecated()).thenReturn(false);
         when(projection.isValid()).thenReturn(true);
-        when(projection.getSearchConfiguration()).thenReturn(new SearchConfig(Map.of("enabled", true)));
+        when(projection.getSearchConfiguration()).thenReturn(new CodesListSearchConfigDto(Map.of("enabled", true)));
 
         List<CodesListMetadataExpandableFieldsEnum> expand = List.of(CodesListMetadataExpandableFieldsEnum.SEARCH_CONFIGURATION);
         CodesListMetadataDto dto = metadataMapper.toDto(projection, expand);
 
         assertNotNull(dto);
-        assertEquals(new SearchConfig(Map.of("enabled", true)), dto.searchConfiguration());
+        assertEquals(new CodesListSearchConfigDto(Map.of("enabled", true)), dto.searchConfiguration());
     }
 
     @Test
@@ -86,7 +86,7 @@ class CodesListMetadataMapperTest {
         when(projection.getUrn()).thenReturn("urn:ddi:communes:2024:1");
         when(projection.isDeprecated()).thenReturn(false);
         when(projection.isValid()).thenReturn(true);
-        when(projection.getSearchConfiguration()).thenReturn(new SearchConfig(Map.of("enabled", true)));
+        when(projection.getSearchConfiguration()).thenReturn(new CodesListSearchConfigDto(Map.of("enabled", true)));
 
         List<CodesListMetadataExpandableFieldsEnum> expand = List.of();
         CodesListMetadataDto dto = metadataMapper.toDto(projection, expand);
