@@ -182,7 +182,7 @@ class CodesListRecoveryControllerTest {
         List<CodesListMetadataExpandableFieldsEnum> expand = List.of(CodesListMetadataExpandableFieldsEnum.SEARCH_CONFIGURATION);
         Mockito.when(codesListRecoveryService.getMetadataById(testId, expand)).thenReturn(Optional.of(metadata));
 
-        String response = mockMvc.perform(get("/codes-lists/"+ testId +"/metadata?expand=searchConfiguration"))
+        String response = mockMvc.perform(get("/codes-lists/"+ testId +"/metadata?expand=SEARCH_CONFIGURATION"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.label").value("CodesList1"))
                 .andExpect(jsonPath("$.version").value(1))

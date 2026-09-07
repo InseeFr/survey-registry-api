@@ -4,6 +4,17 @@ import fr.insee.surveyregistry.entity.ConceptualModelEntity;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @NullMarked
-public interface ConceptualModelRepository extends JpaRepository<ConceptualModelEntity, String> {
+public interface ConceptualModelRepository extends JpaRepository<ConceptualModelEntity, UUID> {
+
+    interface MetadataProjection {
+        UUID getPoguesVersionId();
+        String getPoguesId();
+        String getSerieId();
+    }
+
+    Optional<MetadataProjection> findMetadataByPoguesVersionId(UUID poguesVersionId);
 }

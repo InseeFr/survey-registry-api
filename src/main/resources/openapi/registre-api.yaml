@@ -36,11 +36,11 @@ paths:
       responses:
         "201":
           description: Questionnaire initialized
-  /questionnaires/{questionnaireId}/conceptual-model:
+  /questionnaires/{questionnaireId}/conceptual-models:
     put:
       tags:
         - Questionnaire Publication
-      summary: Publication of conceptual-model of questionnaire
+      summary: Publication of conceptual-models of questionnaire
       description: Pogues-Model publication
       operationId: putConceptualModelQuestionnaireById
       parameters:

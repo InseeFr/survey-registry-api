@@ -7,6 +7,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Entity
@@ -14,10 +16,15 @@ import lombok.Setter;
 public class ConceptualModelEntity {
 
     @Id
-    @Column(name = "pogues_id")
+    @Column(name = "pogues_version_id", columnDefinition = "uuid")
+    private UUID poguesVersionId;
+
+    @Column(name = "pogues_id", nullable = false)
     private String poguesId;
 
     @Column(name = "serie_id", nullable = false)
     private String serieId;
 
+    @Column(name = "ddi_content", columnDefinition = "text")
+    private String ddiContent;
 }

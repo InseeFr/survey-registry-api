@@ -16,27 +16,25 @@ public class CollectionInstrumentMapper {
         CollectionInstrumentMetadataDto metadataDto =
                 new CollectionInstrumentMetadataDto(
                         entity.getCollectionInstrumentId(),
-                        entity.getConceptualModel().getPoguesId(),
+                        entity.getConceptualModel().getPoguesVersionId(),
                         entity.getMode(),
                         entity.getVersion(),
-                        entity.getPoguesVersionId(),
                         entity.getGenerationParameters(),
                         entity.getReleaseDescription(),
-                        entity.getReleaseDate()
+                        entity.getReleaseDate(),
+                        null
                 );
 
         CollectionInstrumentLunaticContentDto lunaticContent =
                 entity.getLunaticContent() != null
                         ? new CollectionInstrumentLunaticContentDto(
-                        entity.getLunaticContent()
-                )
+                        entity.getLunaticContent())
                         : null;
 
         return new CollectionInstrumentDto(
                 entity.getCollectionInstrumentId(),
                 metadataDto,
-                lunaticContent,
-                entity.getDdiContent()
+                lunaticContent
         );
     }
 
@@ -46,14 +44,12 @@ public class CollectionInstrumentMapper {
         CollectionInstrumentEntity entity = new CollectionInstrumentEntity();
 
         entity.setCollectionInstrumentId(dto.collectionInstrumentId());
-
         entity.setConceptualModel(conceptualModel);
 
         CollectionInstrumentMetadataDto metadata = dto.metadata();
 
         entity.setMode(metadata.mode());
         entity.setVersion(metadata.version());
-        entity.setPoguesVersionId(metadata.poguesVersionId());
         entity.setGenerationParameters(metadata.generationParameters());
         entity.setReleaseDescription(metadata.releaseDescription());
 

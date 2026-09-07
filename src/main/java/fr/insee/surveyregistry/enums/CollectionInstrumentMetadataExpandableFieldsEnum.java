@@ -4,14 +4,14 @@ import lombok.Getter;
 
 /**
  * <p>
- * Codes list metadata can include some additional fields.
+ * CollectionInstrument metadata can include some additional fields.
  * User can ask for these fields through the {@code expand} query param.
  * </p>
  * <p>
- * e.g. {@code ?expand=SEARCH_CONFIGURATION}
+ * e.g. {@code ?expand=CODES_LISTS}
  * </p>
  */
 @Getter
-public enum CodesListMetadataExpandableFieldsEnum {
-    SEARCH_CONFIGURATION
+public enum CollectionInstrumentMetadataExpandableFieldsEnum {
+    CODES_LISTS
 }

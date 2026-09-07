@@ -1,13 +1,15 @@
 package fr.insee.surveyregistry.service.conceptualmodel;
 
-import fr.insee.surveyregistry.dto.conceptualmodel.ConceptualModelDto;
+import fr.insee.surveyregistry.dto.conceptualmodel.ConceptualModelMetadataDto;
 import fr.insee.surveyregistry.entity.ConceptualModelEntity;
 import fr.insee.surveyregistry.exception.ResourceNotFoundException;
-import fr.insee.surveyregistry.mapper.conceptualmodel.ConceptualModelMapper;
+import fr.insee.surveyregistry.mapper.conceptualmodel.ConceptualModelMetadataMapper;
 import fr.insee.surveyregistry.repository.ConceptualModelRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -15,26 +17,38 @@ import org.springframework.transaction.annotation.Transactional;
 public class ConceptualModelRecoveryService {
 
     private final ConceptualModelRepository conceptualModelRepository;
-    private final ConceptualModelMapper conceptualModelMapper;
+    private final ConceptualModelMetadataMapper conceptualModelMetadataMapper;
 
     /**
-     * Returns the conceptual model associated to the Pogues ID.
+     * Returns the conceptual model metadata associated to a Pogues version ID.
+     * DDI content is not returned.
      *
-     * @param poguesId Pogues identifier of the conceptual model.
-     * @return Conceptual model.
-     * @throws ResourceNotFoundException if no conceptual model exists for the given Pogues ID.
+     * @param poguesVersionId identifier of the conceptual model version
+     * @return conceptual model metadata
+     * @throws ResourceNotFoundException if no conceptual model exists for the given Pogues version ID
      */
-    public ConceptualModelDto getByPoguesId(String poguesId) {
-
-        ConceptualModelEntity entity =
-                conceptualModelRepository.findById(poguesId)
+    public ConceptualModelMetadataDto getByPoguesVersionId(UUID poguesVersionId) {
+        ConceptualModelRepository.MetadataProjection projection =
+                conceptualModelRepository.findMetadataByPoguesVersionId(poguesVersionId)
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(
-                                        "Conceptual model not found for poguesId: "
-                                                + poguesId
+                                        "Conceptual model not found for poguesVersionId: "
+                                                + poguesVersionId
                                 )
                         );
 
-        return conceptualModelMapper.toDto(entity);
+        return conceptualModelMetadataMapper.toDto(projection);
+    }
+
+    public String getDDIByPoguesVersionId(UUID poguesVersionId) {
+        ConceptualModelEntity conceptualModel = conceptualModelRepository
+                .findById(poguesVersionId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Conceptual model not found for poguesVersionId: "
+                                        + poguesVersionId
+                        )
+                );
+        return conceptualModel.getDdiContent();
     }
 }

@@ -8,19 +8,17 @@ import org.springframework.stereotype.Component;
 public class CollectionInstrumentMetadataMapper {
 
     public CollectionInstrumentMetadataDto toDto(CollectionInstrumentRepository.MetadataProjection projection) {
-        if (projection == null) {
-            return null;
-        }
+        if (projection == null) return null;
 
         return new CollectionInstrumentMetadataDto(
                 projection.getCollectionInstrumentId(),
-                projection.getPoguesId(),
+                projection.getConceptualModel().getPoguesVersionId(),
                 projection.getMode(),
                 projection.getVersion(),
-                projection.getPoguesVersionId(),
                 projection.getGenerationParameters(),
                 projection.getReleaseDescription(),
-                projection.getReleaseDate()
+                projection.getReleaseDate(),
+                null
         );
     }
 }

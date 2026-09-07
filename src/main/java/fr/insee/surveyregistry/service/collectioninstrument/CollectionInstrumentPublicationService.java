@@ -1,15 +1,18 @@
 package fr.insee.surveyregistry.service.collectioninstrument;
 
 import fr.insee.surveyregistry.dto.collectioninstrument.CollectionInstrumentDto;
+import fr.insee.surveyregistry.dto.collectioninstrument.CollectionInstrumentLunaticContentDto;
 import fr.insee.surveyregistry.dto.collectioninstrument.CollectionInstrumentMetadataDto;
 import fr.insee.surveyregistry.entity.CollectionInstrumentEntity;
 import fr.insee.surveyregistry.entity.ConceptualModelEntity;
 import fr.insee.surveyregistry.enums.CollectionInstrumentMode;
 import fr.insee.surveyregistry.exception.InvalidRequestException;
 import fr.insee.surveyregistry.exception.ResourceAlreadyExistsException;
+import fr.insee.surveyregistry.exception.ResourceNotFoundException;
 import fr.insee.surveyregistry.mapper.collectioninstrument.CollectionInstrumentMapper;
 import fr.insee.surveyregistry.repository.CollectionInstrumentRepository;
 import fr.insee.surveyregistry.repository.ConceptualModelRepository;
+import fr.insee.surveyregistry.validation.LunaticContentValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,38 +21,28 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CollectionInstrumentPublicationService {
 
     private final CollectionInstrumentRepository collectionInstrumentRepository;
     private final ConceptualModelRepository conceptualModelRepository;
     private final CollectionInstrumentMapper collectionInstrumentMapper;
+    private final LunaticContentValidator lunaticContentValidator;
 
     /**
      * Creates a collection instrument with metadata only.
-     * The collection instrument ID is automatically generated.
-     * The version is automatically incremented for the given Pogues ID and mode.
-     * Lunatic and DDI contents are not provided at this stage.
-     * The release date remains null until both contents are available.
+     * Lunatic content is not provided and release date remains null.
      *
-     * @param metadataDto the collection instrument metadata
-     * @return the generated collection instrument ID
+     * @param metadataDto collection instrument metadata
+     * @return generated collection instrument identifier
      */
-    @Transactional
-    public UUID createCollectionInstrumentMetadataOnly(CollectionInstrumentMetadataDto metadataDto) {
+    public UUID createCollectionInstrumentMetadataOnly(
+            CollectionInstrumentMetadataDto metadataDto
+    ) {
         CollectionInstrumentDto dto = new CollectionInstrumentDto(
                 null,
-                new CollectionInstrumentMetadataDto(
-                        null,
-                        metadataDto.poguesId(),
-                        metadataDto.mode(),
-                        null,
-                        metadataDto.poguesVersionId(),
-                        metadataDto.generationParameters(),
-                        metadataDto.releaseDescription(),
-                        null
-                ),
-                null,
+                metadataDto,
                 null
         );
 
@@ -57,78 +50,130 @@ public class CollectionInstrumentPublicationService {
     }
 
     /**
-     * Persists a collection instrument.
-     * The collection instrument ID is automatically generated.
+     * Creates a collection instrument.
+     * The collection instrument identifier is generated if absent.
      * The version is automatically incremented for the given Pogues ID and mode.
-     * The release date is set when both Lunatic and DDI contents are available.
+     * The release date is generated when Lunatic content is provided.
      *
-     * @param dto the collection instrument to create
-     * @return the generated collection instrument ID
+     * @param dto collection instrument to create
+     * @return generated collection instrument identifier
      */
     public UUID createCollectionInstrument(CollectionInstrumentDto dto) {
-        CollectionInstrumentMetadataDto metadata = dto.metadata();
+        CollectionInstrumentMetadataDto metadataDto = dto.metadata();
 
-        ConceptualModelEntity conceptualModel =
-                conceptualModelRepository.findById(metadata.poguesId())
+        ConceptualModelEntity conceptualModelEntity =
+                conceptualModelRepository.findById(metadataDto.poguesVersionId())
                         .orElseThrow(() ->
-                                new InvalidRequestException("No conceptual model found for poguesId: "
-                                        + metadata.poguesId()
-                                )
+                                new InvalidRequestException(
+                                        "No conceptual model found for poguesVersionId: "
+                                                + metadataDto.poguesVersionId())
                         );
 
-        CollectionInstrumentEntity entity = collectionInstrumentMapper.toEntity(dto, conceptualModel);
 
-        if (entity.getCollectionInstrumentId() == null) {
-            entity.setCollectionInstrumentId(UUID.randomUUID());
-        }
-
-        if (entity.getVersion() == null) {
-            entity.setVersion(computeNextVersion(metadata.poguesId(), metadata.mode()));
-        }
-
-        if (collectionInstrumentRepository
-                .existsByConceptualModel_PoguesIdAndModeAndVersion(
-                        metadata.poguesId(),
-                        metadata.mode(),
-                        entity.getVersion()
-                )) {
-
-            throw new ResourceAlreadyExistsException("Collection instrument with poguesId="
-                            + metadata.poguesId()
-                            + ", mode="
-                            + metadata.mode()
-                            + ", version="
-                            + entity.getVersion()
-                            + " already exists"
+        if (conceptualModelEntity.getDdiContent() == null) {
+            throw new InvalidRequestException(
+                    "Cannot create collection instrument because conceptual model DDI content is missing for " +
+                            "poguesVersionId: " + metadataDto.poguesVersionId()
             );
         }
 
-        if (dto.lunaticContent() != null) {entity.setLunaticContent(dto.lunaticContent().content());}
 
-        entity.setDdiContent(dto.ddiContent());
+        CollectionInstrumentEntity collectionInstrumentEntity =
+                collectionInstrumentMapper.toEntity(dto, conceptualModelEntity);
 
-        // The release date is set only when both contents are available.
-        if (entity.getLunaticContent() != null
-                && entity.getDdiContent() != null) {
-            entity.setReleaseDate(Instant.now());
+        collectionInstrumentEntity.setCollectionInstrumentId(UUID.randomUUID());
+
+        if (collectionInstrumentEntity.getVersion() == null) {
+            collectionInstrumentEntity.setVersion(
+                    computeNextVersion(
+                            conceptualModelEntity.getPoguesId(),
+                            metadataDto.mode()
+                    )
+            );
         }
 
-        collectionInstrumentRepository.save(entity);
+        if (collectionInstrumentRepository.existsByConceptualModel_PoguesIdAndModeAndVersion(
+                        conceptualModelEntity.getPoguesId(),
+                        metadataDto.mode(),
+                        collectionInstrumentEntity.getVersion()
+                )) {
 
-        return entity.getCollectionInstrumentId();
+            throw new ResourceAlreadyExistsException("Collection instrument already exists for poguesId="
+                            + conceptualModelEntity.getPoguesId()
+                            + ", mode="
+                            + metadataDto.mode()
+                            + ", version="
+                            + collectionInstrumentEntity.getVersion()
+            );
+        }
+
+        if(collectionInstrumentRepository.existsByConceptualModel_PoguesVersionIdAndMode(conceptualModelEntity.getPoguesVersionId(), metadataDto.mode())){
+            throw new ResourceAlreadyExistsException("Collection instrument already exists for poguesVersionId="
+                    + conceptualModelEntity.getPoguesVersionId()
+                    + ", mode="
+                    + metadataDto.mode()
+            );
+        }
+
+        if (dto.lunaticContent() != null) {
+            lunaticContentValidator.validate(dto.lunaticContent().lunaticContent());
+
+            collectionInstrumentEntity.setLunaticContent(
+                    dto.lunaticContent().lunaticContent()
+            );
+
+            collectionInstrumentEntity.setReleaseDate(Instant.now());
+        }
+
+        collectionInstrumentRepository.save(collectionInstrumentEntity);
+
+        return collectionInstrumentEntity.getCollectionInstrumentId();
     }
 
     /**
-     * Computes the next version for a given Pogues ID and collection mode.
+     * Computes the next collection instrument version.
+     * Versions are incremented per Pogues ID and collection mode.
      *
-     * @param poguesId the Pogues ID of the conceptual model
-     * @param mode the collection mode
-     * @return the next version number
+     * @param poguesId conceptual model Pogues identifier
+     * @param mode collection instrument mode
+     * @return next version number
      */
     private Integer computeNextVersion(String poguesId, CollectionInstrumentMode mode) {
         return collectionInstrumentRepository
                 .findMaxVersionByPoguesIdAndMode(poguesId, mode)
                 .map(maxVersion -> maxVersion + 1)
                 .orElse(1);
+    }
+
+    /**
+     * Adds Lunatic content to an existing collection instrument.
+     * The release date is automatically set when the Lunatic content is added.
+     *
+     * @param collectionInstrumentId the UUID of the collection instrument
+     * @param lunaticContent the Lunatic content object
+     * @throws ResourceNotFoundException if the collection instrument does not exist
+     * @throws ResourceAlreadyExistsException if Lunatic content already exists
+     */
+    public void addLunaticContent(UUID collectionInstrumentId, CollectionInstrumentLunaticContentDto lunaticContent) {
+        CollectionInstrumentEntity collectionInstrumentEntity =
+                collectionInstrumentRepository.findById(collectionInstrumentId)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Collection instrument not found for id: " + collectionInstrumentId
+                                )
+                        );
+
+        if (collectionInstrumentEntity.getLunaticContent() != null) {
+            throw new ResourceAlreadyExistsException(
+                    "Lunatic content already exists for collectionInstrumentId: " + collectionInstrumentId
+            );
+        }
+
+        lunaticContentValidator.validate(lunaticContent.lunaticContent());
+
+        collectionInstrumentEntity.setLunaticContent(lunaticContent.lunaticContent());
+        collectionInstrumentEntity.setReleaseDate(Instant.now());
+
+        collectionInstrumentRepository.save(collectionInstrumentEntity);
     }
 }

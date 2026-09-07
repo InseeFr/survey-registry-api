@@ -1,14 +1,15 @@
 package fr.insee.surveyregistry.service.conceptualmodel;
 
-import fr.insee.surveyregistry.dto.conceptualmodel.ConceptualModelDto;
+import fr.insee.surveyregistry.dto.conceptualmodel.ConceptualModelMetadataDto;
 import fr.insee.surveyregistry.entity.ConceptualModelEntity;
 import fr.insee.surveyregistry.exception.ResourceNotFoundException;
-import fr.insee.surveyregistry.mapper.conceptualmodel.ConceptualModelMapper;
+import fr.insee.surveyregistry.mapper.conceptualmodel.ConceptualModelMetadataMapper;
 import fr.insee.surveyregistry.repository.ConceptualModelRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -16,52 +17,103 @@ import static org.mockito.Mockito.*;
 class ConceptualModelRecoveryServiceTest {
 
     private ConceptualModelRepository repository;
-    private ConceptualModelMapper mapper;
+    private ConceptualModelMetadataMapper mapper;
     private ConceptualModelRecoveryService service;
-
 
     @BeforeEach
     void setUp() {
         repository = mock(ConceptualModelRepository.class);
-        mapper = mock(ConceptualModelMapper.class);
+        mapper = mock(ConceptualModelMetadataMapper.class);
 
         service = new ConceptualModelRecoveryService(repository, mapper);
     }
 
-
     @Test
-    void testGetByPoguesId_Found() {
-        String poguesId = "mquod4mj";
+    void testGetByPoguesVersionId_Found() {
+        // Given
+        UUID poguesVersionId = UUID.randomUUID();
 
-        ConceptualModelEntity entity = new ConceptualModelEntity();
-        entity.setPoguesId(poguesId);
-        entity.setSerieId("s1193");
+        ConceptualModelRepository.MetadataProjection projection =
+                mock(ConceptualModelRepository.MetadataProjection.class);
 
-        ConceptualModelDto dto = new ConceptualModelDto(poguesId,"s1193");
+        ConceptualModelMetadataDto dto =
+                new ConceptualModelMetadataDto(
+                        poguesVersionId,
+                        "mquod4mj",
+                        "s1193"
+                );
 
-        when(repository.findById(poguesId)).thenReturn(Optional.of(entity));
-        when(mapper.toDto(entity)).thenReturn(dto);
+        when(repository.findMetadataByPoguesVersionId(poguesVersionId))
+                .thenReturn(Optional.of(projection));
 
-        ConceptualModelDto result = service.getByPoguesId(poguesId);
+        when(mapper.toDto(projection)).thenReturn(dto);
 
+        // When
+        ConceptualModelMetadataDto result = service.getByPoguesVersionId(poguesVersionId);
+
+        // Then
         assertNotNull(result);
+        assertEquals(poguesVersionId, result.poguesVersionId());
         assertEquals("mquod4mj", result.poguesId());
         assertEquals("s1193", result.serieId());
 
-        verify(repository).findById(poguesId);
-        verify(mapper).toDto(entity);
+        verify(repository).findMetadataByPoguesVersionId(poguesVersionId);
+        verify(mapper).toDto(projection);
     }
 
+    @Test
+    void testGetByPoguesVersionId_NotFound() {
+        // Given
+        UUID poguesVersionId = UUID.randomUUID();
+
+        when(repository.findMetadataByPoguesVersionId(poguesVersionId))
+                .thenReturn(Optional.empty());
+
+        // When / Then
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> service.getByPoguesVersionId(poguesVersionId)
+        );
+
+        verify(repository).findMetadataByPoguesVersionId(poguesVersionId);
+        verify(mapper, never()).toDto(any());
+    }
 
     @Test
-    void testGetByPoguesId_NotFound() {
-        String poguesId = "unknown";
+    void testGetDDIByPoguesVersionId_Found() {
+        // Given
+        UUID poguesVersionId = UUID.randomUUID();
+        String ddiContent = "<DDIInstance>content</DDIInstance>";
+        ConceptualModelEntity entity = new ConceptualModelEntity();
+        entity.setPoguesVersionId(poguesVersionId);
+        entity.setDdiContent(ddiContent);
 
-        when(repository.findById(poguesId)).thenReturn(Optional.empty());
+        when(repository.findById(poguesVersionId))
+                .thenReturn(Optional.of(entity));
 
-        assertThrows(ResourceNotFoundException.class, () -> service.getByPoguesId(poguesId));
+        // When
+        String result = service.getDDIByPoguesVersionId(poguesVersionId);
 
-        verify(repository).findById(poguesId);
-        verify(mapper, never()).toDto(any());
+        // Then
+        assertEquals(ddiContent, result);
+
+        verify(repository).findById(poguesVersionId);
+    }
+
+    @Test
+    void testGetDDIByPoguesVersionId_NotFound() {
+        // Given
+        UUID poguesVersionId = UUID.randomUUID();
+
+        when(repository.findById(poguesVersionId))
+                .thenReturn(Optional.empty());
+
+        // When / Then
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> service.getDDIByPoguesVersionId(poguesVersionId)
+        );
+
+        verify(repository).findById(poguesVersionId);
     }
 }

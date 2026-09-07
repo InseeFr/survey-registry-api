@@ -4,6 +4,8 @@ import fr.insee.surveyregistry.dto.conceptualmodel.ConceptualModelDto;
 import fr.insee.surveyregistry.entity.ConceptualModelEntity;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ConceptualModelMapperTest {
@@ -11,34 +13,54 @@ class ConceptualModelMapperTest {
     private final ConceptualModelMapper conceptualModelMapper = new ConceptualModelMapper();
 
     @Test
-    void testToDto_WithValidEntity() {
+    void testToDto_WithValidEntityWithoutDdiContent() {
         // Given
+        UUID poguesVersionId = UUID.randomUUID();
         ConceptualModelEntity entity = new ConceptualModelEntity();
 
+        entity.setPoguesVersionId(poguesVersionId);
         entity.setPoguesId("mquod4mj");
         entity.setSerieId("s1193");
+        entity.setDdiContent(null);
 
         // When
         ConceptualModelDto dto = conceptualModelMapper.toDto(entity);
 
         // Then
         assertNotNull(dto);
-        assertEquals("mquod4mj", dto.poguesId());
-        assertEquals("s1193", dto.serieId());
+        assertEquals(poguesVersionId, dto.poguesVersionId());
+
+        assertNotNull(dto.metadata());
+        assertEquals(poguesVersionId, dto.metadata().poguesVersionId());
+        assertEquals("mquod4mj", dto.metadata().poguesId());
+        assertEquals("s1193", dto.metadata().serieId());
+
+        assertNull(dto.ddiContent());
     }
 
     @Test
-    void testToEntity_WithValidDto() {
+    void testToDto_WithValidEntityWithDdiContent() {
         // Given
-        ConceptualModelDto dto = new ConceptualModelDto("mquod4mj","s1193");
+        UUID poguesVersionId = UUID.randomUUID();
+        ConceptualModelEntity entity = new ConceptualModelEntity();
+
+        entity.setPoguesVersionId(poguesVersionId);
+        entity.setPoguesId("mquod4mj");
+        entity.setSerieId("s1193");
+        entity.setDdiContent("<DDIInstance></DDIInstance>");
 
         // When
-        ConceptualModelEntity entity = conceptualModelMapper.toEntity(dto);
+        ConceptualModelDto dto = conceptualModelMapper.toDto(entity);
 
         // Then
-        assertNotNull(entity);
-        assertEquals("mquod4mj", entity.getPoguesId());
-        assertEquals("s1193", entity.getSerieId());
+        assertNotNull(dto);
+        assertEquals(poguesVersionId, dto.poguesVersionId());
+
+        assertNotNull(dto.metadata());
+        assertEquals("mquod4mj", dto.metadata().poguesId());
+        assertEquals("s1193", dto.metadata().serieId());
+
+        assertEquals("<DDIInstance></DDIInstance>", dto.ddiContent());
     }
 
     @Test
@@ -48,14 +70,5 @@ class ConceptualModelMapperTest {
 
         // Then
         assertNull(dto);
-    }
-
-    @Test
-    void testToEntity_WithNullDto() {
-        // When
-        ConceptualModelEntity entity = conceptualModelMapper.toEntity(null);
-
-        // Then
-        assertNull(entity);
     }
 }

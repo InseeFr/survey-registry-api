@@ -424,3 +424,110 @@ databaseChangeLog:
             tableName: collection_instrument
             columnName: generation_parameters
             newDataType: jsonb
+
+  - changeSet:
+      id: 17
+      author: rverriez
+      changes:
+
+        - dropTable:
+            tableName: collection_instrument
+            cascadeConstraints: true
+
+        - dropTable:
+            tableName: conceptual_model
+            cascadeConstraints: true
+
+        - createTable:
+            tableName: conceptual_model
+            columns:
+              - column:
+                  name: pogues_version_id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: pogues_id
+                  type: varchar
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: serie_id
+                  type: varchar
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: ddi_content
+                  type: text
+
+        - createTable:
+            tableName: collection_instrument
+            columns:
+              - column:
+                  name: collection_instrument_id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: pogues_version_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: mode
+                  type: varchar
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: version
+                  type: integer
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: generation_parameters
+                  type: jsonb
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: release_description
+                  type: text
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: release_date
+                  type: timestamp with time zone
+
+              - column:
+                  name: lunatic_content
+                  type: jsonb
+
+        - addForeignKeyConstraint:
+            baseTableName: collection_instrument
+            baseColumnNames: pogues_version_id
+            referencedTableName: conceptual_model
+            referencedColumnNames: pogues_version_id
+            constraintName: fk_collection_instrument_conceptual_model
+
+        - sql:
+            sql: >
+              ALTER TABLE collection_instrument
+              ADD CONSTRAINT chk_instrument_mode
+              CHECK (mode IN ('CAWI','CATI','CAPI','PAPI'));
+
+        - createIndex:
+            tableName: collection_instrument
+            indexName: idx_collection_instrument_pogues_version_id
+            columns:
+              - column:
+                  name: pogues_version_id

@@ -30,13 +30,6 @@ public record CollectionInstrumentDto(
                 type = "Map<String,Object>",
                 example = "{}"
         )
-        CollectionInstrumentLunaticContentDto lunaticContent,
-
-        @Schema(
-                name = "ddiContent",
-                description = "DDI content as XML string",
-                example = "<DDIInstance>...</DDIInstance>"
-        )
-        String ddiContent
+        CollectionInstrumentLunaticContentDto lunaticContent
 
 ) { }
