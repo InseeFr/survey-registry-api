@@ -227,7 +227,7 @@ public class CollectionInstrumentRecoveryController {
 
     /**
      * GET /collection-instruments/{collectionInstrumentId}/ddi :
-     * Get DDI of a collection instrument
+     * Get DDI of a collection instrument.
      *
      * @param collectionInstrumentId the collection instrument identifier
      * @return collection instrument DDI, XML format

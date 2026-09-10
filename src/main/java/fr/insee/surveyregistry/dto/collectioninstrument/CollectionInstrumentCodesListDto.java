@@ -4,9 +4,8 @@ import java.net.URI;
 import java.util.UUID;
 
 public record CollectionInstrumentCodesListDto(
-        // id of codesList
+        // ID of the code list
         UUID id,
-        // url to retrieve the codeList in registry
+        // URL to retrieve the code list from the registry
         URI url
-) {
-}
+) { }

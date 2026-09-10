@@ -78,7 +78,7 @@ public class ConceptualModelRecoveryController {
 
     /**
      * GET /conceptual-models/{poguesVersionId}/ddi :
-     * Get DDI of a collection instrument
+     * Get DDI of a collection instrument.
      *
      * @param poguesVersionId the conceptual model identifier
      * @return conceptual-model DDI, XML format

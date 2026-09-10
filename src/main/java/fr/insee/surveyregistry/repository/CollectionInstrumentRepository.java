@@ -48,8 +48,8 @@ public interface CollectionInstrumentRepository extends JpaRepository<Collection
     @Query("SELECT MAX(c.version) FROM CollectionInstrumentEntity c WHERE c.conceptualModel.poguesId = :poguesId AND c.mode = :mode")
     Optional<Integer> findMaxVersionByPoguesIdAndMode(@Param("poguesId") String poguesId, @Param("mode") CollectionInstrumentMode mode);
 
-    // Get only the suggesters names i.e. the codeLists ID from the Lunatic content, without loading
-    // the full JSON document into memory. Relies on PostgreSQL jsonb operators.
+    // Get only the suggester names (i.e. the code list IDs) from the Lunatic content, without loading
+    // the full JSON document into memory. Relies on PostgreSQL JSONB operators.
     @Query(value = """
             SELECT (suggester ->> 'name')::uuid
             FROM collection_instrument c,

@@ -10,19 +10,18 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * API HealthCheck
+ * API Health Check
  */
 @RestController
 @RequestMapping("/api")
-@Tag(name="HealthCheck")
+@Tag(name = "HealthCheck")
 @Slf4j
 public class HealthCheckController {
 
     @GetMapping("/healthcheck")
-    @Operation(summary = "Healthcheck, check if api is alive")
+    @Operation(summary = "Health check: check whether the API is available")
     @ResponseStatus(HttpStatus.OK)
     public void healthCheck() {
         log.debug("HealthCheck");
     }
-
 }

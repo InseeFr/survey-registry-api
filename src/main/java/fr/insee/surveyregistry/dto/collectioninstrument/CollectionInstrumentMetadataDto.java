@@ -79,7 +79,7 @@ public record CollectionInstrumentMetadataDto(
 
         @Schema(
                 name = "codesLists",
-                description = "Provided if requested with expand param, list of codesList of collection-instrument",
+                description = "Provided if requested with the expand parameter: list of code lists for collection instruments",
                 example = "[ { \"id\": \"123e4567-e89b-12d3-a456-426614174000\", \"url\": \"https://registry.example.com/codes-lists/123e4567-e89b-12d3-a456-426614174000\" } ]",
                 accessMode = Schema.AccessMode.READ_ONLY
         )
