@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: "temurin"
-          java-version: "25"
+          java-version: "25.0.4+101.0.LTS"
 
       - name: Checkout Survey-Registry-API repo
         uses: actions/checkout@v6
@@ -64,7 +64,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: "temurin"
-          java-version: "25"
+          java-version: "25.0.4+101.0.LTS"
 
       - uses: actions/checkout@v6
       - name: Build Survey-Registry-API with Maven
