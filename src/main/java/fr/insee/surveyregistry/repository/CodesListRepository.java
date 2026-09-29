@@ -30,11 +30,12 @@ public interface CodesListRepository extends JpaRepository<CodesListEntity, UUID
 
     Optional<MetadataProjection> findMetadataById(UUID id);
 
-    // Get all codes lists metadata with optional filters on valid and deprecated flags
-    @Query("SELECT c FROM CodesListEntity c WHERE (:valid IS NULL OR c.valid = :valid) AND (:deprecated IS NULL OR c.deprecated = :deprecated)")
+    // Get all codes lists metadata with optional filters on valid, deprecated and urn
+    @Query("SELECT c FROM CodesListEntity c WHERE (:valid IS NULL OR c.valid = :valid) AND (:deprecated IS NULL OR c.deprecated = :deprecated) AND (:urn IS NULL OR c.urn = :urn)")
     List<MetadataProjection> findAllMetadata(
             @Param("valid") @Nullable Boolean valid,
-            @Param("deprecated") @Nullable Boolean deprecated);
+            @Param("deprecated") @Nullable Boolean deprecated,
+            @Param("urn") @Nullable String urn);
 
     // Check if the content already exists
     boolean existsByIdAndContentIsNotNull(UUID id);

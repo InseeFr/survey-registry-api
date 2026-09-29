@@ -30,13 +30,14 @@ public class CodesListRecoveryService {
         this.metadataMapper = metadataMapper;
     }
 
-    /** Returns codes lists metadata, optionally filtered by validity and deprecation status. */
+    /** Returns codes lists metadata, optionally filtered by validity, deprecation status and urn. */
     public List<CodesListMetadataDto> getAllMetadata(
             @Nullable List<CodesListMetadataExpandableFieldsEnum> expand,
             @Nullable Boolean valid,
-            @Nullable Boolean deprecated) {
+            @Nullable Boolean deprecated,
+            @Nullable String urn) {
 
-        return codesListRepository.findAllMetadata(valid, deprecated).stream()
+        return codesListRepository.findAllMetadata(valid, deprecated, urn).stream()
                 .map(v -> metadataMapper.toDto(v, expand))
                 .toList();
     }

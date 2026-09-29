@@ -43,7 +43,7 @@ class CodesListRecoveryServiceIntegrationTest {
 
         repository.save(codesList);
 
-        List<CodesListMetadataDto> result = service.getAllMetadata(null, null, null);
+        List<CodesListMetadataDto> result = service.getAllMetadata(null, null, null, null);
 
         assertEquals(1, result.size());
         assertEquals("Label1", result.getFirst().label());
@@ -69,7 +69,7 @@ class CodesListRecoveryServiceIntegrationTest {
 
         repository.save(codesList);
 
-        List<CodesListMetadataDto> result = service.getAllMetadata(List.of(CodesListMetadataExpandableFieldsEnum.SEARCH_CONFIGURATION), null, null);
+        List<CodesListMetadataDto> result = service.getAllMetadata(List.of(CodesListMetadataExpandableFieldsEnum.SEARCH_CONFIGURATION), null, null, null);
 
         assertEquals(1, result.size());
         assertEquals("Label1", result.getFirst().label());
@@ -95,7 +95,7 @@ class CodesListRecoveryServiceIntegrationTest {
         repository.save(codesList);
 
         List<CodesListMetadataDto> result =
-                service.getAllMetadata(null, true, null);
+                service.getAllMetadata(null, true, null, null);
 
         assertEquals(1, result.size());
     }
@@ -115,7 +115,7 @@ class CodesListRecoveryServiceIntegrationTest {
         repository.save(codesList);
 
         List<CodesListMetadataDto> result =
-                service.getAllMetadata(null, false, null);
+                service.getAllMetadata(null, false, null, null);
 
         assertEquals(1, result.size());
     }
@@ -135,7 +135,7 @@ class CodesListRecoveryServiceIntegrationTest {
         repository.save(codesList);
 
         List<CodesListMetadataDto> result =
-                service.getAllMetadata(null, null, true);
+                service.getAllMetadata(null, null, true, null);
 
         assertEquals(1, result.size());
     }
@@ -165,7 +165,7 @@ class CodesListRecoveryServiceIntegrationTest {
         repository.save(codesList2);
 
         List<CodesListMetadataDto> result =
-                service.getAllMetadata(null, true, false);
+                service.getAllMetadata(null, true, false, null);
 
         assertEquals(1, result.size());
         assertEquals("Label1", result.getFirst().label());
@@ -194,6 +194,138 @@ class CodesListRecoveryServiceIntegrationTest {
         assertEquals("2024", result.get().referenceYear());
         assertFalse(result.get().isDeprecated());
         assertTrue(result.get().isValid());
+    }
+
+    @Test
+    void testGetAllMetadataFilteredByUrn() {
+        String urn = "urn:codeslist:communes:2024";
+
+        CodesListEntity codesList1 = new CodesListEntity();
+        codesList1.setId(UUID.randomUUID());
+        codesList1.setLabel("Label1");
+        codesList1.setVersion(1);
+        codesList1.setTheme("COMMUNES");
+        codesList1.setReferenceYear("2024");
+        codesList1.setDeprecated(true);
+        codesList1.setValid(true);
+        codesList1.setUrn(urn);
+
+        CodesListEntity codesList2 = new CodesListEntity();
+        codesList2.setId(UUID.randomUUID());
+        codesList2.setLabel("Label2");
+        codesList2.setVersion(2);
+        codesList2.setTheme("COMMUNES");
+        codesList2.setReferenceYear("2024");
+        codesList2.setDeprecated(false);
+        codesList2.setValid(true);
+        codesList2.setUrn(urn);
+
+        repository.save(codesList1);
+        repository.save(codesList2);
+
+        List<CodesListMetadataDto> result = service.getAllMetadata(null, null, null, urn);
+
+        assertEquals(2, result.size());
+        assertTrue(result.stream().anyMatch(dto -> dto.version() == 1));
+        assertTrue(result.stream().anyMatch(dto -> dto.version() == 2));
+    }
+
+    @Test
+    void testGetAllMetadataFilteredByUrnWithSearchConfig() {
+        String urn = "urn:codeslist:communes:2024";
+
+        CodesListEntity codesList = new CodesListEntity();
+        codesList.setId(UUID.randomUUID());
+        codesList.setLabel("Label1");
+        codesList.setVersion(1);
+        codesList.setTheme("COMMUNES");
+        codesList.setReferenceYear("2024");
+        codesList.setDeprecated(false);
+        codesList.setValid(true);
+        codesList.setUrn(urn);
+        codesList.setSearchConfiguration(new CodesListSearchConfigDto(Map.of("key", "value")));
+
+        repository.save(codesList);
+
+        List<CodesListMetadataDto> result =
+                service.getAllMetadata(List.of(CodesListMetadataExpandableFieldsEnum.SEARCH_CONFIGURATION), null, null, urn);
+
+        assertEquals(1, result.size());
+        assertEquals("value", result.getFirst().searchConfiguration().content().get("key"));
+    }
+
+    @Test
+    void testGetAllMetadataFilteredByUrnExcludesOtherUrns() {
+        String urn = "urn:codeslist:communes:2024";
+        String otherUrn = "urn:codeslist:pays:2024";
+
+        CodesListEntity codesList1 = new CodesListEntity();
+        codesList1.setId(UUID.randomUUID());
+        codesList1.setLabel("Label1");
+        codesList1.setVersion(1);
+        codesList1.setTheme("COMMUNES");
+        codesList1.setReferenceYear("2024");
+        codesList1.setDeprecated(false);
+        codesList1.setValid(true);
+        codesList1.setUrn(urn);
+
+        CodesListEntity codesList2 = new CodesListEntity();
+        codesList2.setId(UUID.randomUUID());
+        codesList2.setLabel("Label2");
+        codesList2.setVersion(1);
+        codesList2.setTheme("PAYS");
+        codesList2.setReferenceYear("2024");
+        codesList2.setDeprecated(false);
+        codesList2.setValid(true);
+        codesList2.setUrn(otherUrn);
+
+        repository.save(codesList1);
+        repository.save(codesList2);
+
+        List<CodesListMetadataDto> result = service.getAllMetadata(null, null, null, urn);
+
+        assertEquals(1, result.size());
+        assertEquals("Label1", result.getFirst().label());
+    }
+
+    @Test
+    void testGetAllMetadataFilteredByUrn_NotFound() {
+        List<CodesListMetadataDto> result = service.getAllMetadata(null, null, null, "urn:unknown");
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testGetAllMetadataFilteredByUrnAndValid() {
+        String urn = "urn:codeslist:communes:2024";
+
+        CodesListEntity codesList1 = new CodesListEntity();
+        codesList1.setId(UUID.randomUUID());
+        codesList1.setLabel("Label1");
+        codesList1.setVersion(1);
+        codesList1.setTheme("COMMUNES");
+        codesList1.setReferenceYear("2024");
+        codesList1.setDeprecated(true);
+        codesList1.setValid(false);
+        codesList1.setUrn(urn);
+
+        CodesListEntity codesList2 = new CodesListEntity();
+        codesList2.setId(UUID.randomUUID());
+        codesList2.setLabel("Label2");
+        codesList2.setVersion(2);
+        codesList2.setTheme("COMMUNES");
+        codesList2.setReferenceYear("2024");
+        codesList2.setDeprecated(false);
+        codesList2.setValid(true);
+        codesList2.setUrn(urn);
+
+        repository.save(codesList1);
+        repository.save(codesList2);
+
+        List<CodesListMetadataDto> result = service.getAllMetadata(null, true, null, urn);
+
+        assertEquals(1, result.size());
+        assertEquals(2, result.getFirst().version());
     }
 
     @Test

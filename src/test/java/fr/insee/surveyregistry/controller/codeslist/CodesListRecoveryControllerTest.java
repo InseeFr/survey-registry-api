@@ -55,7 +55,7 @@ class CodesListRecoveryControllerTest {
         CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1",1, "COMMUNES", "2024", "urn:ddi:communes:2024:1",false, true, null);
 
         List<CodesListMetadataDto> metadataList = List.of(metadata);
-        Mockito.when(codesListRecoveryService.getAllMetadata(null, null, null)).thenReturn(metadataList);
+        Mockito.when(codesListRecoveryService.getAllMetadata(null, null, null, null)).thenReturn(metadataList);
 
         mockMvc.perform(get("/codes-lists"))
                 .andExpect(status().isOk())
@@ -66,7 +66,7 @@ class CodesListRecoveryControllerTest {
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testGetAllCodesListsFilteredByValid() throws Exception {
-        Mockito.when(codesListRecoveryService.getAllMetadata(null, true, null))
+        Mockito.when(codesListRecoveryService.getAllMetadata(null, true, null, null))
                 .thenReturn(List.of());
 
         mockMvc.perform(get("/codes-lists")
@@ -74,14 +74,14 @@ class CodesListRecoveryControllerTest {
                 .andExpect(status().isOk());
 
         Mockito.verify(codesListRecoveryService)
-                .getAllMetadata(null, true, null);
+                .getAllMetadata(null, true, null, null);
     }
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testGetAllCodesListsFilteredByDeprecated() throws Exception {
 
-        Mockito.when(codesListRecoveryService.getAllMetadata(null, null, false))
+        Mockito.when(codesListRecoveryService.getAllMetadata(null, null, false, null))
                 .thenReturn(List.of());
 
         mockMvc.perform(get("/codes-lists")
@@ -89,14 +89,14 @@ class CodesListRecoveryControllerTest {
                 .andExpect(status().isOk());
 
         Mockito.verify(codesListRecoveryService)
-                .getAllMetadata(null, null, false);
+                .getAllMetadata(null, null, false, null);
     }
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testGetAllCodesListsFilteredByValidAndDeprecated() throws Exception {
 
-        Mockito.when(codesListRecoveryService.getAllMetadata(null, true, false))
+        Mockito.when(codesListRecoveryService.getAllMetadata(null, true, false, null))
                 .thenReturn(List.of());
 
         mockMvc.perform(get("/codes-lists")
@@ -105,7 +105,7 @@ class CodesListRecoveryControllerTest {
                 .andExpect(status().isOk());
 
         Mockito.verify(codesListRecoveryService)
-                .getAllMetadata(null, true, false);
+                .getAllMetadata(null, true, false, null);
     }
 
     @Test
@@ -206,6 +206,109 @@ class CodesListRecoveryControllerTest {
 
         mockMvc.perform(get("/codes-lists/"+ testId +"/metadata?expand=toto"))
                 .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testGetAllCodesListsFilteredByUrn() throws Exception {
+        String urn = "urn:ddi:communes:2024:1";
+        UUID testId = UUID.randomUUID();
+
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1", 1, "COMMUNES", "2024", urn, false, true, null);
+
+        Mockito.when(codesListRecoveryService.getAllMetadata(null, null, null, urn)).thenReturn(List.of(metadata));
+
+        mockMvc.perform(get("/codes-lists")
+                        .param("urn", urn))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].label").value("CodesList1"))
+                .andExpect(jsonPath("$[0].urn").value(urn));
+
+        Mockito.verify(codesListRecoveryService).getAllMetadata(null, null, null, urn);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testGetAllCodesListsFilteredByUrn_MultipleVersions() throws Exception {
+        String urn = "urn:ddi:communes:2024:1";
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+
+        CodesListMetadataDto metadata1 = new CodesListMetadataDto(id1, "CodesList1", 1, "COMMUNES", "2024", urn, true, true, null);
+        CodesListMetadataDto metadata2 = new CodesListMetadataDto(id2, "CodesList2", 2, "COMMUNES", "2024", urn, false, true, null);
+
+        Mockito.when(codesListRecoveryService.getAllMetadata(null, null, null, urn))
+                .thenReturn(List.of(metadata1, metadata2));
+
+        mockMvc.perform(get("/codes-lists")
+                        .param("urn", urn))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].version").value(1))
+                .andExpect(jsonPath("$[1].version").value(2));
+    }
+
+    @Test
+    @WithMockUser(username = "webclient", roles = {"WEBCLIENT"})
+    void testGetAllCodesListsFilteredByUrn_withExpandSearchConfiguration() throws Exception {
+        String urn = "urn:ddi:communes:2024:1";
+        UUID testId = UUID.randomUUID();
+
+        CodesListMetadataDto metadata = new CodesListMetadataDto(testId, "CodesList1", 1, "COMMUNES", "2024", urn, false, true, new CodesListSearchConfigDto(Map.of("enabled", true)));
+
+        List<CodesListMetadataExpandableFieldsEnum> expand = List.of(CodesListMetadataExpandableFieldsEnum.SEARCH_CONFIGURATION);
+        Mockito.when(codesListRecoveryService.getAllMetadata(expand, null, null, urn)).thenReturn(List.of(metadata));
+
+        mockMvc.perform(get("/codes-lists?urn=" + urn + "&expand=SEARCH_CONFIGURATION"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].searchConfiguration.enabled").value(true));
+
+        Mockito.verify(codesListRecoveryService).getAllMetadata(expand, null, null, urn);
+    }
+
+    @Test
+    @WithMockUser(username = "webclient", roles = {"WEBCLIENT"})
+    void testGetAllCodesListsFilteredByUrn_withInvalidExpand() throws Exception {
+        String urn = "urn:ddi:communes:2024:1";
+
+        mockMvc.perform(get("/codes-lists?urn=" + urn + "&expand=toto"))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testGetAllCodesListsFilteredByUrn_NotFound() throws Exception {
+        String urn = "urn:unknown";
+
+        Mockito.when(codesListRecoveryService.getAllMetadata(null, null, null, urn)).thenReturn(List.of());
+
+        mockMvc.perform(get("/codes-lists")
+                        .param("urn", urn))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void testGetAllCodesListsFilteredByUrnAndValid() throws Exception {
+        String urn = "urn:ddi:communes:2024:1";
+
+        Mockito.when(codesListRecoveryService.getAllMetadata(null, true, null, urn)).thenReturn(List.of());
+
+        mockMvc.perform(get("/codes-lists")
+                        .param("urn", urn)
+                        .param("valid", "true"))
+                .andExpect(status().isOk());
+
+        Mockito.verify(codesListRecoveryService).getAllMetadata(null, true, null, urn);
+    }
+
+    @Test
+    void testGetAllCodesListsFilteredByUrn_Unauthorized() throws Exception {
+        mockMvc.perform(get("/codes-lists")
+                        .param("urn", "urn:ddi:communes:2024:1"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

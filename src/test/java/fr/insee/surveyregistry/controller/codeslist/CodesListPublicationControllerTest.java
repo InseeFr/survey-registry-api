@@ -266,7 +266,7 @@ class CodesListPublicationControllerTest {
                 .andExpect(status().isCreated());
 
         Mockito.verify(codesListPublicationService)
-                .createURN(eq(testId), eq(urn));
+                .createURN(testId, urn);
     }
 
     @Test

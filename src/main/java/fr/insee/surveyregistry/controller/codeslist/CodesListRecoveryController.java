@@ -38,7 +38,7 @@ public class CodesListRecoveryController {
 
 
     /**
-     * GET /codes-lists : Get all codes lists metadata with optional filters.
+     * GET /codes-lists : Get all codes lists metadata with optional filters
      *
      * @return List of codes list metadata (status code 200)
      */
@@ -64,11 +64,15 @@ public class CodesListRecoveryController {
 
             @Parameter(name = "deprecated", in = ParameterIn.QUERY)
             @RequestParam(name = "deprecated", required = false)
-            Boolean deprecated
+            Boolean deprecated,
+
+            @Parameter(name = "urn", in = ParameterIn.QUERY)
+            @RequestParam(name = "urn", required = false)
+            String urn
     ) {
 
         List<CodesListMetadataDto> metadataList =
-                codesListRecoveryService.getAllMetadata(expand, valid, deprecated);
+                codesListRecoveryService.getAllMetadata(expand, valid, deprecated, urn);
 
         return ResponseEntity.ok(metadataList);
     }

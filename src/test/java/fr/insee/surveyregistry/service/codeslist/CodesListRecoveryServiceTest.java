@@ -39,12 +39,12 @@ class CodesListRecoveryServiceTest {
         when(projection.getLabel()).thenReturn("Label1");
         when(projection.getVersion()).thenReturn(1);
 
-        when(repository.findAllMetadata(null, null)).thenReturn(List.of(projection));
+        when(repository.findAllMetadata(null, null, null)).thenReturn(List.of(projection));
 
         CodesListMetadataDto dtoMock = new CodesListMetadataDto(id, "Label1", 1, "COMMUNES", "2024", "urn:ddi:communes:2024:1", false, true, null);
         when(metadataMapper.toDto(projection, null)).thenReturn(dtoMock);
 
-        List<CodesListMetadataDto> result = service.getAllMetadata(null, null, null);
+        List<CodesListMetadataDto> result = service.getAllMetadata(null, null, null, null);
 
         assertEquals(1, result.size());
         CodesListMetadataDto dto = result.getFirst();
@@ -57,17 +57,17 @@ class CodesListRecoveryServiceTest {
         assertFalse(dto.isDeprecated());
         assertTrue(dto.isValid());
 
-        verify(repository).findAllMetadata(null, null);
+        verify(repository).findAllMetadata(null, null, null);
         verify(metadataMapper).toDto(projection, null);
     }
 
     @Test
     void testGetAllMetadataWithFilters() {
-        when(repository.findAllMetadata(true, false)).thenReturn(List.of());
+        when(repository.findAllMetadata(true, false, null)).thenReturn(List.of());
 
-        service.getAllMetadata(null, true, false);
+        service.getAllMetadata(null, true, false, null);
 
-        verify(repository).findAllMetadata(true, false);
+        verify(repository).findAllMetadata(true, false, null);
     }
 
     @Test
@@ -122,6 +122,89 @@ class CodesListRecoveryServiceTest {
 
         assertTrue(result.isPresent());
         assertSame(mappedDto, result.get());
+    }
+
+    @Test
+    void testGetAllMetadataFilteredByUrn() {
+        String urn = "urn:ddi:communes:2024:1";
+
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        CodesListRepository.MetadataProjection projection1 = mock(CodesListRepository.MetadataProjection.class);
+        CodesListRepository.MetadataProjection projection2 = mock(CodesListRepository.MetadataProjection.class);
+
+        when(repository.findAllMetadata(null, null, urn)).thenReturn(List.of(projection1, projection2));
+
+        CodesListMetadataDto dto1 = new CodesListMetadataDto(id1, "Label1", 1, "COMMUNES", "2024", urn, true, true, null);
+        CodesListMetadataDto dto2 = new CodesListMetadataDto(id2, "Label2", 2, "COMMUNES", "2024", urn, false, true, null);
+
+        when(metadataMapper.toDto(projection1, null)).thenReturn(dto1);
+        when(metadataMapper.toDto(projection2, null)).thenReturn(dto2);
+
+        List<CodesListMetadataDto> result = service.getAllMetadata(null, null, null, urn);
+
+        assertEquals(2, result.size());
+        assertEquals(dto1, result.get(0));
+        assertEquals(dto2, result.get(1));
+
+        verify(repository).findAllMetadata(null, null, urn);
+        verify(metadataMapper).toDto(projection1, null);
+        verify(metadataMapper).toDto(projection2, null);
+    }
+
+    @Test
+    void testGetAllMetadataFilteredByUrn_withExpandSearchConfiguration() {
+        String urn = "urn:ddi:communes:2024:1";
+        UUID id = UUID.randomUUID();
+
+        CodesListRepository.MetadataProjection projection = mock(CodesListRepository.MetadataProjection.class);
+        CodesListSearchConfigDto searchConfig = new CodesListSearchConfigDto(Map.of("filter", true));
+
+        when(projection.getId()).thenReturn(id);
+        when(projection.getLabel()).thenReturn("Label1");
+        when(projection.getVersion()).thenReturn(1);
+        when(projection.getTheme()).thenReturn("COMMUNES");
+        when(projection.getReferenceYear()).thenReturn("2024");
+        when(projection.getUrn()).thenReturn(urn);
+        when(projection.getSearchConfiguration()).thenReturn(searchConfig);
+
+        CodesListMetadataDto mappedDto = new CodesListMetadataDto(id, "Label1", 1, "COMMUNES", "2024", urn, false, true, searchConfig);
+
+        List<CodesListMetadataExpandableFieldsEnum> expand = List.of(CodesListMetadataExpandableFieldsEnum.SEARCH_CONFIGURATION);
+
+        when(repository.findAllMetadata(null, null, urn)).thenReturn(List.of(projection));
+        when(metadataMapper.toDto(projection, expand)).thenReturn(mappedDto);
+
+        List<CodesListMetadataDto> result = service.getAllMetadata(expand, null, null, urn);
+
+        assertEquals(1, result.size());
+        assertSame(mappedDto, result.getFirst());
+        assertEquals(true, result.getFirst().searchConfiguration().content().get("filter"));
+    }
+
+    @Test
+    void testGetAllMetadataFilteredByUrn_NotFound() {
+        String urn = "urn:unknown";
+
+        when(repository.findAllMetadata(null, null, urn)).thenReturn(List.of());
+
+        List<CodesListMetadataDto> result = service.getAllMetadata(null, null, null, urn);
+
+        assertTrue(result.isEmpty());
+
+        verify(repository).findAllMetadata(null, null, urn);
+        verify(metadataMapper, never()).toDto(any(), any());
+    }
+
+    @Test
+    void testGetAllMetadataFilteredByUrnAndValid() {
+        String urn = "urn:ddi:communes:2024:1";
+
+        when(repository.findAllMetadata(true, null, urn)).thenReturn(List.of());
+
+        service.getAllMetadata(null, true, null, urn);
+
+        verify(repository).findAllMetadata(true, null, urn);
     }
 
     @Test
