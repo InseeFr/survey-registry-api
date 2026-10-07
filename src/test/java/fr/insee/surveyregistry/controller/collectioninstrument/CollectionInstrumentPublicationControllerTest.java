@@ -10,7 +10,6 @@ import fr.insee.surveyregistry.exception.ResourceNotFoundException;
 import fr.insee.surveyregistry.service.collectioninstrument.CollectionInstrumentPublicationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -24,6 +23,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -46,12 +46,12 @@ class CollectionInstrumentPublicationControllerTest {
     static class TestConfig {
         @Bean
         public CollectionInstrumentPublicationService collectionInstrumentPublicationService() {
-            return Mockito.mock(CollectionInstrumentPublicationService.class);
+            return mock(CollectionInstrumentPublicationService.class);
         }
     }
 
     @BeforeEach
-    void setup() {Mockito.reset(collectionInstrumentPublicationService);}
+    void setup() {reset(collectionInstrumentPublicationService);}
 
     @Test
     @WithMockUser(username = "designer", roles = {"DESIGNER"})
@@ -63,7 +63,7 @@ class CollectionInstrumentPublicationControllerTest {
         CollectionInstrumentMetadataDto metadataDto =
                 createMetadataDto(poguesVersionId,null);
 
-        Mockito.when(collectionInstrumentPublicationService
+        when(collectionInstrumentPublicationService
                         .createCollectionInstrumentMetadataOnly(metadataDto))
                 .thenReturn(collectionInstrumentId);
 
@@ -75,7 +75,7 @@ class CollectionInstrumentPublicationControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().string("\"" + collectionInstrumentId + "\""));
 
-        Mockito.verify(collectionInstrumentPublicationService)
+        verify(collectionInstrumentPublicationService)
                 .createCollectionInstrumentMetadataOnly(metadataDto);
     }
     @Test
@@ -87,7 +87,7 @@ class CollectionInstrumentPublicationControllerTest {
         CollectionInstrumentMetadataDto metadataDto =
                 createMetadataDto(poguesVersionId,null);
 
-        Mockito.when(collectionInstrumentPublicationService
+        when(collectionInstrumentPublicationService
                         .createCollectionInstrumentMetadataOnly(metadataDto))
                 .thenThrow(new ResourceAlreadyExistsException(
                         "Collection instrument already exists"
@@ -103,7 +103,7 @@ class CollectionInstrumentPublicationControllerTest {
                 .andExpect(jsonPath("$.title")
                         .value("Resource already exists"));
 
-        Mockito.verify(collectionInstrumentPublicationService)
+        verify(collectionInstrumentPublicationService)
                 .createCollectionInstrumentMetadataOnly(metadataDto);
     }
 
@@ -123,7 +123,7 @@ class CollectionInstrumentPublicationControllerTest {
                         .content(objectMapper.writeValueAsString(metadataDto)))
                 .andExpect(status().isForbidden());
 
-        Mockito.verifyNoInteractions(collectionInstrumentPublicationService);
+        verifyNoInteractions(collectionInstrumentPublicationService);
     }
 
     @Test
@@ -145,7 +145,7 @@ class CollectionInstrumentPublicationControllerTest {
                         )
                 );
 
-        Mockito.when(collectionInstrumentPublicationService
+        when(collectionInstrumentPublicationService
                         .createCollectionInstrument(dto))
                 .thenReturn(collectionInstrumentId);
 
@@ -157,7 +157,7 @@ class CollectionInstrumentPublicationControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().string("\"" + collectionInstrumentId + "\""));
 
-        Mockito.verify(collectionInstrumentPublicationService).createCollectionInstrument(dto);
+        verify(collectionInstrumentPublicationService).createCollectionInstrument(dto);
     }
 
     @Test
@@ -176,7 +176,7 @@ class CollectionInstrumentPublicationControllerTest {
                         null
                 );
 
-        Mockito.when(collectionInstrumentPublicationService
+        when(collectionInstrumentPublicationService
                         .createCollectionInstrument(dto))
                 .thenThrow(new InvalidRequestException(
                         "No conceptual model found for poguesVersionId: "
@@ -189,7 +189,7 @@ class CollectionInstrumentPublicationControllerTest {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
 
-        Mockito.verify(collectionInstrumentPublicationService)
+        verify(collectionInstrumentPublicationService)
                 .createCollectionInstrument(dto);
     }
 
@@ -209,7 +209,7 @@ class CollectionInstrumentPublicationControllerTest {
                         null
                 );
 
-        Mockito.when(collectionInstrumentPublicationService
+        when(collectionInstrumentPublicationService
                         .createCollectionInstrument(dto))
                 .thenThrow(new ResourceAlreadyExistsException(
                         "Collection instrument already exists"
@@ -225,7 +225,7 @@ class CollectionInstrumentPublicationControllerTest {
                 .andExpect(jsonPath("$.title")
                         .value("Resource already exists"));
 
-        Mockito.verify(collectionInstrumentPublicationService)
+        verify(collectionInstrumentPublicationService)
                 .createCollectionInstrument(dto);
     }
 
@@ -252,7 +252,7 @@ class CollectionInstrumentPublicationControllerTest {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isForbidden());
 
-        Mockito.verifyNoInteractions(collectionInstrumentPublicationService);
+        verifyNoInteractions(collectionInstrumentPublicationService);
     }
 
     @Test
@@ -274,7 +274,7 @@ class CollectionInstrumentPublicationControllerTest {
                         .content(objectMapper.writeValueAsString(lunaticContent)))
                 .andExpect(status().isCreated());
 
-        Mockito.verify(collectionInstrumentPublicationService)
+        verify(collectionInstrumentPublicationService)
                 .addLunaticContent(collectionInstrumentId, lunaticContent);
     }
 
@@ -288,7 +288,7 @@ class CollectionInstrumentPublicationControllerTest {
                 new CollectionInstrumentLunaticContentDto(
                         Map.of("questionnaire", "content"));
 
-        Mockito.doThrow(new ResourceNotFoundException(
+        doThrow(new ResourceNotFoundException(
                         "Collection instrument not found for id: "
                                 + collectionInstrumentId
                 ))
@@ -304,7 +304,7 @@ class CollectionInstrumentPublicationControllerTest {
                         .content(objectMapper.writeValueAsString(lunaticContent)))
                 .andExpect(status().isNotFound());
 
-        Mockito.verify(collectionInstrumentPublicationService)
+        verify(collectionInstrumentPublicationService)
                 .addLunaticContent(collectionInstrumentId, lunaticContent);
     }
 
@@ -318,7 +318,7 @@ class CollectionInstrumentPublicationControllerTest {
                 new CollectionInstrumentLunaticContentDto(
                         Map.of("questionnaire", "content"));
 
-        Mockito.doThrow(new ResourceAlreadyExistsException(
+        doThrow(new ResourceAlreadyExistsException(
                         "Lunatic content already exists"
                 ))
                 .when(collectionInstrumentPublicationService)
@@ -336,7 +336,7 @@ class CollectionInstrumentPublicationControllerTest {
                 .andExpect(jsonPath("$.title")
                         .value("Resource already exists"));
 
-        Mockito.verify(collectionInstrumentPublicationService)
+        verify(collectionInstrumentPublicationService)
                 .addLunaticContent(collectionInstrumentId, lunaticContent);
     }
 
@@ -359,7 +359,7 @@ class CollectionInstrumentPublicationControllerTest {
                         .content(objectMapper.writeValueAsString(lunaticContent)))
                 .andExpect(status().isForbidden());
 
-        Mockito.verifyNoInteractions(collectionInstrumentPublicationService);
+        verifyNoInteractions(collectionInstrumentPublicationService);
     }
 
     private CollectionInstrumentMetadataDto createMetadataDto(UUID poguesVersionId, Integer version) {

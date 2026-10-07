@@ -5,7 +5,6 @@ import fr.insee.surveyregistry.exception.ResourceNotFoundException;
 import fr.insee.surveyregistry.service.conceptualmodel.ConceptualModelRecoveryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -17,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -34,12 +34,12 @@ class ConceptualModelRecoveryControllerTest {
     static class TestConfig {
         @Bean
         public ConceptualModelRecoveryService conceptualModelRecoveryService() {
-            return Mockito.mock(ConceptualModelRecoveryService.class);
+            return mock(ConceptualModelRecoveryService.class);
         }
     }
 
     @BeforeEach
-    void resetMocks() {Mockito.reset(conceptualModelRecoveryService);}
+    void resetMocks() {reset(conceptualModelRecoveryService);}
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
@@ -53,7 +53,7 @@ class ConceptualModelRecoveryControllerTest {
                         "s1193"
                 );
 
-        Mockito.when(conceptualModelRecoveryService.getByPoguesVersionId(poguesVersionId)).
+        when(conceptualModelRecoveryService.getByPoguesVersionId(poguesVersionId)).
                 thenReturn(metadataDto);
 
         mockMvc.perform(get("/conceptual-models")
@@ -63,7 +63,7 @@ class ConceptualModelRecoveryControllerTest {
                 .andExpect(jsonPath("$.poguesId").value("mquod4mj"))
                 .andExpect(jsonPath("$.serieId").value("s1193"));
 
-        Mockito.verify(conceptualModelRecoveryService).getByPoguesVersionId(poguesVersionId);
+        verify(conceptualModelRecoveryService).getByPoguesVersionId(poguesVersionId);
     }
 
     @Test
@@ -71,7 +71,7 @@ class ConceptualModelRecoveryControllerTest {
     void testGetConceptualModelByPoguesVersionId_NotFound() throws Exception {
         UUID poguesVersionId = UUID.randomUUID();
 
-        Mockito.when(conceptualModelRecoveryService.getByPoguesVersionId(poguesVersionId)).
+        when(conceptualModelRecoveryService.getByPoguesVersionId(poguesVersionId)).
                 thenThrow(
                 new ResourceNotFoundException(
                         "Conceptual model not found for poguesVersionId: "
@@ -88,7 +88,7 @@ class ConceptualModelRecoveryControllerTest {
                         .value("Conceptual model not found for poguesVersionId: "
                                 + poguesVersionId));
 
-        Mockito.verify(conceptualModelRecoveryService).getByPoguesVersionId(poguesVersionId);
+        verify(conceptualModelRecoveryService).getByPoguesVersionId(poguesVersionId);
     }
 
     @Test
@@ -98,7 +98,7 @@ class ConceptualModelRecoveryControllerTest {
         UUID poguesVersionId = UUID.randomUUID();
         String ddiContent = "<DDIInstance>content</DDIInstance>";
 
-        Mockito.when(conceptualModelRecoveryService.getDDIByPoguesVersionId(poguesVersionId))
+        when(conceptualModelRecoveryService.getDDIByPoguesVersionId(poguesVersionId))
                 .thenReturn(ddiContent);
 
         // When / Then
@@ -108,7 +108,7 @@ class ConceptualModelRecoveryControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML))
                 .andExpect(content().string(ddiContent));
 
-        Mockito.verify(conceptualModelRecoveryService).getDDIByPoguesVersionId(poguesVersionId);
+        verify(conceptualModelRecoveryService).getDDIByPoguesVersionId(poguesVersionId);
     }
 
     @Test
@@ -117,7 +117,7 @@ class ConceptualModelRecoveryControllerTest {
         // Given
         UUID poguesVersionId = UUID.randomUUID();
 
-        Mockito.when(conceptualModelRecoveryService.getDDIByPoguesVersionId(poguesVersionId))
+        when(conceptualModelRecoveryService.getDDIByPoguesVersionId(poguesVersionId))
                 .thenThrow(new ResourceNotFoundException(
                         "Conceptual model not found for poguesVersionId: " + poguesVersionId
                 ));
@@ -131,6 +131,6 @@ class ConceptualModelRecoveryControllerTest {
                 .andExpect(jsonPath("$.detail")
                         .value("Conceptual model not found for poguesVersionId: " + poguesVersionId));
 
-        Mockito.verify(conceptualModelRecoveryService).getDDIByPoguesVersionId(poguesVersionId);
+        verify(conceptualModelRecoveryService).getDDIByPoguesVersionId(poguesVersionId);
     }
 }

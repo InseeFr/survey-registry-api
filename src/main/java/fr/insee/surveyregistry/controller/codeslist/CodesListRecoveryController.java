@@ -1,7 +1,12 @@
 package fr.insee.surveyregistry.controller.codeslist;
 
-import fr.insee.surveyregistry.enums.CodesListMetadataExpandableFieldsEnum;
 import fr.insee.surveyregistry.configuration.auth.AuthorityPrivileges;
+import fr.insee.surveyregistry.dto.codeslist.CodesListContentDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
+import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
+import fr.insee.surveyregistry.enums.CodesListMetadataExpandableFieldsEnum;
+import fr.insee.surveyregistry.exception.ResourceNotFoundException;
+import fr.insee.surveyregistry.service.codeslist.CodesListRecoveryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -12,17 +17,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import fr.insee.surveyregistry.dto.codeslist.CodesListContentDto;
-import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
-import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
-import fr.insee.surveyregistry.service.codeslist.CodesListRecoveryService;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +31,10 @@ import java.util.UUID;
 @Tag(name = "Codes List Recovery", description = "Codes List Endpoints for retrieving codes lists and metadata")
 @PreAuthorize(AuthorityPrivileges.HAS_USER_PRIVILEGES)
 public class CodesListRecoveryController {
+
+    private static final String PROBLEM_JSON = MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+    private static final String CODES_LIST_NOT_FOUND = "Codes list not found: ";
+    private static final String CODES_LIST_NOT_FOUND_DESCRIPTION = "Codes list not found";
 
     private final CodesListRecoveryService codesListRecoveryService;
 
@@ -83,6 +85,7 @@ public class CodesListRecoveryController {
      *
      * @param codesListId  (required)
      * @return Codes list content as raw JSON (status code 200)
+     *         or Codes list not found (status code 404)
      */
     @Operation(
             operationId = "getCodesListById",
@@ -99,7 +102,11 @@ public class CodesListRecoveryController {
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Codes list not found"
+                            description = CODES_LIST_NOT_FOUND_DESCRIPTION,
+                            content = @Content(
+                                    mediaType = PROBLEM_JSON,
+                                    schema = @Schema(implementation = ProblemDetail.class)
+                            )
                     )
             }
     )
@@ -110,7 +117,7 @@ public class CodesListRecoveryController {
 
         return codesListRecoveryService.getCodesListById(codesListId)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> codesListNotFound(codesListId));
     }
 
 
@@ -120,6 +127,7 @@ public class CodesListRecoveryController {
      * @param codesListId  (required)
      * @param expand Allow to include additional fields such as "searchConfiguration". (optional)
      * @return Metadata of a codes list (status code 200)
+     *         or Codes list not found (status code 404)
      */
     @Operation(
             operationId = "getCodesListMetadataById",
@@ -134,7 +142,14 @@ public class CodesListRecoveryController {
                                     schema = @Schema(implementation = CodesListMetadataDto.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "404", description = "Codes list not found")
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = CODES_LIST_NOT_FOUND_DESCRIPTION,
+                            content = @Content(
+                                    mediaType = PROBLEM_JSON,
+                                    schema = @Schema(implementation = ProblemDetail.class)
+                            )
+                    )
             }
     )
     @GetMapping(value = "/{codesListId}/metadata", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -146,7 +161,7 @@ public class CodesListRecoveryController {
         ) {
         return codesListRecoveryService.getMetadataById(codesListId, expand)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> codesListNotFound(codesListId));
     }
 
 
@@ -155,6 +170,7 @@ public class CodesListRecoveryController {
      *
      * @param codesListId (required)
      * @return Search configuration (status code 200)
+     *         or Codes list not found (status code 404)
      */
     @Operation(
             operationId = "getCodesListSearchConfigById",
@@ -169,7 +185,14 @@ public class CodesListRecoveryController {
                                     schema = @Schema(implementation = CodesListSearchConfigDto.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "404", description = "Codes list not found")
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = CODES_LIST_NOT_FOUND_DESCRIPTION,
+                            content = @Content(
+                                    mediaType = PROBLEM_JSON,
+                                    schema = @Schema(implementation = ProblemDetail.class)
+                            )
+                    )
             }
     )
     @GetMapping(value = "/{codesListId}/search-configuration", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -179,7 +202,12 @@ public class CodesListRecoveryController {
 
         return codesListRecoveryService.getSearchConfiguration(codesListId)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> codesListNotFound(codesListId));
+    }
+
+
+    private static ResourceNotFoundException codesListNotFound(UUID codesListId) {
+        return new ResourceNotFoundException(CODES_LIST_NOT_FOUND + codesListId);
     }
 }
 

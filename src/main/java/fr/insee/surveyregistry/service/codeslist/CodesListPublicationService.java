@@ -5,14 +5,15 @@ import fr.insee.surveyregistry.dto.codeslist.CodesListDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 import fr.insee.surveyregistry.entity.CodesListEntity;
+import fr.insee.surveyregistry.exception.ResourceAlreadyExistsException;
+import fr.insee.surveyregistry.exception.ResourceNotFoundException;
+import fr.insee.surveyregistry.exception.ResourceStateConflictException;
 import fr.insee.surveyregistry.mapper.codeslist.CodesListMapper;
 import fr.insee.surveyregistry.repository.CodesListRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -31,6 +32,8 @@ public class CodesListPublicationService {
      * The version is automatically incremented based on existing entries with the same theme and referenceYear.
      *
      * @param metadataDto the metadata for the codes list
+     * @throws ResourceAlreadyExistsException if a codes list already exists for the same
+     * theme, reference year and version
      */
     @Transactional
     public UUID createCodesListMetadataOnly(CodesListMetadataDto metadataDto) {
@@ -61,6 +64,8 @@ public class CodesListPublicationService {
      *
      * @param dto the DTO representing the codes list
      * @return the generated UUID
+     * @throws ResourceAlreadyExistsException if a codes list already exists for the same
+     *theme, reference year and version
      */
     public UUID createCodesList(CodesListDto dto) {
         CodesListEntity entity = codesListMapper.toEntity(dto);
@@ -75,8 +80,7 @@ public class CodesListPublicationService {
 
         if (codesListRepository.existsByThemeAndReferenceYearAndVersion(
                 entity.getTheme(), entity.getReferenceYear(), entity.getVersion())) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
+            throw new ResourceAlreadyExistsException(
                     "Codes list with theme=" + entity.getTheme() +
                             ", referenceYear=" + entity.getReferenceYear() +
                             ", version=" + entity.getVersion() + ALREADY_EXISTS
@@ -121,23 +125,20 @@ public class CodesListPublicationService {
      *
      * @param codesListId the UUID of the codes list
      * @param content the content object
+     * @throws ResourceNotFoundException      if the codes list does not exist
+     * @throws ResourceAlreadyExistsException if the codes list already has content
      */
     public void createContent(UUID codesListId, CodesListContentDto content) {
-        if (!codesListRepository.existsById(codesListId)) {
-            throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
-        }
+        CodesListEntity entity = findByIdOrThrow(codesListId);
 
         if (codesListRepository.existsByIdAndContentIsNotNull(codesListId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
+            throw new ResourceAlreadyExistsException(
                     "Content of " + codesListId + ALREADY_EXISTS
             );
         }
 
-        codesListRepository.findById(codesListId).ifPresent(entity -> {
-            entity.setContent(content);
-            codesListRepository.save(entity);
-        });
+        entity.setContent(content);
+        codesListRepository.save(entity);
     }
 
     /**
@@ -145,23 +146,20 @@ public class CodesListPublicationService {
      *
      * @param codesListId the UUID of the codes list
      * @param searchConfig the search configuration object
+     * @throws ResourceNotFoundException      if the codes list does not exist
+     * @throws ResourceAlreadyExistsException if the codes list already has a search configuration
      */
     public void createSearchConfiguration(UUID codesListId, CodesListSearchConfigDto searchConfig) {
-        if (!codesListRepository.existsById(codesListId)) {
-            throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
-        }
+        CodesListEntity entity = findByIdOrThrow(codesListId);
 
         if (codesListRepository.existsByIdAndSearchConfigurationIsNotNull(codesListId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
+            throw new ResourceAlreadyExistsException(
                     "Search configuration of " + codesListId + ALREADY_EXISTS
             );
         }
 
-        codesListRepository.findById(codesListId).ifPresent(entity -> {
-            entity.setSearchConfiguration(searchConfig);
-            codesListRepository.save(entity);
-        });
+        entity.setSearchConfiguration(searchConfig);
+        codesListRepository.save(entity);
     }
 
     /**
@@ -169,23 +167,20 @@ public class CodesListPublicationService {
      *
      * @param codesListId the UUID of the codes list
      * @param urn the urn string
+     * @throws ResourceNotFoundException      if the codes list does not exist
+     * @throws ResourceAlreadyExistsException if the codes list already has a URN
      */
     public void createURN(UUID codesListId, String urn) {
-        if (!codesListRepository.existsById(codesListId)) {
-            throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
-        }
+        CodesListEntity entity = findByIdOrThrow(codesListId);
 
         if (codesListRepository.existsByIdAndUrnIsNotNull(codesListId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
+            throw new ResourceAlreadyExistsException(
                     "URN of " + codesListId + ALREADY_EXISTS
             );
         }
 
-        codesListRepository.findById(codesListId).ifPresent(entity -> {
-            entity.setUrn(urn);
-            codesListRepository.save(entity);
-        });
+        entity.setUrn(urn);
+        codesListRepository.save(entity);
     }
 
     /**
@@ -194,25 +189,20 @@ public class CodesListPublicationService {
      * as deprecated cannot become valid again.
      *
      * @param codesListId the unique identifier of the codes list to deprecate
-     * @throws IllegalArgumentException if the codes list does not exist
-     * @throws ResponseStatusException  if the codes list is already deprecated
+     * @throws ResourceNotFoundException      if the codes list does not exist
+     * @throws ResourceStateConflictException if the codes list is already deprecated
      */
     public void markAsDeprecated(UUID codesListId) {
-        if (!codesListRepository.existsById(codesListId)) {
-            throw new IllegalArgumentException(CODES_LIST_NOT_FOUND);
+        CodesListEntity entity = findByIdOrThrow(codesListId);
+
+        if (entity.isDeprecated()) {
+            throw new ResourceStateConflictException(
+                    "Codes list " + codesListId + " is already deprecated"
+            );
         }
 
-        codesListRepository.findById(codesListId).ifPresent(entity -> {
-            if (entity.isDeprecated()) {
-                throw new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "Codes list " + codesListId + " is already deprecated"
-                );
-            }
-
-            entity.setDeprecated(true);
-            codesListRepository.save(entity);
-        });
+        entity.setDeprecated(true);
+        codesListRepository.save(entity);
     }
 
     /**
@@ -221,24 +211,33 @@ public class CodesListPublicationService {
      * as invalid cannot become valid again.
      *
      * @param codesListId the unique identifier of the codes list to invalidate
-     * @throws IllegalArgumentException if the codes list does not exist
-     * @throws ResponseStatusException  if the codes list is already invalid
+     * @throws ResourceNotFoundException      if the codes list does not exist
+     * @throws ResourceStateConflictException if the codes list is already invalid
      */
     public void markAsInvalid(UUID codesListId) {
-        if (!codesListRepository.existsById(codesListId)) {
-            throw new IllegalArgumentException("Codes list not found: " + codesListId);
+        CodesListEntity entity = findByIdOrThrow(codesListId);
+
+        if (!entity.isValid()) {
+            throw new ResourceStateConflictException(
+                    "Codes list " + codesListId + " is already marked as invalid"
+            );
         }
 
-        codesListRepository.findById(codesListId).ifPresent(entity -> {
-            if (!entity.isValid()) {
-                throw new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "Codes list " + codesListId + " is already marked as invalid"
-                );
-            }
+        entity.setValid(false);
+        codesListRepository.save(entity);
+    }
 
-            entity.setValid(false);
-            codesListRepository.save(entity);
-        });
+    /**
+     * Retrieves a codes list by its identifier.
+     *
+     * @param codesListId the unique identifier of the codes list
+     * @return the matching entity
+     * @throws ResourceNotFoundException if the codes list does not exist
+     */
+    private CodesListEntity findByIdOrThrow(UUID codesListId) {
+        return codesListRepository.findById(codesListId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        CODES_LIST_NOT_FOUND + ": " + codesListId
+                ));
     }
 }

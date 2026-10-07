@@ -5,6 +5,9 @@ import fr.insee.surveyregistry.dto.codeslist.CodesListDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
 import fr.insee.surveyregistry.entity.CodesListEntity;
+import fr.insee.surveyregistry.exception.ResourceAlreadyExistsException;
+import fr.insee.surveyregistry.exception.ResourceNotFoundException;
+import fr.insee.surveyregistry.exception.ResourceStateConflictException;
 import fr.insee.surveyregistry.repository.CodesListRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -159,7 +161,7 @@ class CodesListPublicationServiceIntegrationTest {
     }
 
     @Test
-    void testCreateContent_WhenAlreadyExists_ShouldThrow409() {
+    void testCreateContent_WhenAlreadyExists_ShouldThrowResourceAlreadyExists() {
         CodesListDto dto = buildEmptyCodesListDto("LabelX", "COMMUNES", "2025");
         UUID id = service.createCodesList(dto);
 
@@ -170,12 +172,19 @@ class CodesListPublicationServiceIntegrationTest {
 
         Executable action = () -> service.createContent(id, new CodesListContentDto(contentList));
 
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class, action);
-        assertEquals(409, ex.getStatusCode().value());
+        assertThrows(ResourceAlreadyExistsException.class, action);
     }
 
     @Test
-    void testCreateSearchConfiguration_WhenAlreadyExists_ShouldThrow409() {
+    void testCreateContent_WhenCodesListDoesNotExist_ShouldThrowResourceNotFound() {
+        UUID unknownId = UUID.randomUUID();
+        CodesListContentDto content = new CodesListContentDto(List.of(Map.of("id", "code1")));
+
+        assertThrows(ResourceNotFoundException.class, () -> service.createContent(unknownId, content));
+    }
+
+    @Test
+    void testCreateSearchConfiguration_WhenAlreadyExists_ShouldThrowResourceAlreadyExists() {
         CodesListDto dto = buildEmptyCodesListDto("LabelX", "COMMUNES", "2025");
         UUID id = service.createCodesList(dto);
 
@@ -185,8 +194,15 @@ class CodesListPublicationServiceIntegrationTest {
 
         Executable action = () -> service.createSearchConfiguration(id, new CodesListSearchConfigDto(configMap));
 
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class, action);
-        assertEquals(409, ex.getStatusCode().value());
+        assertThrows(ResourceAlreadyExistsException.class, action);
+    }
+
+    @Test
+    void testCreateSearchConfiguration_WhenCodesListDoesNotExist_ShouldThrowResourceNotFound() {
+        UUID unknownId = UUID.randomUUID();
+        CodesListSearchConfigDto config = new CodesListSearchConfigDto(Map.of("type", "simple"));
+
+        assertThrows(ResourceNotFoundException.class, () -> service.createSearchConfiguration(unknownId, config));
     }
 
     @Test
@@ -202,8 +218,14 @@ class CodesListPublicationServiceIntegrationTest {
         CodesListEntity entityDeprecated = codesListRepository.findById(id).orElseThrow();
         assertTrue(entityDeprecated.isDeprecated());
 
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> service.markAsDeprecated(id));
-        assertEquals(409, ex.getStatusCode().value());
+        assertThrows(ResourceStateConflictException.class, () -> service.markAsDeprecated(id));
+    }
+
+    @Test
+    void testMarkAsDeprecated_WhenCodesListDoesNotExist_ShouldThrowResourceNotFound() {
+        UUID unknownId = UUID.randomUUID();
+
+        assertThrows(ResourceNotFoundException.class, () -> service.markAsDeprecated(unknownId));
     }
 
     @Test
@@ -219,8 +241,14 @@ class CodesListPublicationServiceIntegrationTest {
         CodesListEntity entityInvalid = codesListRepository.findById(id).orElseThrow();
         assertFalse(entityInvalid.isValid());
 
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> service.markAsInvalid(id));
-        assertEquals(409, ex.getStatusCode().value());
+        assertThrows(ResourceStateConflictException.class, () -> service.markAsInvalid(id));
+    }
+
+    @Test
+    void testMarkAsInvalid_WhenCodesListDoesNotExist_ShouldThrowResourceNotFound() {
+        UUID unknownId = UUID.randomUUID();
+
+        assertThrows(ResourceNotFoundException.class, () -> service.markAsInvalid(unknownId));
     }
 
 }

@@ -9,7 +9,6 @@ import fr.insee.surveyregistry.exception.ResourceNotFoundException;
 import fr.insee.surveyregistry.service.collectioninstrument.CollectionInstrumentRecoveryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -43,12 +43,12 @@ class CollectionInstrumentRecoveryControllerTest {
 
         @Bean
         public CollectionInstrumentRecoveryService collectionInstrumentRecoveryService() {
-            return Mockito.mock(CollectionInstrumentRecoveryService.class);
+            return mock(CollectionInstrumentRecoveryService.class);
         }
     }
 
     @BeforeEach
-    void setup() {Mockito.reset(collectionInstrumentRecoveryService);}
+    void setup() {reset(collectionInstrumentRecoveryService);}
 
     @Test
     @WithMockUser(username = "designer", roles = {"DESIGNER"})
@@ -69,7 +69,7 @@ class CollectionInstrumentRecoveryControllerTest {
                         null
                 );
 
-        Mockito.when(collectionInstrumentRecoveryService.getMetadataById(collectionInstrumentId, null))
+        when(collectionInstrumentRecoveryService.getMetadataById(collectionInstrumentId, null))
                 .thenReturn(metadataDto);
 
         // When / Then
@@ -93,7 +93,7 @@ class CollectionInstrumentRecoveryControllerTest {
                 .andExpect(jsonPath("$.releaseDate")
                         .exists());
 
-        Mockito.verify(collectionInstrumentRecoveryService).getMetadataById(collectionInstrumentId, null);
+        verify(collectionInstrumentRecoveryService).getMetadataById(collectionInstrumentId, null);
     }
 
     @Test
@@ -102,7 +102,7 @@ class CollectionInstrumentRecoveryControllerTest {
         // Given
         UUID collectionInstrumentId = UUID.randomUUID();
 
-        Mockito.when(collectionInstrumentRecoveryService.getMetadataById(collectionInstrumentId, null))
+        when(collectionInstrumentRecoveryService.getMetadataById(collectionInstrumentId, null))
                 .thenThrow(new ResourceNotFoundException("Collection instrument not found for id: "
                         + collectionInstrumentId
                 ));
@@ -116,7 +116,7 @@ class CollectionInstrumentRecoveryControllerTest {
                 .andExpect(jsonPath("$.title")
                         .value("Resource not found"));
 
-        Mockito.verify(collectionInstrumentRecoveryService).getMetadataById(collectionInstrumentId, null);
+        verify(collectionInstrumentRecoveryService).getMetadataById(collectionInstrumentId, null);
     }
 
     @Test
@@ -130,7 +130,7 @@ class CollectionInstrumentRecoveryControllerTest {
         CollectionInstrumentLunaticContentDto lunaticContentDto =
                 new CollectionInstrumentLunaticContentDto(lunaticContent);
 
-        Mockito.when(collectionInstrumentRecoveryService.getLunaticContentById(collectionInstrumentId))
+        when(collectionInstrumentRecoveryService.getLunaticContentById(collectionInstrumentId))
                 .thenReturn(lunaticContentDto);
 
         // When / Then
@@ -142,7 +142,7 @@ class CollectionInstrumentRecoveryControllerTest {
                 .andExpect(jsonPath("$.questionnaire")
                         .value("content"));
 
-        Mockito.verify(collectionInstrumentRecoveryService)
+        verify(collectionInstrumentRecoveryService)
                 .getLunaticContentById(collectionInstrumentId);
     }
 
@@ -152,7 +152,7 @@ class CollectionInstrumentRecoveryControllerTest {
         // Given
         UUID collectionInstrumentId = UUID.randomUUID();
 
-        Mockito.when(collectionInstrumentRecoveryService.getLunaticContentById(collectionInstrumentId))
+        when(collectionInstrumentRecoveryService.getLunaticContentById(collectionInstrumentId))
                 .thenThrow(new ResourceNotFoundException("Collection instrument not found for id: "
                         + collectionInstrumentId)
                 );
@@ -166,7 +166,7 @@ class CollectionInstrumentRecoveryControllerTest {
                 .andExpect(jsonPath("$.title")
                         .value("Resource not found"));
 
-        Mockito.verify(collectionInstrumentRecoveryService)
+        verify(collectionInstrumentRecoveryService)
                 .getLunaticContentById(collectionInstrumentId);
     }
 
@@ -191,7 +191,7 @@ class CollectionInstrumentRecoveryControllerTest {
                 new CollectionInstrumentCodesListDto(secondCodesListId, secondCodesListUrl)
         );
 
-        Mockito.when(
+        when(
                 collectionInstrumentRecoveryService
                         .getCollectionInstrumentCodesListsById(collectionInstrumentId)
         ).thenReturn(codesLists);
@@ -211,7 +211,7 @@ class CollectionInstrumentRecoveryControllerTest {
                 .andExpect(jsonPath("$[1].id").value(secondCodesListId.toString()))
                 .andExpect(jsonPath("$[1].url").value(secondCodesListUrl.toString()));
 
-        Mockito.verify(collectionInstrumentRecoveryService)
+        verify(collectionInstrumentRecoveryService)
                 .getCollectionInstrumentCodesListsById(collectionInstrumentId);
     }
 
@@ -221,7 +221,7 @@ class CollectionInstrumentRecoveryControllerTest {
         // Given
         UUID collectionInstrumentId = UUID.randomUUID();
 
-        Mockito.when(
+        when(
                 collectionInstrumentRecoveryService
                         .getCollectionInstrumentCodesListsById(collectionInstrumentId)
         ).thenThrow(new ResourceNotFoundException(
@@ -238,7 +238,7 @@ class CollectionInstrumentRecoveryControllerTest {
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.title").value("Resource not found"));
 
-        Mockito.verify(collectionInstrumentRecoveryService)
+        verify(collectionInstrumentRecoveryService)
                 .getCollectionInstrumentCodesListsById(collectionInstrumentId);
     }
 
@@ -262,7 +262,7 @@ class CollectionInstrumentRecoveryControllerTest {
                         null
                 );
 
-        Mockito.when(collectionInstrumentRecoveryService.getMetadataByPoguesId(poguesId, null))
+        when(collectionInstrumentRecoveryService.getMetadataByPoguesId(poguesId, null))
                 .thenReturn(List.of(metadataDto));
 
         // When / Then
@@ -288,7 +288,7 @@ class CollectionInstrumentRecoveryControllerTest {
                 .andExpect(jsonPath("$[0].releaseDate")
                         .exists());
 
-        Mockito.verify(collectionInstrumentRecoveryService)
+        verify(collectionInstrumentRecoveryService)
                 .getMetadataByPoguesId(poguesId, null);
     }
 
@@ -316,7 +316,7 @@ class CollectionInstrumentRecoveryControllerTest {
                         List.of(new CollectionInstrumentCodesListDto(codesListId, codesListUrl))
                 );
 
-        Mockito.when(collectionInstrumentRecoveryService.getMetadataByPoguesId(
+        when(collectionInstrumentRecoveryService.getMetadataByPoguesId(
                         poguesId,
                         List.of(CollectionInstrumentMetadataExpandableFieldsEnum.CODES_LISTS)
                 ))
@@ -334,7 +334,7 @@ class CollectionInstrumentRecoveryControllerTest {
                 .andExpect(jsonPath("$[0].codesLists[0].id").value(codesListId.toString()))
                 .andExpect(jsonPath("$[0].codesLists[0].url").value(codesListUrl.toString()));
 
-        Mockito.verify(collectionInstrumentRecoveryService).getMetadataByPoguesId(
+        verify(collectionInstrumentRecoveryService).getMetadataByPoguesId(
                 poguesId,
                 List.of(CollectionInstrumentMetadataExpandableFieldsEnum.CODES_LISTS)
         );
@@ -346,7 +346,7 @@ class CollectionInstrumentRecoveryControllerTest {
         // Given
         String poguesId = "unknown-pogues-id";
 
-        Mockito.when(collectionInstrumentRecoveryService.getMetadataByPoguesId(poguesId, null))
+        when(collectionInstrumentRecoveryService.getMetadataByPoguesId(poguesId, null))
                 .thenReturn(List.of());
 
         // When / Then
@@ -358,7 +358,7 @@ class CollectionInstrumentRecoveryControllerTest {
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(0));
 
-        Mockito.verify(collectionInstrumentRecoveryService)
+        verify(collectionInstrumentRecoveryService)
                 .getMetadataByPoguesId(poguesId, null);
     }
 
@@ -369,7 +369,7 @@ class CollectionInstrumentRecoveryControllerTest {
         UUID collectionInstrumentId = UUID.randomUUID();
         String ddiContent = "<DDIInstance>content</DDIInstance>";
 
-        Mockito.when(collectionInstrumentRecoveryService.getDDIById(collectionInstrumentId))
+        when(collectionInstrumentRecoveryService.getDDIById(collectionInstrumentId))
                 .thenReturn(ddiContent);
 
         // When / Then
@@ -380,7 +380,7 @@ class CollectionInstrumentRecoveryControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML))
                 .andExpect(content().string(ddiContent));
 
-        Mockito.verify(collectionInstrumentRecoveryService).getDDIById(collectionInstrumentId);
+        verify(collectionInstrumentRecoveryService).getDDIById(collectionInstrumentId);
     }
 
     @Test
@@ -389,7 +389,7 @@ class CollectionInstrumentRecoveryControllerTest {
         // Given
         UUID collectionInstrumentId = UUID.randomUUID();
 
-        Mockito.when(collectionInstrumentRecoveryService.getDDIById(collectionInstrumentId))
+        when(collectionInstrumentRecoveryService.getDDIById(collectionInstrumentId))
                 .thenThrow(new ResourceNotFoundException("Collection instrument not found for id: "
                         + collectionInstrumentId
                 ));
@@ -403,6 +403,6 @@ class CollectionInstrumentRecoveryControllerTest {
                 .andExpect(jsonPath("$.title")
                         .value("Resource not found"));
 
-        Mockito.verify(collectionInstrumentRecoveryService).getDDIById(collectionInstrumentId);
+        verify(collectionInstrumentRecoveryService).getDDIById(collectionInstrumentId);
     }
 }

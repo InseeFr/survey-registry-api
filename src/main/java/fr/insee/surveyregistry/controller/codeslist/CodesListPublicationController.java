@@ -2,12 +2,12 @@ package fr.insee.surveyregistry.controller.codeslist;
 
 import fr.insee.surveyregistry.configuration.auth.AuthorityPrivileges;
 import fr.insee.surveyregistry.constants.RegexPatterns;
-import fr.insee.surveyregistry.dto.*;
+import fr.insee.surveyregistry.dto.SuccessResponseDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListContentDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
-import fr.insee.surveyregistry.dto.ErrorResponseDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
+import fr.insee.surveyregistry.exception.ResourceNotFoundException;
 import fr.insee.surveyregistry.service.codeslist.CodesListPublicationService;
 import fr.insee.surveyregistry.service.codeslist.CodesListRecoveryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,10 +21,11 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -34,6 +35,8 @@ import java.util.UUID;
 @Tag(name = "Codes List Publication", description = "Codes List Endpoints for publication")
 @PreAuthorize(AuthorityPrivileges.HAS_ADMIN_PRIVILEGES)
 public class CodesListPublicationController {
+
+    private static final String PROBLEM_JSON = MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 
     private final CodesListPublicationService codesListPublicationService;
     private final CodesListRecoveryService codesListRecoveryService;
@@ -62,10 +65,10 @@ public class CodesListPublicationController {
                     ),
                     @ApiResponse(
                             responseCode = "409",
-                            description = "Conflict - structured error (the codes list already exists or violates business rules)",
+                            description = "Conflict - the codes list already exists",
                             content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                                    mediaType = PROBLEM_JSON,
+                                    schema = @Schema(implementation = ProblemDetail.class)
                             )
                     )
             }
@@ -78,7 +81,7 @@ public class CodesListPublicationController {
         codesListPublicationService.deprecateOlderVersions(metadataDto.theme(), metadataDto.referenceYear(), id);
 
         CodesListMetadataDto createdMetadata = codesListRecoveryService.getMetadataById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Metadata not found after creation"));
+                .orElseThrow(() -> new ResourceNotFoundException("Metadata not found after creation"));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdMetadata);
     }
@@ -108,10 +111,10 @@ public class CodesListPublicationController {
                     ),
                     @ApiResponse(
                             responseCode = "409",
-                            description = "Conflict - structured error (the codes list already exists or violates business rules)",
+                            description = "Conflict - the codes list already exists",
                             content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                                    mediaType = PROBLEM_JSON,
+                                    schema = @Schema(implementation = ProblemDetail.class)
                             )
                     )
             }
@@ -137,7 +140,7 @@ public class CodesListPublicationController {
         );
 
         CodesListMetadataDto createdMetadata = codesListRecoveryService.getMetadataById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Metadata not found after creation"));
+                .orElseThrow(() -> new ResourceNotFoundException("Metadata not found after creation"));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdMetadata);
     }
@@ -149,7 +152,8 @@ public class CodesListPublicationController {
      * @param codesListId  (required)
      * @param content  (optional) JSON content to add
      * @return Content set successfully (status code 201)
-     *         or Structured error (status code 409)
+     *         or Codes list not found (status code 404)
+     *         or Content already exists (status code 409)
      */
     @Operation(
             operationId = "putCodesListContentById",
@@ -157,8 +161,11 @@ public class CodesListPublicationController {
             tags = { "Codes List Publication" },
             responses = {
                     @ApiResponse(responseCode = "201", description = "Content set successfully"),
-                    @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
+                    @ApiResponse(responseCode = "404", description = "Codes list not found", content = {
+                            @Content(mediaType = PROBLEM_JSON, schema = @Schema(implementation = ProblemDetail.class))
+                    }),
+                    @ApiResponse(responseCode = "409", description = "Content already exists", content = {
+                            @Content(mediaType = PROBLEM_JSON, schema = @Schema(implementation = ProblemDetail.class))
                     })
             }
     )
@@ -180,7 +187,8 @@ public class CodesListPublicationController {
      * @param codesListId  (required)
      * @param searchConfig  (optional)
      * @return Search configuration set successfully (status code 201)
-     *         or Structured error (status code 409)
+     *         or Codes list not found (status code 404)
+     *         or Search configuration already exists (status code 409)
      */
     @Operation(
             operationId = "putCodesListSearchConfigById",
@@ -188,8 +196,11 @@ public class CodesListPublicationController {
             tags = { "Codes List Publication" },
             responses = {
                     @ApiResponse(responseCode = "201", description = "Search configuration set successfully"),
-                    @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
+                    @ApiResponse(responseCode = "404", description = "Codes list not found", content = {
+                            @Content(mediaType = PROBLEM_JSON, schema = @Schema(implementation = ProblemDetail.class))
+                    }),
+                    @ApiResponse(responseCode = "409", description = "Search configuration already exists", content = {
+                            @Content(mediaType = PROBLEM_JSON, schema = @Schema(implementation = ProblemDetail.class))
                     })
             }
     )
@@ -211,7 +222,8 @@ public class CodesListPublicationController {
      * @param codesListId  (required)
      * @param urn  (optional)
      * @return URN set successfully (status code 201)
-     *         or Structured error (status code 409)
+     *         or Codes list not found (status code 404)
+     *         or URN already exists (status code 409)
      */
     @Operation(
             operationId = "putURNById",
@@ -219,8 +231,11 @@ public class CodesListPublicationController {
             tags = { "Codes List Publication" },
             responses = {
                     @ApiResponse(responseCode = "201", description = "URN set successfully"),
-                    @ApiResponse(responseCode = "409", description = "Structured error", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
+                    @ApiResponse(responseCode = "404", description = "Codes list not found", content = {
+                            @Content(mediaType = PROBLEM_JSON, schema = @Schema(implementation = ProblemDetail.class))
+                    }),
+                    @ApiResponse(responseCode = "409", description = "URN already exists", content = {
+                            @Content(mediaType = PROBLEM_JSON, schema = @Schema(implementation = ProblemDetail.class))
                     })
             }
     )
@@ -252,9 +267,9 @@ public class CodesListPublicationController {
                     @ApiResponse(responseCode = "200", description = "Marked as deprecated successfully",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))),
                     @ApiResponse(responseCode = "404", description = "Codes list not found",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))),
+                            content = @Content(mediaType = PROBLEM_JSON, schema = @Schema(implementation = ProblemDetail.class))),
                     @ApiResponse(responseCode = "409", description = "Codes list already deprecated",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
+                            content = @Content(mediaType = PROBLEM_JSON, schema = @Schema(implementation = ProblemDetail.class)))
             }
     )
     @PatchMapping(value = "/{codesListId}/deprecated", produces = "application/json")
@@ -288,9 +303,9 @@ public class CodesListPublicationController {
                     @ApiResponse(responseCode = "200", description = "Marked as invalid successfully",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))),
                     @ApiResponse(responseCode = "404", description = "Codes list not found",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))),
+                            content = @Content(mediaType = PROBLEM_JSON, schema = @Schema(implementation = ProblemDetail.class))),
                     @ApiResponse(responseCode = "409", description = "Codes list already marked as invalid",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class)))
+                            content = @Content(mediaType = PROBLEM_JSON, schema = @Schema(implementation = ProblemDetail.class)))
             }
     )
     @PatchMapping(value = "/{codesListId}/valid", produces = "application/json")

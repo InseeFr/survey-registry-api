@@ -52,4 +52,18 @@ public class RestExceptionHandler {
 
         return problemDetail;
     }
+
+    @ExceptionHandler(ResourceStateConflictException.class)
+    public ProblemDetail handleResourceStateConflict(
+            ResourceStateConflictException exception,
+            HttpServletRequest request) {
+
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+
+        problemDetail.setTitle("Resource state conflict");
+        problemDetail.setDetail(exception.getMessage());
+        problemDetail.setInstance(URI.create(request.getRequestURI()));
+
+        return problemDetail;
+    }
 }

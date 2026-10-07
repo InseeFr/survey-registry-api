@@ -4,16 +4,19 @@ import fr.insee.surveyregistry.dto.codeslist.CodesListContentDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListMetadataDto;
 import fr.insee.surveyregistry.dto.codeslist.CodesListSearchConfigDto;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 import fr.insee.surveyregistry.entity.CodesListEntity;
+import fr.insee.surveyregistry.exception.ResourceAlreadyExistsException;
+import fr.insee.surveyregistry.exception.ResourceNotFoundException;
+import fr.insee.surveyregistry.exception.ResourceStateConflictException;
 import fr.insee.surveyregistry.mapper.codeslist.CodesListMapper;
 import fr.insee.surveyregistry.repository.CodesListRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -49,8 +52,6 @@ class CodesListPublicationServiceTest {
         CodesListEntity entity = new CodesListEntity();
         when(codesListMapper.toEntity(any(CodesListDto.class))).thenReturn(entity);
         when(codesListRepository.save(entity)).thenReturn(entity);
-        when(codesListRepository.existsById(any(UUID.class))).thenReturn(true);
-        when(codesListRepository.findById(any(UUID.class))).thenReturn(Optional.of(entity));
 
         service.createCodesListMetadataOnly(metadataDto);
 
@@ -59,7 +60,7 @@ class CodesListPublicationServiceTest {
 
     @Test
     void testCreateCodesList() {
-        CodesListDto dto = new CodesListDto(null,null,null,null);
+        CodesListDto dto = new CodesListDto(null, null, null, null);
         CodesListEntity entity = new CodesListEntity();
 
         when(codesListMapper.toEntity(dto)).thenReturn(entity);
@@ -69,6 +70,22 @@ class CodesListPublicationServiceTest {
 
         assertNotNull(id);
         verify(codesListRepository).save(entity);
+    }
+
+    @Test
+    void testCreateCodesList_WhenAlreadyExists() {
+        CodesListDto dto = new CodesListDto(null, null, null, null);
+        CodesListEntity entity = new CodesListEntity();
+
+        when(codesListMapper.toEntity(dto)).thenReturn(entity);
+        when(codesListRepository.existsByThemeAndReferenceYearAndVersion(any(), any(), any()))
+                .thenReturn(true);
+
+        ResourceAlreadyExistsException ex = assertThrows(ResourceAlreadyExistsException.class,
+                () -> service.createCodesList(dto));
+
+        assertTrue(ex.getMessage().contains("already exists"));
+        verify(codesListRepository, never()).save(any());
     }
 
     @Test
@@ -88,9 +105,8 @@ class CodesListPublicationServiceTest {
         UUID id = UUID.randomUUID();
         CodesListEntity entity = new CodesListEntity();
 
-        when(codesListRepository.existsById(id)).thenReturn(true);
-        when(codesListRepository.existsByIdAndContentIsNotNull(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
+        when(codesListRepository.existsByIdAndContentIsNotNull(id)).thenReturn(false);
 
         List<Map<String, Object>> contentList = List.of(
                 Map.of("code", "code1"),
@@ -112,30 +128,32 @@ class CodesListPublicationServiceTest {
     @Test
     void testCreateContent_WhenCodesListDoesNotExist() {
         UUID id = UUID.randomUUID();
-        when(codesListRepository.existsById(id)).thenReturn(false);
+        when(codesListRepository.findById(id)).thenReturn(Optional.empty());
 
         List<Map<String, Object>> contentList = List.of(Map.of("code", "dummy"));
+        CodesListContentDto contentWrapper = new CodesListContentDto(contentList);
 
-        Executable executable = () -> service.createContent(id, new CodesListContentDto(contentList));
+        ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
+                () -> service.createContent(id, contentWrapper));
 
-        assertThrows(IllegalArgumentException.class, executable);
+        assertTrue(ex.getMessage().contains(id.toString()));
+        verify(codesListRepository, never()).save(any());
     }
 
     @Test
     void testCreateContent_WhenContentAlreadyExists() {
         UUID id = UUID.randomUUID();
 
-        when(codesListRepository.existsById(id)).thenReturn(true);
+        when(codesListRepository.findById(id)).thenReturn(Optional.of(new CodesListEntity()));
         when(codesListRepository.existsByIdAndContentIsNotNull(id)).thenReturn(true);
 
         List<Map<String, Object>> contentList = List.of(Map.of("code", "code1"));
         CodesListContentDto contentWrapper = new CodesListContentDto(contentList);
 
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+        ResourceAlreadyExistsException ex = assertThrows(ResourceAlreadyExistsException.class,
                 () -> service.createContent(id, contentWrapper));
 
-        assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
-        assertTrue(Objects.requireNonNull(ex.getReason()).contains("already exists"));
+        assertTrue(ex.getMessage().contains("already exists"));
         verify(codesListRepository, never()).save(any());
     }
 
@@ -144,11 +162,10 @@ class CodesListPublicationServiceTest {
         UUID id = UUID.randomUUID();
         CodesListEntity entity = new CodesListEntity();
 
-        when(codesListRepository.existsById(id)).thenReturn(true);
-        when(codesListRepository.existsByIdAndSearchConfigurationIsNotNull(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
+        when(codesListRepository.existsByIdAndSearchConfigurationIsNotNull(id)).thenReturn(false);
 
-        Map<String,Object> searchConfigMap = Map.of("type", "advanced");
+        Map<String, Object> searchConfigMap = Map.of("type", "advanced");
         CodesListSearchConfigDto searchConfig = new CodesListSearchConfigDto(searchConfigMap);
 
         service.createSearchConfiguration(id, searchConfig);
@@ -163,11 +180,10 @@ class CodesListPublicationServiceTest {
         UUID id = UUID.randomUUID();
         CodesListEntity entity = new CodesListEntity();
 
-        when(codesListRepository.existsById(id)).thenReturn(true);
-        when(codesListRepository.existsByIdAndSearchConfigurationIsNotNull(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
+        when(codesListRepository.existsByIdAndSearchConfigurationIsNotNull(id)).thenReturn(false);
 
-        Map<String,Object> searchConfigMap = Map.of();
+        Map<String, Object> searchConfigMap = Map.of();
         CodesListSearchConfigDto searchConfig = new CodesListSearchConfigDto(searchConfigMap);
 
         service.createSearchConfiguration(id, searchConfig);
@@ -178,31 +194,32 @@ class CodesListPublicationServiceTest {
     @Test
     void testCreateSearchConfiguration_WhenCodesListDoesNotExist() {
         UUID id = UUID.randomUUID();
-        when(codesListRepository.existsById(id)).thenReturn(false);
+        when(codesListRepository.findById(id)).thenReturn(Optional.empty());
 
-        Map<String,Object> searchConfigMap = Map.of("type", "advanced");
+        Map<String, Object> searchConfigMap = Map.of("type", "advanced");
         CodesListSearchConfigDto searchConfig = new CodesListSearchConfigDto(searchConfigMap);
 
-        Executable executable = () -> service.createSearchConfiguration(id, searchConfig);
+        ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
+                () -> service.createSearchConfiguration(id, searchConfig));
 
-        assertThrows(IllegalArgumentException.class, executable);
+        assertTrue(ex.getMessage().contains(id.toString()));
+        verify(codesListRepository, never()).save(any());
     }
 
     @Test
     void testCreateSearchConfiguration_WhenConfigAlreadyExists() {
         UUID id = UUID.randomUUID();
 
-        when(codesListRepository.existsById(id)).thenReturn(true);
+        when(codesListRepository.findById(id)).thenReturn(Optional.of(new CodesListEntity()));
         when(codesListRepository.existsByIdAndSearchConfigurationIsNotNull(id)).thenReturn(true);
 
-        Map<String,Object> configMap = Map.of("type", "advanced");
+        Map<String, Object> configMap = Map.of("type", "advanced");
         CodesListSearchConfigDto configWrapper = new CodesListSearchConfigDto(configMap);
 
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+        ResourceAlreadyExistsException ex = assertThrows(ResourceAlreadyExistsException.class,
                 () -> service.createSearchConfiguration(id, configWrapper));
 
-        assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
-        assertTrue(Objects.requireNonNull(ex.getReason()).contains("already exists"));
+        assertTrue(ex.getMessage().contains("already exists"));
         verify(codesListRepository, never()).save(any());
     }
 
@@ -211,9 +228,8 @@ class CodesListPublicationServiceTest {
         UUID id = UUID.randomUUID();
         CodesListEntity entity = new CodesListEntity();
 
-        when(codesListRepository.existsById(id)).thenReturn(true);
-        when(codesListRepository.existsByIdAndUrnIsNotNull(id)).thenReturn(false);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
+        when(codesListRepository.existsByIdAndUrnIsNotNull(id)).thenReturn(false);
 
         String urn = "urn:ddi:communes:2024:1";
 
@@ -226,25 +242,26 @@ class CodesListPublicationServiceTest {
     @Test
     void testCreateURN_WhenCodesListDoesNotExist() {
         UUID id = UUID.randomUUID();
-        when(codesListRepository.existsById(id)).thenReturn(false);
+        when(codesListRepository.findById(id)).thenReturn(Optional.empty());
 
-        Executable executable = () -> service.createURN(id, "urn:ddi:communes:2024:1");
+        ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
+                () -> service.createURN(id, "urn:ddi:communes:2024:1"));
 
-        assertThrows(IllegalArgumentException.class, executable);
+        assertTrue(ex.getMessage().contains(id.toString()));
+        verify(codesListRepository, never()).save(any());
     }
 
     @Test
     void testCreateURN_WhenURNAlreadyExists() {
         UUID id = UUID.randomUUID();
 
-        when(codesListRepository.existsById(id)).thenReturn(true);
+        when(codesListRepository.findById(id)).thenReturn(Optional.of(new CodesListEntity()));
         when(codesListRepository.existsByIdAndUrnIsNotNull(id)).thenReturn(true);
 
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+        ResourceAlreadyExistsException ex = assertThrows(ResourceAlreadyExistsException.class,
                 () -> service.createURN(id, "urn:ddi:communes:2024:1"));
 
-        assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
-        assertTrue(Objects.requireNonNull(ex.getReason()).contains("already exists"));
+        assertTrue(ex.getMessage().contains("already exists"));
         verify(codesListRepository, never()).save(any());
     }
 
@@ -259,7 +276,6 @@ class CodesListPublicationServiceTest {
 
         when(codesListMapper.toEntity(dto)).thenReturn(entity);
         when(codesListRepository.save(entity)).thenReturn(entity);
-        when(codesListRepository.existsById(id)).thenReturn(true);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
         service.createCodesList(dto);
@@ -268,9 +284,18 @@ class CodesListPublicationServiceTest {
         service.markAsDeprecated(id);
         assertTrue(entity.isDeprecated());
 
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+        ResourceStateConflictException ex = assertThrows(ResourceStateConflictException.class,
                 () -> service.markAsDeprecated(id));
-        assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
+        assertTrue(ex.getMessage().contains("already deprecated"));
+    }
+
+    @Test
+    void testMarkAsDeprecated_WhenCodesListDoesNotExist() {
+        UUID id = UUID.randomUUID();
+        when(codesListRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> service.markAsDeprecated(id));
+        verify(codesListRepository, never()).save(any());
     }
 
     @Test
@@ -284,7 +309,6 @@ class CodesListPublicationServiceTest {
 
         when(codesListMapper.toEntity(dto)).thenReturn(entity);
         when(codesListRepository.save(entity)).thenReturn(entity);
-        when(codesListRepository.existsById(id)).thenReturn(true);
         when(codesListRepository.findById(id)).thenReturn(Optional.of(entity));
 
         service.createCodesList(dto);
@@ -293,8 +317,17 @@ class CodesListPublicationServiceTest {
         service.markAsInvalid(id);
         assertFalse(entity.isValid());
 
-        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+        ResourceStateConflictException ex = assertThrows(ResourceStateConflictException.class,
                 () -> service.markAsInvalid(id));
-        assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
+        assertTrue(ex.getMessage().contains("already marked as invalid"));
+    }
+
+    @Test
+    void testMarkAsInvalid_WhenCodesListDoesNotExist() {
+        UUID id = UUID.randomUUID();
+        when(codesListRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> service.markAsInvalid(id));
+        verify(codesListRepository, never()).save(any());
     }
 }

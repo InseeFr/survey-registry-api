@@ -7,7 +7,6 @@ import fr.insee.surveyregistry.exception.ResourceNotFoundException;
 import fr.insee.surveyregistry.service.conceptualmodel.ConceptualModelPublicationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -20,6 +19,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.util.UUID;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -43,12 +43,12 @@ class ConceptualModelPublicationControllerTest {
     static class TestConfig {
         @Bean
         public ConceptualModelPublicationService conceptualModelPublicationService() {
-            return Mockito.mock(ConceptualModelPublicationService.class);
+            return mock(ConceptualModelPublicationService.class);
         }
     }
 
     @BeforeEach
-    void setup() {Mockito.reset(conceptualModelPublicationService);}
+    void setup() {reset(conceptualModelPublicationService);}
 
     @Test
     @WithMockUser(username = "designer", roles = {"DESIGNER"})
@@ -69,7 +69,7 @@ class ConceptualModelPublicationControllerTest {
                         null
                 );
 
-        Mockito.when(conceptualModelPublicationService.create(metadataDto))
+        when(conceptualModelPublicationService.create(metadataDto))
                 .thenReturn(dto);
 
         mockMvc.perform(post("/conceptual-models")
@@ -85,7 +85,7 @@ class ConceptualModelPublicationControllerTest {
                         .value("s1193"))
                 .andExpect(jsonPath("$.ddiContent").doesNotExist());
 
-        Mockito.verify(conceptualModelPublicationService)
+        verify(conceptualModelPublicationService)
                 .create(metadataDto);
     }
 
@@ -101,7 +101,7 @@ class ConceptualModelPublicationControllerTest {
                         "s1193"
                 );
 
-        Mockito.when(conceptualModelPublicationService.create(metadataDto))
+        when(conceptualModelPublicationService.create(metadataDto))
                 .thenThrow(new ResourceAlreadyExistsException(
                         "Conceptual model already exists for poguesVersionId: "
                                 + poguesVersionId
@@ -116,7 +116,7 @@ class ConceptualModelPublicationControllerTest {
                 .andExpect(jsonPath("$.title")
                         .value("Resource already exists"));
 
-        Mockito.verify(conceptualModelPublicationService)
+        verify(conceptualModelPublicationService)
                 .create(metadataDto);
     }
 
@@ -138,7 +138,7 @@ class ConceptualModelPublicationControllerTest {
                         .content(objectMapper.writeValueAsString(metadataDto)))
                 .andExpect(status().isForbidden());
 
-        Mockito.verifyNoInteractions(conceptualModelPublicationService);
+        verifyNoInteractions(conceptualModelPublicationService);
     }
 
     @Test
@@ -154,7 +154,7 @@ class ConceptualModelPublicationControllerTest {
                         .content(ddi))
                 .andExpect(status().isOk());
 
-        Mockito.verify(conceptualModelPublicationService)
+        verify(conceptualModelPublicationService)
                 .addDdiContent(poguesVersionId, ddi);
     }
 
@@ -164,7 +164,7 @@ class ConceptualModelPublicationControllerTest {
         UUID poguesVersionId = UUID.randomUUID();
         String ddi = "<DDIInstance></DDIInstance>";
 
-        Mockito.doThrow(new ResourceNotFoundException(
+        doThrow(new ResourceNotFoundException(
                         "Conceptual model not found"))
                 .when(conceptualModelPublicationService)
                 .addDdiContent(poguesVersionId, ddi);
@@ -176,7 +176,7 @@ class ConceptualModelPublicationControllerTest {
                         .content(ddi))
                 .andExpect(status().isNotFound());
 
-        Mockito.verify(conceptualModelPublicationService)
+        verify(conceptualModelPublicationService)
                 .addDdiContent(poguesVersionId, ddi);
     }
 
@@ -186,7 +186,7 @@ class ConceptualModelPublicationControllerTest {
         UUID poguesVersionId = UUID.randomUUID();
         String ddi = "<DDIInstance></DDIInstance>";
 
-        Mockito.doThrow(new ResourceAlreadyExistsException(
+        doThrow(new ResourceAlreadyExistsException(
                         "DDI content already exists"))
                 .when(conceptualModelPublicationService)
                 .addDdiContent(poguesVersionId, ddi);
@@ -198,7 +198,7 @@ class ConceptualModelPublicationControllerTest {
                         .content(ddi))
                 .andExpect(status().isConflict());
 
-        Mockito.verify(conceptualModelPublicationService)
+        verify(conceptualModelPublicationService)
                 .addDdiContent(poguesVersionId, ddi);
     }
 
@@ -214,6 +214,6 @@ class ConceptualModelPublicationControllerTest {
                         .content("<DDIInstance></DDIInstance>"))
                 .andExpect(status().isForbidden());
 
-        Mockito.verifyNoInteractions(conceptualModelPublicationService);
+        verifyNoInteractions(conceptualModelPublicationService);
     }
 }
