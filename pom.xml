@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.1</version>
+        <version>4.1.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>fr.insee</groupId>
@@ -27,16 +27,16 @@
         <url/>
     </scm>
     <properties>
-        <revision>2.11.1</revision> <!-- Version is managed by git tags -->
+        <revision>2.11.2</revision> <!-- Version is managed by git tags -->
         <java.version>25</java.version>
         <final.asset.name>survey-registry-api</final.asset.name>
         <!-- override Spring Boot, see https://central.sonatype.com/artifact/org.springframework.boot/spring-boot-dependencies/4.1.0 -->
-        <postgresql.version>42.7.13</postgresql.version>
+        <postgresql.version>42.7.14</postgresql.version>
         <jackson-2-bom.version>2.22.3</jackson-2-bom.version>
         <jackson-bom.version>3.2.3</jackson-bom.version>
         <tomcat.version>11.0.25</tomcat.version>
         <!-- Version properties not managed by Spring Boot -->
-        <jacoco.version>0.8.15</jacoco.version>
+        <jacoco.version>0.8.16</jacoco.version>
         <!-- Sonar properties -->
         <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
@@ -56,7 +56,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>3.1.1</version>
+            <version>3.2.0</version>
         </dependency>
 
         <!-- Validation (includes Hibernate Validator) -->
